@@ -57,6 +57,7 @@ header{background:var(--surface);border-bottom:2px solid var(--accent);padding:0
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.85);display:flex;align-items:center;justify-content:center;z-index:100;padding:16px}
 .modal-overlay.hidden{display:none}
 .modal{background:var(--surface);border:1px solid var(--border);border-radius:16px;width:100%;max-width:420px;max-height:92dvh;overflow-y:auto}
+.modal-wide{max-width:600px}
 .modal-header{padding:18px 18px 14px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:var(--surface);z-index:1}
 .modal-title{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:18px}
 .modal-close{background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer}
@@ -66,7 +67,7 @@ header{background:var(--surface);border-bottom:2px solid var(--accent);padding:0
 .form-group input,.form-group select{background:var(--bg);border:1px solid var(--border);color:var(--text);font-family:'Barlow',sans-serif;font-size:14px;padding:9px 11px;border-radius:8px;outline:none;width:100%}
 .form-group input:focus,.form-group select:focus{border-color:var(--accent)}
 .btn{padding:9px 18px;border-radius:8px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;cursor:pointer;border:none;transition:all .15s}
-.btn-primary{background:var(--accent);color:#000}.btn-secondary{background:var(--surface2);color:var(--text);border:1px solid var(--border)}.btn-success{background:var(--green);color:#fff}
+.btn-primary{background:var(--accent);color:#000}.btn-secondary{background:var(--surface2);color:var(--text);border:1px solid var(--border)}.btn-success{background:var(--green);color:#fff}.btn-danger{background:var(--red);color:#fff}
 .payment-total{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:48px;color:var(--accent);text-align:center;padding:16px;background:var(--bg);border-radius:10px;margin-bottom:14px}
 .payment-lbl{text-align:center;font-size:12px;color:var(--muted);margin-bottom:4px}
 .cash-group{display:flex;flex-direction:column;gap:8px;margin-top:12px}
@@ -80,8 +81,16 @@ header{background:var(--surface);border-bottom:2px solid var(--accent);padding:0
 .preset-btn{flex:1;min-width:70px;padding:12px 8px;border-radius:10px;border:2px solid var(--border);background:var(--surface2);color:var(--text);font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:16px;cursor:pointer;transition:all .15s;text-align:center}
 .preset-btn:hover{border-color:var(--accent);color:var(--accent)}
 .preset-btn.active{border-color:var(--accent);background:rgba(245,158,11,.15);color:var(--accent)}
-@media(max-width:580px){.cart-panel{width:220px}.products-grid{grid-template-columns:repeat(2,1fr)}}
-
+.sale-row{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)}
+.sale-row:last-child{border-bottom:none}
+.sale-row.storno{opacity:.4}
+.sale-row-info{flex:1;min-width:0}
+.sale-row-time{font-size:11px;color:var(--muted);margin-bottom:2px}
+.sale-row-items{font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sale-row-total{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:18px;color:var(--accent);flex-shrink:0}
+.sale-storno-btn{background:none;border:1px solid var(--border);color:var(--red);font-size:11px;font-weight:600;padding:4px 8px;border-radius:6px;cursor:pointer;flex-shrink:0;font-family:'Barlow',sans-serif}
+.sale-storno-btn:hover{background:var(--red);color:#fff;border-color:var(--red)}
+.sales-summary{background:var(--surface2);border-radius:8px;padding:10px 14px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center}
 .login-overlay{position:fixed;inset:0;background:#0f1117;display:flex;align-items:center;justify-content:center;z-index:9999;flex-direction:column;gap:20px}
 .login-box{background:#1a1d27;border:1px solid #2e3350;border-radius:16px;padding:32px;width:100%;max-width:340px;text-align:center}
 .login-logo{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:32px;color:#f59e0b;margin-bottom:4px}
@@ -92,6 +101,7 @@ header{background:var(--surface);border-bottom:2px solid var(--accent);padding:0
 .login-btn{width:100%;background:#22c55e;border:none;color:#fff;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:18px;padding:13px;border-radius:10px;cursor:pointer}
 .login-btn:hover{filter:brightness(1.1)}
 .login-err{color:#ef4444;font-size:13px;margin-top:8px;display:none}
+@media(max-width:580px){.cart-panel{width:220px}.products-grid{grid-template-columns:repeat(2,1fr)}}
 </style>
 </head>
 <body>
@@ -105,15 +115,18 @@ header{background:var(--surface);border-bottom:2px solid var(--accent);padding:0
     <div class="login-err" id="loginErr">Nesprávne heslo</div>
   </div>
 </div>
+
 <header>
   <div class="logo">Stánok<span>POS</span></div>
   <div class="stanok-badge" id="stanokBadge">NASTAV STÁNOK</div>
   <div class="header-btns">
     <span><span class="sync-dot" id="syncDot"></span><span id="syncText" style="font-size:11px;color:var(--muted)">...</span></span>
+    <button class="btn-sm" id="btnSales">📋 Predaje</button>
     <button class="btn-sm" id="btnSettings">⚙️ Nastavenia</button>
     <button class="btn-sm" id="btnRefresh">🔄 Tovar</button>
   </div>
 </header>
+
 <div class="main">
   <div class="products-panel">
     <div class="cats" id="catsBar"></div>
@@ -136,6 +149,7 @@ header{background:var(--surface);border-bottom:2px solid var(--accent);padding:0
     </div>
   </div>
 </div>
+
 <div class="status-bar">
   <span class="status-item">Predaje dnes: <strong id="salesCount">0</strong></span>
   <span class="status-item">Tržba: <strong id="totalRevenue">0,00 €</strong></span>
@@ -163,6 +177,32 @@ header{background:var(--surface);border-bottom:2px solid var(--accent);padding:0
     <div class="modal-footer">
       <button class="btn btn-secondary" id="btnCancelPayment">Zrušiť</button>
       <button class="btn btn-success" id="btnConfirmPayment">✓ Potvrdiť</button>
+    </div>
+  </div>
+</div>
+
+<!-- PREDAJE -->
+<div class="modal-overlay hidden" id="salesModal">
+  <div class="modal modal-wide">
+    <div class="modal-header">
+      <span class="modal-title">📋 Predaje</span>
+      <button class="modal-close" id="btnCloseSales">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="sales-summary">
+        <div>
+          <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Celkom predajov</div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:22px" id="salesTotalCount">0</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Celková tržba</div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:22px;color:var(--accent)" id="salesTotalRev">0,00 €</div>
+        </div>
+      </div>
+      <div id="salesList"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" id="btnCloseSales2">Zavrieť</button>
     </div>
   </div>
 </div>
@@ -211,7 +251,7 @@ let state = {
   sales: JSON.parse(localStorage.getItem('pos_sales') || '[]'),
   pending: JSON.parse(localStorage.getItem('pos_pending') || '[]'),
   cart: [],
-  activeCat: 'Všetky',
+  activeCat: 'Vsetky',
   online: false,
   payMethod: 'cash',
   akcie: []
@@ -219,7 +259,7 @@ let state = {
 
 function saveSalesLocal(){localStorage.setItem('pos_sales',JSON.stringify(state.sales));}
 function savePending(){localStorage.setItem('pos_pending',JSON.stringify(state.pending));}
-function fmt(n){return(Math.round(n*100)/100).toFixed(2).replace('.',',')+' €';}
+function fmt(n){return(Math.round(n*100)/100).toFixed(2).replace('.',',')+' €';}
 
 function toast(msg,type){
   const t=document.getElementById('toast');t.textContent=msg;
@@ -228,9 +268,9 @@ function toast(msg,type){
 }
 
 function updateBadge(){
-  const txt = state.stanok ? state.stanok.toUpperCase() : 'NASTAV STÁNOK';
-  const akcia = state.akciaName ? ' | ' + state.akciaName : '';
-  document.getElementById('stanokBadge').textContent = txt + akcia;
+  const txt=state.stanok?state.stanok.toUpperCase():'NASTAV STÁNOK';
+  const akcia=state.akciaName?' | '+state.akciaName:'';
+  document.getElementById('stanokBadge').textContent=txt+akcia;
 }
 
 function setOnline(v){
@@ -272,6 +312,12 @@ async function sendSale(sale){
   return d;
 }
 
+async function deleteSaleFromSheets(saleId){
+  try{
+    await fetch(SCRIPT_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'deleteSale',saleId})});
+  }catch(e){console.log('Storno sync chyba',e);}
+}
+
 async function loadAkcie(){
   try{
     const r=await fetch(SCRIPT_URL+'?action=getAkcie');
@@ -281,13 +327,13 @@ async function loadAkcie(){
       const sel=document.getElementById('setAkcia');
       sel.innerHTML='<option value="">— Vyber akciu —</option>'+
         d.akcie.map(a=>'<option value="'+a.id+'" data-name="'+escHtml(a.name)+'">'+escHtml(a.name)+(a.datum?' ('+a.datum+')':'')+'</option>').join('');
-      if(state.akciaId) sel.value=state.akciaId;
+      if(state.akciaId)sel.value=state.akciaId;
     }
   }catch(e){console.log('Chyba nacitania akcii',e);}
 }
 
 async function loadProducts(){
-  const akciaId = state.akciaId;
+  const akciaId=state.akciaId;
   if(!akciaId){
     const cached=localStorage.getItem('pos_products');
     if(cached){state.products=JSON.parse(cached);renderCats();renderProducts();}
@@ -435,41 +481,98 @@ async function confirmPayment(){
     id:Date.now(),time:new Date().toISOString(),
     stanok:state.stanok||'Neznamy',obsluha:state.obsluha||'',
     akcia:state.akciaName||'',method:'cash',
-    items:state.cart.map(i=>({name:i.name,price:i.price,qty:i.qty})),total
+    items:state.cart.map(i=>({name:i.name,price:i.price,qty:i.qty})),total,
+    storno:false
   };
   state.sales.push(sale);saveSalesLocal();
   state.cart=[];renderCart();updateStats();
   document.getElementById('paymentModal').classList.add('hidden');
   toast('✓ '+fmt(total)+' — zaznamenane!');
-
-  // Sync na pozadi bez cakania
   if(state.online){
-    sendSale(sale).then(()=>{
-      setOnline(true);
-    }).catch(()=>{
-      state.pending.push(sale);savePending();setOnline(false);
-      updatePendingInfo();
+    sendSale(sale).then(()=>setOnline(true)).catch(()=>{
+      state.pending.push(sale);savePending();setOnline(false);updatePendingInfo();
     });
   }else{
-    state.pending.push(sale);savePending();
-    updatePendingInfo();
+    state.pending.push(sale);savePending();updatePendingInfo();
   }
+}
+
+// PREDAJE MODAL
+function openSalesModal(){
+  renderSalesList();
+  document.getElementById('salesModal').classList.remove('hidden');
+}
+
+function renderSalesList(){
+  const sales=[...state.sales].reverse();
+  const active=sales.filter(s=>!s.storno);
+  const totalRev=active.reduce((s,x)=>s+x.total,0);
+
+  document.getElementById('salesTotalCount').textContent=active.length;
+  document.getElementById('salesTotalRev').textContent=fmt(totalRev);
+
+  if(!sales.length){
+    document.getElementById('salesList').innerHTML='<div style="text-align:center;color:var(--muted);padding:30px;font-size:13px">Žiadne predaje</div>';
+    return;
+  }
+
+  document.getElementById('salesList').innerHTML=sales.map(s=>
+    '<div class="sale-row'+(s.storno?' storno':'')+'" data-id="'+s.id+'">' +
+    '<div class="sale-row-info">' +
+    '<div class="sale-row-time">'+fmtTime(s.time)+(s.storno?' — <span style="color:var(--red);font-weight:700">STORNO</span>':'')+'</div>' +
+    '<div class="sale-row-items">'+(s.items?s.items.map(i=>i.name+' ×'+i.qty).join(', '):s.itemsStr||'')+'</div>' +
+    '</div>' +
+    '<div class="sale-row-total">'+(s.storno?'<span style="color:var(--muted)">'+fmt(s.total)+'</span>':fmt(s.total))+'</div>' +
+    (!s.storno?'<button class="sale-storno-btn" data-id="'+s.id+'">Storno</button>':'<span style="font-size:11px;color:var(--muted)">✕</span>') +
+    '</div>'
+  ).join('');
+
+  document.querySelectorAll('.sale-storno-btn').forEach(btn=>{
+    btn.addEventListener('click',function(){
+      const id=parseInt(this.dataset.id);
+      stornoSale(id);
+    });
+  });
+}
+
+function stornoSale(id){
+  const sale=state.sales.find(s=>s.id===id);
+  if(!sale||sale.storno)return;
+  sale.storno=true;
+  saveSalesLocal();
+  // Odstran z pending ak tam je
+  state.pending=state.pending.filter(p=>p.id!==id);
+  savePending();
+  updateStats();
+  renderSalesList();
+  toast('✓ Predaj stornovaný');
+  // Pokus o vymazanie zo Sheets
+  if(state.online) deleteSaleFromSheets(id);
+}
+
+function fmtTime(t){
+  try{return new Date(t).toLocaleString('sk-SK',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});}
+  catch{return t;}
 }
 
 function updateStats(){
   const today=new Date().toDateString();
-  const ts=state.sales.filter(s=>new Date(s.time).toDateString()===today);
+  const ts=state.sales.filter(s=>new Date(s.time).toDateString()===today&&!s.storno);
   document.getElementById('salesCount').textContent=ts.length;
   document.getElementById('totalRevenue').textContent=fmt(ts.reduce((s,x)=>s+x.total,0));
   if(state.sales.length){
-    const last=state.sales[state.sales.length-1];
-    document.getElementById('lastSaleEl').textContent='Posledny: '+new Date(last.time).toLocaleTimeString('sk-SK',{hour:'2-digit',minute:'2-digit'});
+    const last=state.sales.filter(s=>!s.storno).slice(-1)[0];
+    if(last)document.getElementById('lastSaleEl').textContent='Posledny: '+new Date(last.time).toLocaleTimeString('sk-SK',{hour:'2-digit',minute:'2-digit'});
   }
   updatePendingInfo();
 }
 
 function escHtml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 
+// EVENT LISTENERS
+document.getElementById('btnSales').addEventListener('click',openSalesModal);
+document.getElementById('btnCloseSales').addEventListener('click',function(){document.getElementById('salesModal').classList.add('hidden');});
+document.getElementById('btnCloseSales2').addEventListener('click',function(){document.getElementById('salesModal').classList.add('hidden');});
 document.getElementById('btnSettings').addEventListener('click',function(){
   document.getElementById('setStanok').value=state.stanok;
   document.getElementById('setObsluha').value=state.obsluha;
@@ -526,27 +629,20 @@ async function init(){
 
 // LOGIN
 (function(){
-  const PW = 'dhzpos22';
-  const KEY = 'pos_auth';
-  const overlay = document.getElementById('loginOverlay');
-  if(localStorage.getItem(KEY) === PW){overlay.style.display='none';return;}
+  const PW='dhzpos22';
+  const KEY='pos_auth';
+  const overlay=document.getElementById('loginOverlay');
+  if(localStorage.getItem(KEY)===PW){overlay.style.display='none';return;}
   function tryLogin(){
-    const val = document.getElementById('loginInput').value;
-    if(val === PW){
-      localStorage.setItem(KEY, PW);
-      overlay.style.display='none';
-    } else {
-      document.getElementById('loginErr').style.display='block';
-      document.getElementById('loginInput').value='';
-      document.getElementById('loginInput').focus();
-    }
+    const val=document.getElementById('loginInput').value;
+    if(val===PW){localStorage.setItem(KEY,PW);overlay.style.display='none';}
+    else{document.getElementById('loginErr').style.display='block';document.getElementById('loginInput').value='';document.getElementById('loginInput').focus();}
   }
-  document.getElementById('loginBtn').addEventListener('click', tryLogin);
-  document.getElementById('loginInput').addEventListener('keydown', function(e){
-    if(e.key==='Enter') tryLogin();
-  });
+  document.getElementById('loginBtn').addEventListener('click',tryLogin);
+  document.getElementById('loginInput').addEventListener('keydown',function(e){if(e.key==='Enter')tryLogin();});
   document.getElementById('loginInput').focus();
 })();
+
 init();
 </script>
 </body>
