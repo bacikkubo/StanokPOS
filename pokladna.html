@@ -80,6 +80,9 @@ header{background:var(--surface);border-bottom:2px solid var(--accent);padding:0
 .change-lbl{font-size:11px;color:var(--muted)}
 .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--green);color:#fff;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;padding:10px 22px;border-radius:10px;z-index:999;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap}
 .toast.show{opacity:1}.toast.err{background:var(--red)}.toast.warn{background:var(--accent);color:#000}
+.preset-btn{flex:1;min-width:70px;padding:12px 8px;border-radius:10px;border:2px solid var(--border);background:var(--surface2);color:var(--text);font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:16px;cursor:pointer;transition:all .15s;text-align:center}
+.preset-btn:hover{border-color:var(--accent);color:var(--accent)}
+.preset-btn.active{border-color:var(--accent);background:rgba(245,158,11,.15);color:var(--accent)}
 @media(max-width:580px){.cart-panel{width:220px}.products-grid{grid-template-columns:repeat(auto-fill,minmax(90px,1fr))}}
 </style>
 </head>
@@ -111,8 +114,8 @@ header{background:var(--surface);border-bottom:2px solid var(--accent);padding:0
         <span class="cart-total-amount" id="cartTotal">0,00 €</span>
       </div>
       <div class="pay-btns">
-        <button class="pay-btn cash" id="payBtnCash" disabled>💵 HOTOVOSŤ</button>
-        <button class="pay-btn card" id="payBtnCard" disabled>💳 KARTA</button>
+        <button class="pay-btn cash" id="payBtnCash" disabled>💵 ZAPLATIŤ</button>
+        
       </div>
     </div>
   </div>
@@ -132,7 +135,8 @@ header{background:var(--surface);border-bottom:2px solid var(--accent);padding:0
       <div class="payment-lbl">Suma na zaplatenie</div>
       <div class="payment-total" id="payTotal">0,00 €</div>
       <div id="cashSection" class="cash-group">
-        <label style="font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.5px">Zákazník zaplatil:</label>
+        <div id="presetBtns" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px"></div>
+        <label style="font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.5px">alebo zadaj ručne:</label>
         <input type="number" class="cash-input" id="cashPaid" placeholder="0,00" step="0.50" min="0">
         <div class="change-box" id="changeBox" style="display:none">
           <div class="change-lbl" id="changeLbl">Vydať</div>
@@ -356,31 +360,70 @@ function renderCart(){
   }
   document.getElementById('cartTotal').textContent=fmt(total);
   document.getElementById('payBtnCash').disabled=!state.cart.length;
-  document.getElementById('payBtnCard').disabled=!state.cart.length;
+  
 }
 
 function cartTotal(){return state.cart.reduce((s,i)=>s+i.price*i.qty,0);}
 
 function openPayment(method){
   state.payMethod=method;
-  document.getElementById('paymentTitle').textContent=method==='cash'?'💵 Platba hotovosťou':'💳 Platba kartou';
-  document.getElementById('payTotal').textContent=fmt(cartTotal());
-  document.getElementById('cashPaid').value='';
+  document.getElementById('paymentTitle').textContent='💵 Platba hotovosťou';
+  const total = cartTotal();
+  document.getElementById('payTotal').textContent=fmt(total);
   document.getElementById('changeBox').style.display='none';
-  document.getElementById('cashSection').style.display=method==='cash'?'flex':'none';
+
+  // Predefinovane sumy
+  const presets = calcPresets(total);
+  document.getElementById('cashPaid').value = presets[0];
+  document.getElementById('presetBtns').innerHTML = presets.map(p =>
+    '<button class="preset-btn" data-val="'+p+'">'+fmt(p)+'</button>'
+  ).join('');
+  document.querySelectorAll('.preset-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      document.getElementById('cashPaid').value = this.dataset.val;
+      document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+      triggerChange();
+    });
+  });
+  // Aktivuj prvy preset
+  document.querySelector('.preset-btn')?.classList.add('active');
+  triggerChange();
+
   document.getElementById('paymentModal').classList.remove('hidden');
 }
 
-document.getElementById('cashPaid').addEventListener('input',function(){
-  const total=cartTotal();const paid=parseFloat(this.value)||0;const change=paid-total;
-  const box=document.getElementById('changeBox');
-  if(paid>0){
-    box.style.display='block';
-    document.getElementById('changeAmt').textContent=fmt(Math.max(0,change));
-    document.getElementById('changeLbl').textContent=change>=0?'Vydať':'⚠️ Málo!';
-    box.style.borderColor=change>=0?'var(--green)':'var(--red)';
-  }else box.style.display='none';
-});
+function calcPresets(total) {
+  // Zaokruhli nahor na rozne sumy
+  const presets = new Set();
+  presets.add(Math.ceil(total));
+  // Zaokruhli na najblizsie 5
+  presets.add(Math.ceil(total / 5) * 5);
+  // Zaokruhli na najblizsie 10
+  presets.add(Math.ceil(total / 10) * 10);
+  // Zaokruhli na najblizsie 20
+  presets.add(Math.ceil(total / 20) * 20);
+  // Pridaj 50 ak je total > 30
+  if (total > 30) presets.add(50);
+  return [...presets].filter(p => p >= total).sort((a,b)=>a-b).slice(0,4);
+}
+
+function triggerChange() {
+  const total = cartTotal();
+  const paid = parseFloat(document.getElementById('cashPaid').value) || 0;
+  const change = paid - total;
+  const box = document.getElementById('changeBox');
+  if (paid > 0) {
+    box.style.display = 'block';
+    document.getElementById('changeAmt').textContent = fmt(Math.max(0, change));
+    document.getElementById('changeLbl').textContent = change >= 0 ? 'Vydať' : '⚠️ Málo!';
+    box.style.borderColor = change >= 0 ? 'var(--green)' : 'var(--red)';
+  } else {
+    box.style.display = 'none';
+  }
+}
+
+document.getElementById('cashPaid').addEventListener('input', triggerChange);
 
 async function confirmPayment(){
   const total=cartTotal();
@@ -433,7 +476,7 @@ document.getElementById('btnRefresh').addEventListener('click',async function(){
 
 document.getElementById('btnClearCart').addEventListener('click',function(){state.cart=[];renderCart();});
 document.getElementById('payBtnCash').addEventListener('click',function(){openPayment('cash');});
-document.getElementById('payBtnCard').addEventListener('click',function(){openPayment('card');});
+
 document.getElementById('btnClosePayment').addEventListener('click',function(){document.getElementById('paymentModal').classList.add('hidden');});
 document.getElementById('btnCancelPayment').addEventListener('click',function(){document.getElementById('paymentModal').classList.add('hidden');});
 document.getElementById('btnConfirmPayment').addEventListener('click',confirmPayment);
