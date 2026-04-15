@@ -6,7 +6,7 @@
 <title>StánokPOS — Back Office</title>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;700;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#f8f7f2;--surface:#fff;--surface2:#f1efe8;--border:#e2ddd4;--accent:#d4500a;--green:#1a472a;--text:#1c1a17;--muted:#7a7568;--r:10px;--red:#ef4444;--blue:#3b82f6}
+:root{--bg:#f8f7f2;--surface:#fff;--surface2:#f1efe8;--border:#e2ddd4;--accent:#d4500a;--green:#1a472a;--text:#1c1a17;--muted:#7a7568;--r:10px;--red:#ef4444;--blue:#3b82f6;--purple:#7c3aed}
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;min-height:100vh}
 header{background:var(--text);padding:0 28px;height:58px;display:flex;align-items:center;justify-content:space-between}
@@ -68,8 +68,7 @@ tr:hover td{background:var(--surface2)}
 .prod-bar-fill{height:100%;background:var(--green);border-radius:3px;display:flex;align-items:center;padding-left:4px}
 .prod-bar-fill span{font-size:10px;color:#fff;font-weight:700;white-space:nowrap}
 .prod-bar-qty{min-width:50px;text-align:right;font-size:13px;font-weight:700;color:var(--green)}
-.prod-bar-rev{min-width:70px;text-align:right;font-size:13px;font-weight:700;color:var(--accent)}
-
+.dhz-badge{display:inline-block;background:var(--purple);color:#fff;border-radius:4px;padding:1px 6px;font-size:11px;font-weight:700;margin-left:4px}
 .login-overlay{position:fixed;inset:0;background:#1c1a17;display:flex;align-items:center;justify-content:center;z-index:9999}
 .login-box{background:#fff;border:1px solid #e2ddd4;border-radius:16px;padding:32px;width:100%;max-width:340px;text-align:center;box-shadow:0 10px 40px rgba(0,0,0,.15)}
 .login-logo{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:32px;color:#d4500a;margin-bottom:4px}
@@ -84,7 +83,6 @@ tr:hover td{background:var(--surface2)}
 </head>
 <body>
 
-
 <div class="login-overlay" id="loginOverlay">
   <div class="login-box">
     <div class="login-logo">Stánok<span>POS</span></div>
@@ -94,6 +92,7 @@ tr:hover td{background:var(--surface2)}
     <div class="login-err" id="loginErr">Nesprávne heslo</div>
   </div>
 </div>
+
 <header>
   <div><span class="logo">Stánok<span>POS</span></span><span class="logo-sub">Back Office</span></div>
   <div class="nav">
@@ -113,9 +112,7 @@ tr:hover td{background:var(--surface2)}
         <button class="btn btn-success" id="btnSaveAkcie">💾 Uložiť akcie</button>
       </div>
       <div class="section-body">
-        <div class="info">
-          ℹ️ Vytvor akcie (eventy). Ku každej akcii potom v záložke <strong>📦 Produkty</strong> priradíš vlastný tovar. Na tablete si obsluha vyberie akciu a načíta sa správny tovar.
-        </div>
+        <div class="info">ℹ️ Vytvor akcie (eventy). Ku každej akcii potom v záložke <strong>📦 Produkty</strong> priradíš vlastný tovar.</div>
         <div style="display:flex;gap:12px;align-items:flex-end;margin-bottom:16px;flex-wrap:wrap">
           <div class="form-group" style="flex:1;min-width:180px">
             <label>Názov akcie</label>
@@ -127,9 +124,7 @@ tr:hover td{background:var(--surface2)}
           </div>
           <button class="btn btn-primary" id="btnAddAkcia">➕ Pridať akciu</button>
         </div>
-        <div class="akcie-grid" id="akcieGrid">
-          <div style="color:var(--muted);font-size:13px;padding:10px">Načítavam...</div>
-        </div>
+        <div class="akcie-grid" id="akcieGrid"><div style="color:var(--muted);font-size:13px;padding:10px">Načítavam...</div></div>
       </div>
     </div>
   </div>
@@ -166,25 +161,31 @@ tr:hover td{background:var(--surface2)}
 
   <!-- REPORT -->
   <div class="page" id="page-report">
-
-    <!-- FILTER -->
     <div class="section">
       <div class="section-header"><span class="section-title">🔍 Filter</span></div>
       <div class="section-body">
         <div style="display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap">
-          <div class="form-group" style="flex:1;min-width:160px">
+          <div class="form-group" style="flex:1;min-width:150px">
             <label>Akcia</label>
             <select id="filterAkcia"><option value="">— Všetky akcie —</option></select>
           </div>
-          <div class="form-group" style="flex:1;min-width:160px">
+          <div class="form-group" style="flex:1;min-width:150px">
             <label>Stánok</label>
             <select id="filterStanok"><option value="">— Všetky stánky —</option></select>
           </div>
-          <div class="form-group" style="min-width:130px">
+          <div class="form-group" style="min-width:140px">
+            <label>Platba</label>
+            <select id="filterPlatba">
+              <option value="">— Všetky —</option>
+              <option value="cash">💵 Hotovosť</option>
+              <option value="dhz">🎫 DHZ</option>
+            </select>
+          </div>
+          <div class="form-group" style="min-width:120px">
             <label>Od dátumu</label>
             <input type="date" id="filterOd">
           </div>
-          <div class="form-group" style="min-width:130px">
+          <div class="form-group" style="min-width:120px">
             <label>Do dátumu</label>
             <input type="date" id="filterDo">
           </div>
@@ -195,27 +196,23 @@ tr:hover td{background:var(--surface2)}
       </div>
     </div>
 
-    <!-- ŠTATISTIKY -->
     <div class="stat-grid">
-      <div class="stat-card"><div class="stat-label">Celková tržba</div><div class="stat-value" id="statTotal">—</div></div>
+      <div class="stat-card"><div class="stat-label">Tržba (hotovosť)</div><div class="stat-value" id="statTotal">—</div></div>
+      <div class="stat-card"><div class="stat-label">Hodnota DHZ</div><div class="stat-value" id="statDhz" style="color:var(--purple)">—</div></div>
       <div class="stat-card"><div class="stat-label">Transakcií</div><div class="stat-value" id="statCount">—</div></div>
       <div class="stat-card"><div class="stat-label">Stánkov</div><div class="stat-value" id="statStanky">—</div></div>
-      <div class="stat-card"><div class="stat-label">Priem. transakcia</div><div class="stat-value" id="statAvg">—</div></div>
     </div>
 
-    <!-- TRŽBY PODĽA STÁNKU -->
     <div class="section">
       <div class="section-header"><span class="section-title">📍 Tržby podľa stánku</span></div>
       <div class="section-body" id="stankyReport"><div style="color:var(--muted);text-align:center;padding:20px">Klikni Obnoviť</div></div>
     </div>
 
-    <!-- SÚHRN PRODUKTOV -->
     <div class="section">
       <div class="section-header"><span class="section-title">🏆 Predané produkty — súhrn</span></div>
       <div class="section-body" id="productsReport"><div style="color:var(--muted);text-align:center;padding:20px">Klikni Obnoviť</div></div>
     </div>
 
-    <!-- PREDAJE -->
     <div class="section">
       <div class="section-header"><span class="section-title">🧾 Predaje</span></div>
       <div style="overflow-x:auto">
@@ -225,22 +222,16 @@ tr:hover td{background:var(--surface2)}
         </table>
       </div>
     </div>
-
   </div>
 </div>
 <div class="toast" id="toast"></div>
 
 <script>
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwi7SP4YflAkU2Vssopa-G9BpKhhtEFR3_WsUe55NeZIu6Phkw3y6rNCtLMmYqTxEjciQ/exec';
-
-let akcie = [];
-let products = [];
-let selectedAkciaId = null;
-let allSalesData = [];
+let akcie = [], products = [], selectedAkciaId = null, allSalesData = [];
 
 async function init() { await loadAkcie(); }
 
-// NAV
 document.getElementById('navAkcie').addEventListener('click', function() { showPage('akcie'); });
 document.getElementById('navProducts').addEventListener('click', function() { showPage('products'); });
 document.getElementById('navReport').addEventListener('click', function() { showPage('report'); loadReport(); });
@@ -252,7 +243,6 @@ function showPage(page) {
   document.getElementById('nav' + page.charAt(0).toUpperCase() + page.slice(1)).classList.add('active');
 }
 
-// AKCIE
 async function loadAkcie() {
   try {
     const r = await fetch(SCRIPT_URL + '?action=getAkcie');
@@ -263,36 +253,28 @@ async function loadAkcie() {
 
 function renderAkcie() {
   const grid = document.getElementById('akcieGrid');
-  if (!akcie.length) {
-    grid.innerHTML = '<div style="color:var(--muted);font-size:13px;padding:10px;grid-column:1/-1">Žiadne akcie. Pridaj prvú akciu.</div>';
-    return;
-  }
+  if (!akcie.length) { grid.innerHTML = '<div style="color:var(--muted);font-size:13px;padding:10px;grid-column:1/-1">Žiadne akcie.</div>'; return; }
   grid.innerHTML = akcie.map(a =>
     '<div class="akcia-card" data-id="' + a.id + '">' +
     '<div style="position:absolute;top:8px;right:8px"><button class="btn btn-danger btn-sm" data-del="' + a.id + '">🗑</button></div>' +
     '<div class="akcia-card-name">🎪 ' + escHtml(a.name) + '</div>' +
-    '<div class="akcia-card-datum">' + (a.datum || 'Bez dátumu') + '</div>' +
-    '</div>'
+    '<div class="akcia-card-datum">' + (a.datum || 'Bez dátumu') + '</div></div>'
   ).join('');
-
   document.querySelectorAll('.akcia-card').forEach(card => {
     card.addEventListener('click', function(e) {
       if (e.target.dataset.del) return;
-      const id = this.dataset.id;
       showPage('products');
       document.getElementById('navProducts').classList.add('active');
       document.getElementById('navAkcie').classList.remove('active');
-      document.getElementById('selectAkciaProducts').value = id;
-      loadProductsForAkcia(id);
+      document.getElementById('selectAkciaProducts').value = this.dataset.id;
+      loadProductsForAkcia(this.dataset.id);
     });
   });
-
   document.querySelectorAll('[data-del]').forEach(btn => {
     btn.addEventListener('click', function(e) {
       e.stopPropagation();
-      const id = this.dataset.del;
       if (!confirm('Vymazať akciu?')) return;
-      akcie = akcie.filter(a => a.id !== id);
+      akcie = akcie.filter(a => a.id !== this.dataset.del);
       renderAkcie(); updateAkcieSelects();
       toast('Akcia vymazaná — nezabudni Uložiť!', 'warn');
     });
@@ -301,7 +283,7 @@ function renderAkcie() {
 
 function updateAkcieSelects() {
   const opts = '<option value="">— Vyber akciu —</option>' +
-    akcie.map(a => '<option value="' + a.id + '">' + escHtml(a.name) + (a.datum ? ' ('+a.datum+')' : '') + '</option>').join('');
+    akcie.map(a => '<option value="' + a.id + '">' + escHtml(a.name) + (a.datum?' ('+a.datum+')':'') + '</option>').join('');
   document.getElementById('selectAkciaProducts').innerHTML = opts;
   document.getElementById('filterAkcia').innerHTML = '<option value="">— Všetky akcie —</option>' +
     akcie.map(a => '<option value="' + escHtml(a.name) + '">' + escHtml(a.name) + '</option>').join('');
@@ -310,10 +292,8 @@ function updateAkcieSelects() {
 document.getElementById('btnAddAkcia').addEventListener('click', function() {
   const name = document.getElementById('newAkciaName').value.trim();
   if (!name) { toast('Zadaj názov akcie!', 'err'); return; }
-  const datum = document.getElementById('newAkciaDatum').value;
-  akcie.push({ id: 'akcia_' + Date.now(), name, datum });
-  document.getElementById('newAkciaName').value = '';
-  document.getElementById('newAkciaDatum').value = '';
+  akcie.push({ id: 'akcia_' + Date.now(), name, datum: document.getElementById('newAkciaDatum').value });
+  document.getElementById('newAkciaName').value = ''; document.getElementById('newAkciaDatum').value = '';
   renderAkcie(); updateAkcieSelects();
   toast('✓ Akcia pridaná — nezabudni Uložiť!', 'warn');
 });
@@ -323,13 +303,11 @@ document.getElementById('btnSaveAkcie').addEventListener('click', async function
   try {
     const r = await fetch(SCRIPT_URL, { method:'POST', headers:{'Content-Type':'text/plain'}, body: JSON.stringify({ action:'saveAkcie', akcie }) });
     const d = await r.json();
-    if (d.status === 'ok') toast('✓ Akcie uložené!');
-    else throw new Error(d.message);
+    if (d.status === 'ok') toast('✓ Akcie uložené!'); else throw new Error(d.message);
   } catch(e) { toast('Chyba: ' + e.message, 'err'); }
   finally { this.textContent = '💾 Uložiť akcie'; this.disabled = false; }
 });
 
-// PRODUKTY
 document.getElementById('selectAkciaProducts').addEventListener('change', function() {
   if (this.value) loadProductsForAkcia(this.value);
   else {
@@ -354,10 +332,7 @@ async function loadProductsForAkcia(akciaId) {
 
 function renderProducts() {
   const container = document.getElementById('productsContainer');
-  if (!products.length) {
-    container.innerHTML = '<div style="text-align:center;color:var(--muted);padding:24px">Žiadne produkty. Pridaj prvý produkt.</div>';
-    return;
-  }
+  if (!products.length) { container.innerHTML = '<div style="text-align:center;color:var(--muted);padding:24px">Žiadne produkty. Pridaj prvý.</div>'; return; }
   const cats = [...new Set(products.map(p => p.cat))];
   let html = '<table><thead><tr><th style="width:46px">Emoji</th><th>Názov</th><th>Kategória</th><th>Cena (€)</th><th style="width:56px"></th></tr></thead><tbody>';
   cats.forEach(cat => {
@@ -371,21 +346,14 @@ function renderProducts() {
         '<td><button class="btn btn-danger btn-sm" data-del="' + p.id + '">🗑</button></td></tr>';
     });
   });
-  html += '</tbody></table>';
-  container.innerHTML = html;
-
+  container.innerHTML = html + '</tbody></table>';
   container.querySelectorAll('.edit-input').forEach(input => {
     input.addEventListener('change', function() {
       const id = this.closest('tr').dataset.id;
-      const field = this.dataset.field;
       const p = products.find(p => p.id == id);
-      if (p) {
-        p[field] = field === 'price' ? parseFloat(this.value) : this.value;
-        if (field === 'cat') { renderProducts(); updateCatSuggestions(); }
-      }
+      if (p) { p[this.dataset.field] = this.dataset.field === 'price' ? parseFloat(this.value) : this.value; if (this.dataset.field === 'cat') { renderProducts(); updateCatSuggestions(); } }
     });
   });
-
   container.querySelectorAll('[data-del]').forEach(btn => {
     btn.addEventListener('click', function() {
       if (!confirm('Vymazať produkt?')) return;
@@ -397,8 +365,7 @@ function renderProducts() {
 }
 
 function updateCatSuggestions() {
-  const cats = [...new Set(products.map(p => p.cat))];
-  document.getElementById('catSuggestions').innerHTML = cats.map(c => '<option value="' + escHtml(c) + '">').join('');
+  document.getElementById('catSuggestions').innerHTML = [...new Set(products.map(p => p.cat))].map(c => '<option value="' + escHtml(c) + '">').join('');
 }
 
 document.getElementById('btnAddProduct').addEventListener('click', function() {
@@ -410,9 +377,7 @@ document.getElementById('btnAddProduct').addEventListener('click', function() {
   if (!name) { toast('Zadaj názov!', 'err'); return; }
   if (isNaN(price)||price<0) { toast('Zadaj správnu cenu!', 'err'); return; }
   products.push({ id: Date.now(), akciaId: selectedAkciaId, name, price, cat, emoji });
-  document.getElementById('newName').value = '';
-  document.getElementById('newPrice').value = '';
-  document.getElementById('newEmoji').value = '';
+  document.getElementById('newName').value = ''; document.getElementById('newPrice').value = ''; document.getElementById('newEmoji').value = '';
   renderProducts(); updateCatSuggestions();
   toast('✓ Produkt pridaný — nezabudni Uložiť!', 'warn');
 });
@@ -421,11 +386,9 @@ document.getElementById('btnSaveProducts').addEventListener('click', async funct
   if (!selectedAkciaId) { toast('Vyber akciu!', 'err'); return; }
   this.textContent = '⏳ Ukladám...'; this.disabled = true;
   try {
-    const r = await fetch(SCRIPT_URL, { method:'POST', headers:{'Content-Type':'text/plain'},
-      body: JSON.stringify({ action:'saveProducts', akciaId: selectedAkciaId, products }) });
+    const r = await fetch(SCRIPT_URL, { method:'POST', headers:{'Content-Type':'text/plain'}, body: JSON.stringify({ action:'saveProducts', akciaId: selectedAkciaId, products }) });
     const d = await r.json();
-    if (d.status === 'ok') toast('✓ Produkty uložené! Tablety si ich stiahnu pri obnovení.');
-    else throw new Error(d.message);
+    if (d.status === 'ok') toast('✓ Produkty uložené!'); else throw new Error(d.message);
   } catch(e) { toast('Chyba: ' + e.message, 'err'); }
   finally { this.textContent = '💾 Uložiť a synchronizovať'; this.disabled = false; }
 });
@@ -433,21 +396,24 @@ document.getElementById('btnSaveProducts').addEventListener('click', async funct
 document.getElementById('btnCopyFrom').addEventListener('click', async function() {
   if (!selectedAkciaId) { toast('Vyber cieľovú akciu!', 'err'); return; }
   const otherAkcie = akcie.filter(a => a.id !== selectedAkciaId);
-  if (!otherAkcie.length) { toast('Žiadna iná akcia na kopírovanie', 'warn'); return; }
-  const name = prompt('Kopírovať produkty z akcie:\n\n' + otherAkcie.map((a,i)=>(i+1)+'. '+a.name).join('\n') + '\n\nZadaj číslo:');
+  if (!otherAkcie.length) { toast('Žiadna iná akcia', 'warn'); return; }
+  const name = prompt('Kopírovať z akcie:
+
+' + otherAkcie.map((a,i)=>(i+1)+'. '+a.name).join('
+') + '
+
+Zadaj číslo:');
   if (!name) return;
   const idx = parseInt(name) - 1;
   if (isNaN(idx)||idx<0||idx>=otherAkcie.length) { toast('Neplatná voľba', 'err'); return; }
-  const srcAkcia = otherAkcie[idx];
   try {
-    const r = await fetch(SCRIPT_URL + '?action=getProducts&akcia=' + encodeURIComponent(srcAkcia.id));
+    const r = await fetch(SCRIPT_URL + '?action=getProducts&akcia=' + encodeURIComponent(otherAkcie[idx].id));
     const d = await r.json();
     if (d.status === 'ok' && d.products.length) {
-      const copied = d.products.map(p => ({...p, id: Date.now() + Math.random(), akciaId: selectedAkciaId}));
-      products = [...products, ...copied];
+      products = [...products, ...d.products.map(p => ({...p, id: Date.now() + Math.random(), akciaId: selectedAkciaId}))];
       renderProducts(); updateCatSuggestions();
-      toast('✓ Skopírovaných ' + copied.length + ' produktov — nezabudni Uložiť!', 'warn');
-    } else toast('Zdrojová akcia nemá žiadne produkty', 'warn');
+      toast('✓ Skopírovaných ' + d.products.length + ' produktov — nezabudni Uložiť!', 'warn');
+    } else toast('Zdrojová akcia nemá produkty', 'warn');
   } catch(e) { toast('Chyba kopírovania', 'err'); }
 });
 
@@ -461,17 +427,12 @@ async function loadReport() {
     const d = await r.json();
     if (d.status !== 'ok') throw new Error(d.message);
     allSalesData = d.sales || [];
-
-    // Naplnit filter akcia
     const akcieInSales = [...new Set(allSalesData.map(s => s.akcia).filter(a => a))];
     document.getElementById('filterAkcia').innerHTML = '<option value="">— Všetky akcie —</option>' +
       akcieInSales.map(a => '<option value="' + escHtml(a) + '">' + escHtml(a) + '</option>').join('');
-
-    // Naplnit filter stanok
     const stankyInSales = [...new Set(allSalesData.map(s => s.stanok).filter(s => s))].sort();
     document.getElementById('filterStanok').innerHTML = '<option value="">— Všetky stánky —</option>' +
       stankyInSales.map(s => '<option value="' + escHtml(s) + '">' + escHtml(s) + '</option>').join('');
-
     renderReport(allSalesData);
   } catch(e) {
     document.getElementById('stankyReport').innerHTML = '<div style="color:var(--red);padding:20px;text-align:center">❌ ' + e.message + '</div>';
@@ -481,28 +442,30 @@ async function loadReport() {
 document.getElementById('btnRefreshReport').addEventListener('click', loadReport);
 
 document.getElementById('btnFilter').addEventListener('click', function() {
-  let filtered = [...allSalesData];
+  let f = [...allSalesData];
   const akcia = document.getElementById('filterAkcia').value;
   const stanok = document.getElementById('filterStanok').value;
+  const platba = document.getElementById('filterPlatba').value;
   const od = document.getElementById('filterOd').value;
   const doo = document.getElementById('filterDo').value;
-  if (akcia) filtered = filtered.filter(s => s.akcia === akcia);
-  if (stanok) filtered = filtered.filter(s => s.stanok === stanok);
-  if (od) filtered = filtered.filter(s => new Date(s.time) >= new Date(od));
-  if (doo) filtered = filtered.filter(s => new Date(s.time) <= new Date(doo + 'T23:59:59'));
-  renderReport(filtered);
+  if (akcia) f = f.filter(s => s.akcia === akcia);
+  if (stanok) f = f.filter(s => s.stanok === stanok);
+  if (platba) f = f.filter(s => s.method === platba);
+  if (od) f = f.filter(s => new Date(s.time) >= new Date(od));
+  if (doo) f = f.filter(s => new Date(s.time) <= new Date(doo + 'T23:59:59'));
+  renderReport(f);
 });
 
 document.getElementById('btnClearFilter').addEventListener('click', function() {
   document.getElementById('filterAkcia').value = '';
   document.getElementById('filterStanok').value = '';
+  document.getElementById('filterPlatba').value = '';
   document.getElementById('filterOd').value = '';
   document.getElementById('filterDo').value = '';
   renderReport(allSalesData);
 });
 
 function parseItems(itemsStr) {
-  // Format: "Pivo x2, Kofola x1"
   const result = [];
   if (!itemsStr) return result;
   itemsStr.split(', ').forEach(item => {
@@ -513,106 +476,91 @@ function parseItems(itemsStr) {
 }
 
 function renderReport(sales) {
-  const total = sales.reduce((s,x) => s+x.total, 0);
-  const count = sales.length;
-  document.getElementById('statTotal').textContent = fmt(total);
-  document.getElementById('statCount').textContent = count;
-  document.getElementById('statAvg').textContent = count ? fmt(total/count) : '—';
+  const cashSales = sales.filter(s => s.method !== 'dhz');
+  const dhzSales = sales.filter(s => s.method === 'dhz');
+  const cashTotal = cashSales.reduce((s,x) => s+x.total, 0);
+  const dhzTotal = dhzSales.reduce((s,x) => s+x.total, 0);
 
-  // Stanky
+  document.getElementById('statTotal').textContent = fmt(cashTotal);
+  document.getElementById('statDhz').textContent = fmt(dhzTotal);
+  document.getElementById('statCount').textContent = sales.length;
+
   const byStanok = {};
   sales.forEach(s => {
-    if (!byStanok[s.stanok]) byStanok[s.stanok] = {count:0, rev:0};
+    if (!byStanok[s.stanok]) byStanok[s.stanok] = {count:0, cash:0, dhz:0};
     byStanok[s.stanok].count++;
-    byStanok[s.stanok].rev += s.total;
+    if (s.method === 'dhz') byStanok[s.stanok].dhz += s.total;
+    else byStanok[s.stanok].cash += s.total;
   });
   document.getElementById('statStanky').textContent = Object.keys(byStanok).length;
 
-  const stankyArr = Object.entries(byStanok).sort((a,b) => b[1].rev - a[1].rev);
-  const maxRev = stankyArr[0]?.[1].rev || 1;
+  const stankyArr = Object.entries(byStanok).sort((a,b) => (b[1].cash+b[1].dhz) - (a[1].cash+a[1].dhz));
+  const maxRev = stankyArr[0] ? (stankyArr[0][1].cash + stankyArr[0][1].dhz) : 1;
   document.getElementById('stankyReport').innerHTML = stankyArr.length ? stankyArr.map(([name,v]) =>
     '<div class="stanok-bar">' +
     '<div class="stanok-name">' + escHtml(name) + '</div>' +
-    '<div class="stanok-track"><div class="stanok-fill" style="width:' + (v.rev/maxRev*100).toFixed(0) + '%"><span>' + v.count + ' predajov</span></div></div>' +
-    '<div class="stanok-val">' + fmt(v.rev) + '</div></div>'
+    '<div class="stanok-track"><div class="stanok-fill" style="width:' + ((v.cash+v.dhz)/maxRev*100).toFixed(0) + '%"><span>' + v.count + ' predajov</span></div></div>' +
+    '<div class="stanok-val">' + fmt(v.cash) + (v.dhz > 0 ? ' <span style="color:var(--purple);font-size:11px">+' + fmt(v.dhz) + ' DHZ</span>' : '') + '</div>' +
+    '</div>'
   ).join('') : '<div style="color:var(--muted);text-align:center;padding:20px">Žiadne dáta</div>';
 
-  // Produkty suhrn
   const byProduct = {};
   sales.forEach(s => {
     parseItems(s.itemsStr).forEach(item => {
-      if (!byProduct[item.name]) byProduct[item.name] = { qty: 0, rev: 0 };
-      byProduct[item.name].qty += item.qty;
-      // Priblizna trzba (nevieme cenu per item zo Sheets, len celkovu sumu)
+      if (!byProduct[item.name]) byProduct[item.name] = { qty: 0, dhzQty: 0 };
+      if (s.method === 'dhz') byProduct[item.name].dhzQty += item.qty;
+      else byProduct[item.name].qty += item.qty;
     });
   });
-
-  // Lepsi sposob - parsovat items zo Sheets ktore maju format "Nazov x qty"
-  // Zoradime podla qty
-  const prodArr = Object.entries(byProduct).sort((a,b) => b[1].qty - a[1].qty);
-  const maxQty = prodArr[0]?.[1].qty || 1;
-
+  const prodArr = Object.entries(byProduct).sort((a,b) => (b[1].qty+b[1].dhzQty) - (a[1].qty+a[1].dhzQty));
+  const maxQty = prodArr[0] ? (prodArr[0][1].qty + prodArr[0][1].dhzQty) : 1;
   if (prodArr.length) {
-    let html = '<div style="margin-bottom:12px;font-size:12px;color:var(--muted)">Celkovo predaných kusov: <strong style="color:var(--text)">' +
-      prodArr.reduce((s,x) => s+x[1].qty, 0) + ' ks</strong></div>';
-
-    // Skupina podla kategorie ak mame info - inak len zoznam
+    let html = '<div style="margin-bottom:12px;font-size:12px;color:var(--muted)">Celkovo: <strong style="color:var(--text)">' +
+      prodArr.reduce((s,x) => s+x[1].qty+x[1].dhzQty, 0) + ' ks</strong>' +
+      ' (z toho DHZ: <strong style="color:var(--purple)">' + prodArr.reduce((s,x) => s+x[1].dhzQty, 0) + ' ks</strong>)</div>';
     html += prodArr.map(([name, v]) =>
       '<div class="prod-bar">' +
       '<div class="prod-bar-name">' + escHtml(name) + '</div>' +
-      '<div class="prod-bar-track"><div class="prod-bar-fill" style="width:' + (v.qty/maxQty*100).toFixed(0) + '%"><span>' + v.qty + ' ks</span></div></div>' +
-      '<div class="prod-bar-qty">' + v.qty + ' ks</div>' +
+      '<div class="prod-bar-track"><div class="prod-bar-fill" style="width:' + ((v.qty+v.dhzQty)/maxQty*100).toFixed(0) + '%"><span>' + (v.qty+v.dhzQty) + ' ks</span></div></div>' +
+      '<div class="prod-bar-qty">' + (v.qty+v.dhzQty) + ' ks' + (v.dhzQty > 0 ? ' <span class="dhz-badge">DHZ: ' + v.dhzQty + '</span>' : '') + '</div>' +
       '</div>'
     ).join('');
-
     document.getElementById('productsReport').innerHTML = html;
   } else {
     document.getElementById('productsReport').innerHTML = '<div style="color:var(--muted);text-align:center;padding:20px">Žiadne dáta</div>';
   }
 
-  // Predaje
   const recent = [...sales].sort((a,b) => new Date(b.time)-new Date(a.time)).slice(0,50);
   document.getElementById('salesBody').innerHTML = recent.length ? recent.map(s =>
     '<tr><td style="font-size:12px;white-space:nowrap">' + fmtDate(s.time) + '</td>' +
     '<td><strong>' + escHtml(s.stanok) + '</strong></td>' +
     '<td style="color:var(--muted)">' + escHtml(s.obsluha||'—') + '</td>' +
     '<td style="font-size:12px">' + escHtml(s.akcia||'—') + '</td>' +
-    '<td>' + (s.method==='cash'?'💵':'💳') + '</td>' +
+    '<td>' + (s.method==='dhz' ? '<span class="dhz-badge">🎫 DHZ</span>' : '💵') + '</td>' +
     '<td style="font-size:12px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + escHtml(s.itemsStr||'') + '</td>' +
-    '<td style="font-weight:700;color:var(--accent)">' + fmt(s.total) + '</td></tr>'
+    '<td style="font-weight:700;color:' + (s.method==='dhz'?'var(--purple)':'var(--accent)') + '">' + fmt(s.total) + '</td></tr>'
   ).join('') : '<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:20px">Žiadne predaje</td></tr>';
 }
 
-// UTILS
-function fmt(n){return(Math.round(n*100)/100).toFixed(2).replace('.',',')+'\u00a0€';}
+function fmt(n){return(Math.round(n*100)/100).toFixed(2).replace('.',',')+' €';}
 function fmtDate(t){try{return new Date(t).toLocaleString('sk-SK',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});}catch{return t;}}
 function escHtml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 function toast(msg,type){const t=document.getElementById('toast');t.textContent=msg;t.className='toast show'+(type?' '+type:'');clearTimeout(t._t);t._t=setTimeout(()=>t.className='toast',3500);}
 
-
-// LOGIN
 (function(){
-  const PW = 'dhzpos22';
-  const KEY = 'pos_auth';
-  const overlay = document.getElementById('loginOverlay');
-  if(localStorage.getItem(KEY) === PW){overlay.style.display='none';return;}
+  const PW='dhzpos22', KEY='pos_auth';
+  const overlay=document.getElementById('loginOverlay');
+  if(localStorage.getItem(KEY)===PW){overlay.style.display='none';return;}
   function tryLogin(){
-    const val = document.getElementById('loginInput').value;
-    if(val === PW){
-      localStorage.setItem(KEY, PW);
-      overlay.style.display='none';
-    } else {
-      document.getElementById('loginErr').style.display='block';
-      document.getElementById('loginInput').value='';
-      document.getElementById('loginInput').focus();
-    }
+    const val=document.getElementById('loginInput').value;
+    if(val===PW){localStorage.setItem(KEY,PW);overlay.style.display='none';}
+    else{document.getElementById('loginErr').style.display='block';document.getElementById('loginInput').value='';document.getElementById('loginInput').focus();}
   }
-  document.getElementById('loginBtn').addEventListener('click', tryLogin);
-  document.getElementById('loginInput').addEventListener('keydown', function(e){
-    if(e.key==='Enter') tryLogin();
-  });
+  document.getElementById('loginBtn').addEventListener('click',tryLogin);
+  document.getElementById('loginInput').addEventListener('keydown',function(e){if(e.key==='Enter')tryLogin();});
   document.getElementById('loginInput').focus();
 })();
+
 init();
 </script>
 </body>
