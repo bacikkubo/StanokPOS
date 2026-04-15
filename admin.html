@@ -53,7 +53,6 @@ tr:hover td{background:var(--surface2)}
 .stanok-val{min-width:80px;text-align:right;font-weight:700;font-size:13px;color:var(--accent);font-family:'Barlow Condensed',sans-serif}
 .akcia-card{background:var(--surface2);border:2px solid var(--border);border-radius:var(--r);padding:14px;cursor:pointer;transition:all .15s;position:relative}
 .akcia-card:hover{border-color:var(--accent)}
-.akcia-card.active{border-color:var(--accent);background:#fff8f0}
 .akcia-card-name{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:16px;margin-bottom:4px}
 .akcia-card-datum{font-size:12px;color:var(--muted)}
 .akcie-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin-bottom:16px}
@@ -61,8 +60,15 @@ tr:hover td{background:var(--surface2)}
 .page{display:none}.page.active{display:block}
 .toast{position:fixed;bottom:20px;right:20px;background:#22c55e;color:#fff;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;padding:11px 22px;border-radius:10px;z-index:999;opacity:0;transition:opacity .3s;pointer-events:none;box-shadow:0 4px 20px rgba(0,0,0,.15)}
 .toast.show{opacity:1}.toast.err{background:var(--red)}.toast.warn{background:#f59e0b;color:#000}
-.badge{display:inline-block;background:var(--accent);color:#fff;border-radius:20px;padding:2px 10px;font-size:12px;font-weight:700;margin-left:6px}
 .info{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px 14px;font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:14px}
+.prod-bar{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--border)}
+.prod-bar:last-child{border-bottom:none}
+.prod-bar-name{flex:1;font-size:13px;font-weight:500}
+.prod-bar-track{width:140px;background:var(--surface2);border-radius:4px;height:16px;overflow:hidden;border:1px solid var(--border)}
+.prod-bar-fill{height:100%;background:var(--green);border-radius:3px;display:flex;align-items:center;padding-left:4px}
+.prod-bar-fill span{font-size:10px;color:#fff;font-weight:700;white-space:nowrap}
+.prod-bar-qty{min-width:50px;text-align:right;font-size:13px;font-weight:700;color:var(--green)}
+.prod-bar-rev{min-width:70px;text-align:right;font-size:13px;font-weight:700;color:var(--accent)}
 </style>
 </head>
 <body>
@@ -89,8 +95,6 @@ tr:hover td{background:var(--surface2)}
         <div class="info">
           ℹ️ Vytvor akcie (eventy). Ku každej akcii potom v záložke <strong>📦 Produkty</strong> priradíš vlastný tovar. Na tablete si obsluha vyberie akciu a načíta sa správny tovar.
         </div>
-
-        <!-- Pridaj akciu -->
         <div style="display:flex;gap:12px;align-items:flex-end;margin-bottom:16px;flex-wrap:wrap">
           <div class="form-group" style="flex:1;min-width:180px">
             <label>Názov akcie</label>
@@ -102,7 +106,6 @@ tr:hover td{background:var(--surface2)}
           </div>
           <button class="btn btn-primary" id="btnAddAkcia">➕ Pridať akciu</button>
         </div>
-
         <div class="akcie-grid" id="akcieGrid">
           <div style="color:var(--muted);font-size:13px;padding:10px">Načítavam...</div>
         </div>
@@ -125,8 +128,6 @@ tr:hover td{background:var(--surface2)}
       </div>
       <div class="section-body">
         <div class="info" id="productInfo">Vyber akciu pre správu produktov.</div>
-
-        <!-- Pridaj produkt -->
         <div id="addProductSection" style="display:none;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:14px;margin-bottom:14px">
           <div style="font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">Pridať produkt</div>
           <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr auto;gap:10px;align-items:flex-end">
@@ -137,7 +138,6 @@ tr:hover td{background:var(--surface2)}
             <button class="btn btn-primary" id="btnAddProduct">➕</button>
           </div>
         </div>
-
         <div id="productsContainer"><div style="color:var(--muted);font-size:13px;padding:20px;text-align:center">Vyber akciu pre zobrazenie produktov</div></div>
       </div>
     </div>
@@ -145,19 +145,25 @@ tr:hover td{background:var(--surface2)}
 
   <!-- REPORT -->
   <div class="page" id="page-report">
+
+    <!-- FILTER -->
     <div class="section">
       <div class="section-header"><span class="section-title">🔍 Filter</span></div>
       <div class="section-body">
         <div style="display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap">
-          <div class="form-group" style="flex:1;min-width:180px">
+          <div class="form-group" style="flex:1;min-width:160px">
             <label>Akcia</label>
             <select id="filterAkcia"><option value="">— Všetky akcie —</option></select>
           </div>
-          <div class="form-group" style="min-width:140px">
+          <div class="form-group" style="flex:1;min-width:160px">
+            <label>Stánok</label>
+            <select id="filterStanok"><option value="">— Všetky stánky —</option></select>
+          </div>
+          <div class="form-group" style="min-width:130px">
             <label>Od dátumu</label>
             <input type="date" id="filterOd">
           </div>
-          <div class="form-group" style="min-width:140px">
+          <div class="form-group" style="min-width:130px">
             <label>Do dátumu</label>
             <input type="date" id="filterDo">
           </div>
@@ -168,6 +174,7 @@ tr:hover td{background:var(--surface2)}
       </div>
     </div>
 
+    <!-- ŠTATISTIKY -->
     <div class="stat-grid">
       <div class="stat-card"><div class="stat-label">Celková tržba</div><div class="stat-value" id="statTotal">—</div></div>
       <div class="stat-card"><div class="stat-label">Transakcií</div><div class="stat-value" id="statCount">—</div></div>
@@ -175,11 +182,19 @@ tr:hover td{background:var(--surface2)}
       <div class="stat-card"><div class="stat-label">Priem. transakcia</div><div class="stat-value" id="statAvg">—</div></div>
     </div>
 
+    <!-- TRŽBY PODĽA STÁNKU -->
     <div class="section">
       <div class="section-header"><span class="section-title">📍 Tržby podľa stánku</span></div>
       <div class="section-body" id="stankyReport"><div style="color:var(--muted);text-align:center;padding:20px">Klikni Obnoviť</div></div>
     </div>
 
+    <!-- SÚHRN PRODUKTOV -->
+    <div class="section">
+      <div class="section-header"><span class="section-title">🏆 Predané produkty — súhrn</span></div>
+      <div class="section-body" id="productsReport"><div style="color:var(--muted);text-align:center;padding:20px">Klikni Obnoviť</div></div>
+    </div>
+
+    <!-- PREDAJE -->
     <div class="section">
       <div class="section-header"><span class="section-title">🧾 Predaje</span></div>
       <div style="overflow-x:auto">
@@ -189,8 +204,8 @@ tr:hover td{background:var(--surface2)}
         </table>
       </div>
     </div>
-  </div>
 
+  </div>
 </div>
 <div class="toast" id="toast"></div>
 
@@ -202,12 +217,9 @@ let products = [];
 let selectedAkciaId = null;
 let allSalesData = [];
 
-// ===== INIT =====
-async function init() {
-  await loadAkcie();
-}
+async function init() { await loadAkcie(); }
 
-// ===== NAV =====
+// NAV
 document.getElementById('navAkcie').addEventListener('click', function() { showPage('akcie'); });
 document.getElementById('navProducts').addEventListener('click', function() { showPage('products'); });
 document.getElementById('navReport').addEventListener('click', function() { showPage('report'); loadReport(); });
@@ -219,7 +231,7 @@ function showPage(page) {
   document.getElementById('nav' + page.charAt(0).toUpperCase() + page.slice(1)).classList.add('active');
 }
 
-// ===== AKCIE =====
+// AKCIE
 async function loadAkcie() {
   try {
     const r = await fetch(SCRIPT_URL + '?action=getAkcie');
@@ -258,10 +270,9 @@ function renderAkcie() {
     btn.addEventListener('click', function(e) {
       e.stopPropagation();
       const id = this.dataset.del;
-      if (!confirm('Vymazať akciu? Produkty pre túto akciu zostanú v databáze.')) return;
+      if (!confirm('Vymazať akciu?')) return;
       akcie = akcie.filter(a => a.id !== id);
-      renderAkcie();
-      updateAkcieSelects();
+      renderAkcie(); updateAkcieSelects();
       toast('Akcia vymazaná — nezabudni Uložiť!', 'warn');
     });
   });
@@ -279,18 +290,15 @@ document.getElementById('btnAddAkcia').addEventListener('click', function() {
   const name = document.getElementById('newAkciaName').value.trim();
   if (!name) { toast('Zadaj názov akcie!', 'err'); return; }
   const datum = document.getElementById('newAkciaDatum').value;
-  const id = 'akcia_' + Date.now();
-  akcie.push({ id, name, datum });
+  akcie.push({ id: 'akcia_' + Date.now(), name, datum });
   document.getElementById('newAkciaName').value = '';
   document.getElementById('newAkciaDatum').value = '';
-  renderAkcie();
-  updateAkcieSelects();
+  renderAkcie(); updateAkcieSelects();
   toast('✓ Akcia pridaná — nezabudni Uložiť!', 'warn');
 });
 
 document.getElementById('btnSaveAkcie').addEventListener('click', async function() {
-  this.textContent = '⏳ Ukladám...';
-  this.disabled = true;
+  this.textContent = '⏳ Ukladám...'; this.disabled = true;
   try {
     const r = await fetch(SCRIPT_URL, { method:'POST', headers:{'Content-Type':'text/plain'}, body: JSON.stringify({ action:'saveAkcie', akcie }) });
     const d = await r.json();
@@ -300,7 +308,7 @@ document.getElementById('btnSaveAkcie').addEventListener('click', async function
   finally { this.textContent = '💾 Uložiť akcie'; this.disabled = false; }
 });
 
-// ===== PRODUKTY =====
+// PRODUKTY
 document.getElementById('selectAkciaProducts').addEventListener('change', function() {
   if (this.value) loadProductsForAkcia(this.value);
   else {
@@ -326,7 +334,7 @@ async function loadProductsForAkcia(akciaId) {
 function renderProducts() {
   const container = document.getElementById('productsContainer');
   if (!products.length) {
-    container.innerHTML = '<div style="text-align:center;color:var(--muted);padding:24px">Žiadne produkty pre túto akciu. Pridaj prvý produkt.</div>';
+    container.innerHTML = '<div style="text-align:center;color:var(--muted);padding:24px">Žiadne produkty. Pridaj prvý produkt.</div>';
     return;
   }
   const cats = [...new Set(products.map(p => p.cat))];
@@ -339,8 +347,7 @@ function renderProducts() {
         '<td><input class="edit-input" value="' + escHtml(p.name) + '" data-field="name"></td>' +
         '<td><input class="edit-input" value="' + escHtml(p.cat) + '" data-field="cat" list="catSuggestions"></td>' +
         '<td><input class="edit-input price-input" type="number" step="0.10" min="0" value="' + p.price + '" data-field="price"> €</td>' +
-        '<td><button class="btn btn-danger btn-sm" data-del="' + p.id + '">🗑</button></td>' +
-        '</tr>';
+        '<td><button class="btn btn-danger btn-sm" data-del="' + p.id + '">🗑</button></td></tr>';
     });
   });
   html += '</tbody></table>';
@@ -402,16 +409,14 @@ document.getElementById('btnSaveProducts').addEventListener('click', async funct
   finally { this.textContent = '💾 Uložiť a synchronizovať'; this.disabled = false; }
 });
 
-// Kopirovanie produktov z inej akcie
 document.getElementById('btnCopyFrom').addEventListener('click', async function() {
   if (!selectedAkciaId) { toast('Vyber cieľovú akciu!', 'err'); return; }
   const otherAkcie = akcie.filter(a => a.id !== selectedAkciaId);
   if (!otherAkcie.length) { toast('Žiadna iná akcia na kopírovanie', 'warn'); return; }
-  const opts = otherAkcie.map(a => a.name).join('\n');
   const name = prompt('Kopírovať produkty z akcie:\n\n' + otherAkcie.map((a,i)=>(i+1)+'. '+a.name).join('\n') + '\n\nZadaj číslo:');
   if (!name) return;
   const idx = parseInt(name) - 1;
-  if (isNaN(idx) || idx < 0 || idx >= otherAkcie.length) { toast('Neplatná voľba', 'err'); return; }
+  if (isNaN(idx)||idx<0||idx>=otherAkcie.length) { toast('Neplatná voľba', 'err'); return; }
   const srcAkcia = otherAkcie[idx];
   try {
     const r = await fetch(SCRIPT_URL + '?action=getProducts&akcia=' + encodeURIComponent(srcAkcia.id));
@@ -420,24 +425,32 @@ document.getElementById('btnCopyFrom').addEventListener('click', async function(
       const copied = d.products.map(p => ({...p, id: Date.now() + Math.random(), akciaId: selectedAkciaId}));
       products = [...products, ...copied];
       renderProducts(); updateCatSuggestions();
-      toast('✓ Skopírovaných ' + copied.length + ' produktov z "' + srcAkcia.name + '" — nezabudni Uložiť!', 'warn');
+      toast('✓ Skopírovaných ' + copied.length + ' produktov — nezabudni Uložiť!', 'warn');
     } else toast('Zdrojová akcia nemá žiadne produkty', 'warn');
   } catch(e) { toast('Chyba kopírovania', 'err'); }
 });
 
-// ===== REPORT =====
+// REPORT
 async function loadReport() {
   document.getElementById('stankyReport').innerHTML = '<div style="color:var(--muted);text-align:center;padding:20px">⏳ Načítavam...</div>';
+  document.getElementById('productsReport').innerHTML = '<div style="color:var(--muted);text-align:center;padding:20px">⏳ Načítavam...</div>';
   document.getElementById('salesBody').innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:20px">⏳ Načítavam...</td></tr>';
   try {
     const r = await fetch(SCRIPT_URL + '?action=getReport');
     const d = await r.json();
     if (d.status !== 'ok') throw new Error(d.message);
     allSalesData = d.sales || [];
+
+    // Naplnit filter akcia
     const akcieInSales = [...new Set(allSalesData.map(s => s.akcia).filter(a => a))];
-    const sel = document.getElementById('filterAkcia');
-    sel.innerHTML = '<option value="">— Všetky akcie —</option>' +
+    document.getElementById('filterAkcia').innerHTML = '<option value="">— Všetky akcie —</option>' +
       akcieInSales.map(a => '<option value="' + escHtml(a) + '">' + escHtml(a) + '</option>').join('');
+
+    // Naplnit filter stanok
+    const stankyInSales = [...new Set(allSalesData.map(s => s.stanok).filter(s => s))].sort();
+    document.getElementById('filterStanok').innerHTML = '<option value="">— Všetky stánky —</option>' +
+      stankyInSales.map(s => '<option value="' + escHtml(s) + '">' + escHtml(s) + '</option>').join('');
+
     renderReport(allSalesData);
   } catch(e) {
     document.getElementById('stankyReport').innerHTML = '<div style="color:var(--red);padding:20px;text-align:center">❌ ' + e.message + '</div>';
@@ -445,56 +458,111 @@ async function loadReport() {
 }
 
 document.getElementById('btnRefreshReport').addEventListener('click', loadReport);
+
 document.getElementById('btnFilter').addEventListener('click', function() {
   let filtered = [...allSalesData];
   const akcia = document.getElementById('filterAkcia').value;
+  const stanok = document.getElementById('filterStanok').value;
   const od = document.getElementById('filterOd').value;
   const doo = document.getElementById('filterDo').value;
   if (akcia) filtered = filtered.filter(s => s.akcia === akcia);
+  if (stanok) filtered = filtered.filter(s => s.stanok === stanok);
   if (od) filtered = filtered.filter(s => new Date(s.time) >= new Date(od));
   if (doo) filtered = filtered.filter(s => new Date(s.time) <= new Date(doo + 'T23:59:59'));
   renderReport(filtered);
 });
+
 document.getElementById('btnClearFilter').addEventListener('click', function() {
   document.getElementById('filterAkcia').value = '';
+  document.getElementById('filterStanok').value = '';
   document.getElementById('filterOd').value = '';
   document.getElementById('filterDo').value = '';
   renderReport(allSalesData);
 });
 
+function parseItems(itemsStr) {
+  // Format: "Pivo x2, Kofola x1"
+  const result = [];
+  if (!itemsStr) return result;
+  itemsStr.split(', ').forEach(item => {
+    const m = item.match(/^(.+) x(\d+)$/);
+    if (m) result.push({ name: m[1].trim(), qty: parseInt(m[2]) });
+  });
+  return result;
+}
+
 function renderReport(sales) {
-  const total = sales.reduce((s,x)=>s+x.total,0);
+  const total = sales.reduce((s,x) => s+x.total, 0);
   const count = sales.length;
   document.getElementById('statTotal').textContent = fmt(total);
   document.getElementById('statCount').textContent = count;
   document.getElementById('statAvg').textContent = count ? fmt(total/count) : '—';
+
+  // Stanky
   const byStanok = {};
   sales.forEach(s => {
-    if (!byStanok[s.stanok]) byStanok[s.stanok]={count:0,rev:0};
-    byStanok[s.stanok].count++; byStanok[s.stanok].rev+=s.total;
+    if (!byStanok[s.stanok]) byStanok[s.stanok] = {count:0, rev:0};
+    byStanok[s.stanok].count++;
+    byStanok[s.stanok].rev += s.total;
   });
   document.getElementById('statStanky').textContent = Object.keys(byStanok).length;
-  const stankyArr = Object.entries(byStanok).sort((a,b)=>b[1].rev-a[1].rev);
+
+  const stankyArr = Object.entries(byStanok).sort((a,b) => b[1].rev - a[1].rev);
   const maxRev = stankyArr[0]?.[1].rev || 1;
   document.getElementById('stankyReport').innerHTML = stankyArr.length ? stankyArr.map(([name,v]) =>
-    '<div class="stanok-bar"><div class="stanok-name">'+escHtml(name)+'</div>' +
-    '<div class="stanok-track"><div class="stanok-fill" style="width:'+(v.rev/maxRev*100).toFixed(0)+'%"><span>'+v.count+' predajov</span></div></div>' +
-    '<div class="stanok-val">'+fmt(v.rev)+'</div></div>'
+    '<div class="stanok-bar">' +
+    '<div class="stanok-name">' + escHtml(name) + '</div>' +
+    '<div class="stanok-track"><div class="stanok-fill" style="width:' + (v.rev/maxRev*100).toFixed(0) + '%"><span>' + v.count + ' predajov</span></div></div>' +
+    '<div class="stanok-val">' + fmt(v.rev) + '</div></div>'
   ).join('') : '<div style="color:var(--muted);text-align:center;padding:20px">Žiadne dáta</div>';
 
-  const recent = [...sales].sort((a,b)=>new Date(b.time)-new Date(a.time)).slice(0,50);
+  // Produkty suhrn
+  const byProduct = {};
+  sales.forEach(s => {
+    parseItems(s.itemsStr).forEach(item => {
+      if (!byProduct[item.name]) byProduct[item.name] = { qty: 0, rev: 0 };
+      byProduct[item.name].qty += item.qty;
+      // Priblizna trzba (nevieme cenu per item zo Sheets, len celkovu sumu)
+    });
+  });
+
+  // Lepsi sposob - parsovat items zo Sheets ktore maju format "Nazov x qty"
+  // Zoradime podla qty
+  const prodArr = Object.entries(byProduct).sort((a,b) => b[1].qty - a[1].qty);
+  const maxQty = prodArr[0]?.[1].qty || 1;
+
+  if (prodArr.length) {
+    let html = '<div style="margin-bottom:12px;font-size:12px;color:var(--muted)">Celkovo predaných kusov: <strong style="color:var(--text)">' +
+      prodArr.reduce((s,x) => s+x[1].qty, 0) + ' ks</strong></div>';
+
+    // Skupina podla kategorie ak mame info - inak len zoznam
+    html += prodArr.map(([name, v]) =>
+      '<div class="prod-bar">' +
+      '<div class="prod-bar-name">' + escHtml(name) + '</div>' +
+      '<div class="prod-bar-track"><div class="prod-bar-fill" style="width:' + (v.qty/maxQty*100).toFixed(0) + '%"><span>' + v.qty + ' ks</span></div></div>' +
+      '<div class="prod-bar-qty">' + v.qty + ' ks</div>' +
+      '</div>'
+    ).join('');
+
+    document.getElementById('productsReport').innerHTML = html;
+  } else {
+    document.getElementById('productsReport').innerHTML = '<div style="color:var(--muted);text-align:center;padding:20px">Žiadne dáta</div>';
+  }
+
+  // Predaje
+  const recent = [...sales].sort((a,b) => new Date(b.time)-new Date(a.time)).slice(0,50);
   document.getElementById('salesBody').innerHTML = recent.length ? recent.map(s =>
-    '<tr><td style="font-size:12px;white-space:nowrap">'+fmtDate(s.time)+'</td>' +
-    '<td><strong>'+escHtml(s.stanok)+'</strong></td>' +
-    '<td style="color:var(--muted)">'+escHtml(s.obsluha||'—')+'</td>' +
-    '<td style="font-size:12px">'+escHtml(s.akcia||'—')+'</td>' +
-    '<td>'+(s.method==='cash'?'💵':'💳')+'</td>' +
-    '<td style="font-size:12px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+escHtml(s.itemsStr||'')+'</td>' +
-    '<td style="font-weight:700;color:var(--accent)">'+fmt(s.total)+'</td></tr>'
+    '<tr><td style="font-size:12px;white-space:nowrap">' + fmtDate(s.time) + '</td>' +
+    '<td><strong>' + escHtml(s.stanok) + '</strong></td>' +
+    '<td style="color:var(--muted)">' + escHtml(s.obsluha||'—') + '</td>' +
+    '<td style="font-size:12px">' + escHtml(s.akcia||'—') + '</td>' +
+    '<td>' + (s.method==='cash'?'💵':'💳') + '</td>' +
+    '<td style="font-size:12px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + escHtml(s.itemsStr||'') + '</td>' +
+    '<td style="font-weight:700;color:var(--accent)">' + fmt(s.total) + '</td></tr>'
   ).join('') : '<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:20px">Žiadne predaje</td></tr>';
 }
 
-// ===== UTILS =====
+// UTILS
 function fmt(n){return(Math.round(n*100)/100).toFixed(2).replace('.',',')+'\u00a0€';}
 function fmtDate(t){try{return new Date(t).toLocaleString('sk-SK',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});}catch{return t;}}
 function escHtml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
