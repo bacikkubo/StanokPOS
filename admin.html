@@ -228,7 +228,7 @@ tr:hover td{background:var(--surface2)}
 
 <script>
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwi7SP4YflAkU2Vssopa-G9BpKhhtEFR3_WsUe55NeZIu6Phkw3y6rNCtLMmYqTxEjciQ/exec';
-let akcie = [], products = [], selectedAkciaId = null, allSalesData = [];
+let akcie = [], products = [], selectedAkciaId = null, allSalesData = [], allProductsData = [];
 
 async function init() { await loadAkcie(); }
 
@@ -418,10 +418,16 @@ async function loadReport() {
   document.getElementById('productsReport').innerHTML = '<div style="color:var(--muted);text-align:center;padding:20px">⏳ Načítavam...</div>';
   document.getElementById('salesBody').innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:20px">⏳ Načítavam...</td></tr>';
   try {
-    const r = await fetch(SCRIPT_URL + '?action=getReport');
-    const d = await r.json();
+    // Nacitaj report aj vsetky produkty naraz
+    const [reportRes, prodsRes] = await Promise.all([
+      fetch(SCRIPT_URL + '?action=getReport'),
+      fetch(SCRIPT_URL + '?action=getProducts')
+    ]);
+    const d = await reportRes.json();
+    const dp = await prodsRes.json();
     if (d.status !== 'ok') throw new Error(d.message);
     allSalesData = d.sales || [];
+    allProductsData = dp.status === 'ok' ? dp.products : [];
     const akcieInSales = [...new Set(allSalesData.map(s => s.akcia).filter(a => a))];
     document.getElementById('filterAkcia').innerHTML = '<option value="">— Všetky akcie —</option>' +
       akcieInSales.map(a => '<option value="' + escHtml(a) + '">' + escHtml(a) + '</option>').join('');
@@ -499,27 +505,56 @@ function renderReport(sales) {
     '</div>'
   ).join('') : '<div style="color:var(--muted);text-align:center;padding:20px">Žiadne dáta</div>';
 
+  // Mapa cien produktov podla nazvu
+  const priceMap = {};
+  allProductsData.forEach(p => { priceMap[p.name] = p.price; });
+
   const byProduct = {};
   sales.forEach(s => {
     parseItems(s.itemsStr).forEach(item => {
-      if (!byProduct[item.name]) byProduct[item.name] = { qty: 0, dhzQty: 0 };
-      if (s.method === 'dhz') byProduct[item.name].dhzQty += item.qty;
-      else byProduct[item.name].qty += item.qty;
+      if (!byProduct[item.name]) byProduct[item.name] = { qty: 0, dhzQty: 0, cashRev: 0, dhzRev: 0 };
+      const price = priceMap[item.name] || 0;
+      if (s.method === 'dhz') {
+        byProduct[item.name].dhzQty += item.qty;
+        byProduct[item.name].dhzRev += price * item.qty;
+      } else {
+        byProduct[item.name].qty += item.qty;
+        byProduct[item.name].cashRev += price * item.qty;
+      }
     });
   });
   const prodArr = Object.entries(byProduct).sort((a,b) => (b[1].qty+b[1].dhzQty) - (a[1].qty+a[1].dhzQty));
   const maxQty = prodArr[0] ? (prodArr[0][1].qty + prodArr[0][1].dhzQty) : 1;
   if (prodArr.length) {
-    let html = '<div style="margin-bottom:12px;font-size:12px;color:var(--muted)">Celkovo: <strong style="color:var(--text)">' +
-      prodArr.reduce((s,x) => s+x[1].qty+x[1].dhzQty, 0) + ' ks</strong>' +
-      ' (z toho DHZ: <strong style="color:var(--purple)">' + prodArr.reduce((s,x) => s+x[1].dhzQty, 0) + ' ks</strong>)</div>';
-    html += prodArr.map(([name, v]) =>
-      '<div class="prod-bar">' +
-      '<div class="prod-bar-name">' + escHtml(name) + '</div>' +
-      '<div class="prod-bar-track"><div class="prod-bar-fill" style="width:' + ((v.qty+v.dhzQty)/maxQty*100).toFixed(0) + '%"><span>' + (v.qty+v.dhzQty) + ' ks</span></div></div>' +
-      '<div class="prod-bar-qty">' + (v.qty+v.dhzQty) + ' ks' + (v.dhzQty > 0 ? ' <span class="dhz-badge">DHZ: ' + v.dhzQty + '</span>' : '') + '</div>' +
-      '</div>'
-    ).join('');
+    const totalKs = prodArr.reduce((s,x) => s+x[1].qty+x[1].dhzQty, 0);
+    const totalDhzKs = prodArr.reduce((s,x) => s+x[1].dhzQty, 0);
+    const totalCashRev = prodArr.reduce((s,x) => s+x[1].cashRev, 0);
+    const totalDhzRev = prodArr.reduce((s,x) => s+x[1].dhzRev, 0);
+    let html = '<div style="margin-bottom:14px;display:flex;gap:16px;flex-wrap:wrap">' +
+      '<span style="font-size:12px;color:var(--muted)">Celkovo: <strong style="color:var(--text)">' + totalKs + ' ks</strong></span>' +
+      '<span style="font-size:12px;color:var(--muted)">Tržba z predaja: <strong style="color:var(--accent)">' + fmt(totalCashRev) + '</strong></span>' +
+      (totalDhzKs > 0 ? '<span style="font-size:12px;color:var(--muted)">DHZ ks: <strong style="color:var(--purple)">' + totalDhzKs + ' ks</strong></span>' +
+      '<span style="font-size:12px;color:var(--muted)">Hodnota DHZ: <strong style="color:var(--purple)">' + fmt(totalDhzRev) + '</strong></span>' : '') +
+      '</div>';
+
+    // Hlavicka tabulky
+    html += '<div style="display:grid;grid-template-columns:1fr 120px 60px 80px 80px;gap:6px;padding:5px 0;border-bottom:2px solid var(--border);font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.5px">' +
+      '<div>Produkt</div><div style="text-align:center">Predaj</div><div style="text-align:right">Ks</div><div style="text-align:right">Tržba</div><div style="text-align:right">DHZ</div></div>';
+
+    html += prodArr.map(([name, v]) => {
+      const hasPrice = priceMap[name] !== undefined;
+      const totalQty = v.qty + v.dhzQty;
+      return '<div style="display:grid;grid-template-columns:1fr 120px 60px 80px 80px;gap:6px;align-items:center;padding:7px 0;border-bottom:1px solid var(--border)">' +
+        '<div style="font-size:13px;font-weight:500">' + escHtml(name) + '</div>' +
+        '<div style="text-align:center">' +
+          '<div class="prod-bar-track" style="width:100%"><div class="prod-bar-fill" style="width:' + (totalQty/maxQty*100).toFixed(0) + '%"><span>' + totalQty + ' ks</span></div></div>' +
+        '</div>' +
+        '<div style="text-align:right;font-weight:700;font-size:13px;color:var(--green)">' + v.qty + (v.dhzQty > 0 ? '<span style="color:var(--purple);font-size:11px"> +' + v.dhzQty + '</span>' : '') + '</div>' +
+        '<div style="text-align:right;font-weight:700;font-size:13px;color:var(--accent)">' + (hasPrice && v.cashRev > 0 ? fmt(v.cashRev) : (v.qty > 0 ? '<span style="color:var(--muted);font-size:11px">—</span>' : '')) + '</div>' +
+        '<div style="text-align:right;font-weight:700;font-size:13px;color:var(--purple)">' + (hasPrice && v.dhzRev > 0 ? fmt(v.dhzRev) : (v.dhzQty > 0 ? '<span style="color:var(--muted);font-size:11px">—</span>' : '')) + '</div>' +
+        '</div>';
+    }).join('');
+
     document.getElementById('productsReport').innerHTML = html;
   } else {
     document.getElementById('productsReport').innerHTML = '<div style="color:var(--muted);text-align:center;padding:20px">Žiadne dáta</div>';
