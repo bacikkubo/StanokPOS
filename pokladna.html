@@ -78,7 +78,7 @@ header{background:var(--surface);border-bottom:2px solid var(--accent);padding:0
 .change-lbl{font-size:11px;color:var(--muted)}
 .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--green);color:#fff;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;padding:10px 22px;border-radius:10px;z-index:999;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap}
 .toast.show{opacity:1}.toast.err{background:var(--red)}.toast.warn{background:var(--accent);color:#000}
-.preset-btn{flex:1;min-width:70px;padding:12px 8px;border-radius:10px;border:2px solid var(--border);background:var(--surface2);color:var(--text);font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:16px;cursor:pointer;transition:all .15s;text-align:center}
+.preset-btn{flex:1;min-width:60px;padding:14px 8px;border-radius:10px;border:2px solid var(--border);background:var(--surface2);color:var(--text);font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:18px;cursor:pointer;transition:all .15s;text-align:center}
 .preset-btn:hover{border-color:var(--accent);color:var(--accent)}
 .preset-btn.active{border-color:var(--accent);background:rgba(245,158,11,.15);color:var(--accent)}
 .sale-row{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)}
@@ -160,23 +160,30 @@ header{background:var(--surface);border-bottom:2px solid var(--accent);padding:0
 <!-- PLATBA -->
 <div class="modal-overlay hidden" id="paymentModal">
   <div class="modal">
-    <div class="modal-header"><span class="modal-title" id="paymentTitle">Platba</span><button class="modal-close" id="btnClosePayment">✕</button></div>
+    <div class="modal-header">
+      <span class="modal-title">💵 Platba</span>
+      <button class="modal-close" id="btnClosePayment">✕</button>
+    </div>
     <div class="modal-body">
       <div class="payment-lbl">Suma na zaplatenie</div>
       <div class="payment-total" id="payTotal">0,00 €</div>
-      <div id="cashSection" class="cash-group">
-        <div id="presetBtns" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px"></div>
-        <label style="font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.5px">alebo zadaj ručne:</label>
-        <input type="number" class="cash-input" id="cashPaid" placeholder="0,00" step="0.50" min="0">
-        <div class="change-box" id="changeBox" style="display:none">
-          <div class="change-lbl" id="changeLbl">Vydať</div>
-          <div class="change-amt" id="changeAmt">0,00 €</div>
-        </div>
+      <!-- Bankovky -->
+      <div style="margin-bottom:14px">
+        <div style="font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Zákazník platí:</div>
+        <div id="presetBtns" style="display:flex;gap:8px;flex-wrap:wrap"></div>
+      </div>
+      <!-- Vydavok -->
+      <div class="change-box" id="changeBox" style="display:none">
+        <div class="change-lbl" id="changeLbl">Vydať</div>
+        <div class="change-amt" id="changeAmt">0,00 €</div>
       </div>
     </div>
-    <div class="modal-footer">
-      <button class="btn btn-secondary" id="btnCancelPayment">Zrušiť</button>
-      <button class="btn btn-success" id="btnConfirmPayment">✓ Potvrdiť</button>
+    <div class="modal-footer" style="justify-content:space-between">
+      <button class="btn" id="btnDHZ" style="background:#7c3aed;color:#fff;font-size:16px;padding:12px 18px">🎫 DHZ</button>
+      <div style="display:flex;gap:10px">
+        <button class="btn btn-secondary" id="btnCancelPayment">Zrušiť</button>
+        <button class="btn btn-success" id="btnConfirmPayment" style="font-size:20px;padding:14px 32px">💵 ZAPLATIŤ</button>
+      </div>
     </div>
   </div>
 </div>
@@ -424,59 +431,67 @@ function renderCart(){
 
 function cartTotal(){return state.cart.reduce((s,i)=>s+i.price*i.qty,0);}
 
+let selectedPayAmount = 0;
+
 function openPayment(method){
-  state.payMethod=method;
-  document.getElementById('paymentTitle').textContent='💵 Platba hotovostou';
-  const total=cartTotal();
-  document.getElementById('payTotal').textContent=fmt(total);
-  document.getElementById('changeBox').style.display='none';
-  const presets=calcPresets(total);
-  document.getElementById('cashPaid').value=presets[0];
-  document.getElementById('presetBtns').innerHTML=presets.map(p=>
-    '<button class="preset-btn" data-val="'+p+'">'+fmt(p)+'</button>'
+  state.payMethod = method;
+  selectedPayAmount = 0;
+  const total = cartTotal();
+  document.getElementById('payTotal').textContent = fmt(total);
+  document.getElementById('changeBox').style.display = 'none';
+
+  // Bankovky: pevne + inteligentne zaokruhlenie
+  const bankovky = calcBankovky(total);
+  document.getElementById('presetBtns').innerHTML = bankovky.map(p =>
+    '<button class="preset-btn" data-val="'+p+'">'+fmtBankovka(p)+'</button>'
   ).join('');
-  document.querySelectorAll('.preset-btn').forEach(btn=>{
-    btn.addEventListener('click',function(){
-      document.getElementById('cashPaid').value=this.dataset.val;
-      document.querySelectorAll('.preset-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.preset-btn').forEach(btn => {
+    btn.addEventListener('click', function(){
+      selectedPayAmount = parseFloat(this.dataset.val);
+      document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
       this.classList.add('active');
-      triggerChange();
+      showChange(total, selectedPayAmount);
     });
   });
-  document.querySelector('.preset-btn')?.classList.add('active');
-  triggerChange();
+  // Automaticky vyber prvu moznost
+  const first = document.querySelector('.preset-btn');
+  if(first){ first.classList.add('active'); selectedPayAmount = parseFloat(first.dataset.val); showChange(total, selectedPayAmount); }
   document.getElementById('paymentModal').classList.remove('hidden');
 }
 
-function calcPresets(total){
-  const p=new Set();
-  p.add(Math.ceil(total));
-  p.add(Math.ceil(total/5)*5);
-  p.add(Math.ceil(total/10)*10);
-  p.add(Math.ceil(total/20)*20);
-  if(total>30)p.add(50);
-  return [...p].filter(x=>x>=total).sort((a,b)=>a-b).slice(0,4);
+function calcBankovky(total){
+  const fixne = [5, 10, 20, 50, 100];
+  const result = new Set();
+  // Zaokruhli nahor na najblizsiu bankovku
+  for(const b of fixne){ if(b >= total){ result.add(b); break; } }
+  // Pridaj dalsie rozumne moznosti
+  for(const b of fixne){ if(b >= total) result.add(b); }
+  // Ak je suma napr 22, pridaj 25 (zaokruhlenie na 5)
+  const na5 = Math.ceil(total/5)*5;
+  if(na5 >= total) result.add(na5);
+  // Vzdy pridaj presnu sumu
+  result.add(Math.ceil(total * 100) / 100);
+  return [...result].filter(x => x >= total).sort((a,b)=>a-b).slice(0,5);
 }
 
-function triggerChange(){
-  const total=cartTotal();
-  const paid=parseFloat(document.getElementById('cashPaid').value)||0;
-  const change=paid-total;
-  const box=document.getElementById('changeBox');
-  if(paid>0){
-    box.style.display='block';
-    document.getElementById('changeAmt').textContent=fmt(Math.max(0,change));
-    document.getElementById('changeLbl').textContent=change>=0?'Vydat':'⚠️ Malo!';
-    box.style.borderColor=change>=0?'var(--green)':'var(--red)';
-  }else box.style.display='none';
+function fmtBankovka(n){
+  const s = (Math.round(n*100)/100).toFixed(2).replace('.',',');
+  return s.endsWith(',00') ? s.replace(',00','') + ' €' : s + ' €';
 }
 
-document.getElementById('cashPaid').addEventListener('input',triggerChange);
+function showChange(total, paid){
+  const change = paid - total;
+  const box = document.getElementById('changeBox');
+  box.style.display = 'block';
+  document.getElementById('changeAmt').textContent = fmt(Math.max(0, change));
+  document.getElementById('changeLbl').textContent = change >= 0 ? 'Vydať' : '⚠️ Nedostatok!';
+  box.style.borderColor = change >= 0 ? 'var(--green)' : 'var(--red)';
+  document.getElementById('changeAmt').style.color = change >= 0 ? 'var(--green)' : 'var(--red)';
+}
 
 async function confirmPayment(){
   const total=cartTotal();
-  const paid=parseFloat(document.getElementById('cashPaid').value)||0;
-  if(paid<total){toast('Nedostatocna suma!','err');return;}
+  if(selectedPayAmount < total){toast('Vyber sumu!','err');return;}
   const sale={
     id:Date.now(),time:new Date().toISOString(),
     stanok:state.stanok||'Neznamy',obsluha:state.obsluha||'',
@@ -519,7 +534,7 @@ function renderSalesList(){
   document.getElementById('salesList').innerHTML=sales.map(s=>
     '<div class="sale-row'+(s.storno?' storno':'')+'" data-id="'+s.id+'">' +
     '<div class="sale-row-info">' +
-    '<div class="sale-row-time">'+fmtTime(s.time)+(s.storno?' — <span style="color:var(--red);font-weight:700">STORNO</span>':'')+'</div>' +
+    '<div class="sale-row-time">'+fmtTime(s.time)+(s.storno?' — <span style="color:var(--red);font-weight:700">STORNO</span>':s.method==='dhz'?' — <span style="color:#7c3aed;font-weight:700">🎫 DHZ</span>':'')+'</div>' +
     '<div class="sale-row-items">'+(s.items?s.items.map(i=>i.name+' ×'+i.qty).join(', '):s.itemsStr||'')+'</div>' +
     '</div>' +
     '<div class="sale-row-total">'+(s.storno?'<span style="color:var(--muted)">'+fmt(s.total)+'</span>':fmt(s.total))+'</div>' +
@@ -558,16 +573,42 @@ function fmtTime(t){
 function updateStats(){
   const today=new Date().toDateString();
   const ts=state.sales.filter(s=>new Date(s.time).toDateString()===today&&!s.storno);
+  const cashSales=ts.filter(s=>s.method!=='dhz');
+  const dhzSales=ts.filter(s=>s.method==='dhz');
   document.getElementById('salesCount').textContent=ts.length;
-  document.getElementById('totalRevenue').textContent=fmt(ts.reduce((s,x)=>s+x.total,0));
+  document.getElementById('totalRevenue').textContent=fmt(cashSales.reduce((s,x)=>s+x.total,0));
+  const dhzEl=document.getElementById('pendingInfo');
+  const pending=state.pending.length?'⚠️ '+state.pending.length+' čaká sync  ':'';
+  const dhzInfo=dhzSales.length?'🎫 DHZ: '+dhzSales.length+' ('+fmt(dhzSales.reduce((s,x)=>s+x.total,0))+')':'';
+  dhzEl.textContent=pending+dhzInfo;
   if(state.sales.length){
     const last=state.sales.filter(s=>!s.storno).slice(-1)[0];
     if(last)document.getElementById('lastSaleEl').textContent='Posledny: '+new Date(last.time).toLocaleTimeString('sk-SK',{hour:'2-digit',minute:'2-digit'});
   }
-  updatePendingInfo();
 }
 
 function escHtml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+// DHZ - zadarmo ale evidovane
+async function confirmDHZ(){
+  const total = cartTotal();
+  const sale = {
+    id: Date.now(), time: new Date().toISOString(),
+    stanok: state.stanok||'Neznamy', obsluha: state.obsluha||'',
+    akcia: state.akciaName||'', method: 'dhz',
+    items: state.cart.map(i=>({name:i.name,price:i.price,qty:i.qty})),
+    total: total, totalPaid: 0, storno: false
+  };
+  state.sales.push(sale); saveSalesLocal();
+  state.cart=[]; renderCart(); updateStats();
+  document.getElementById('paymentModal').classList.add('hidden');
+  toast('🎫 DHZ — evidované ('+fmt(total)+')','warn');
+  if(state.online){
+    sendSale(sale).then(()=>setOnline(true)).catch(()=>{
+      state.pending.push(sale);savePending();setOnline(false);updatePendingInfo();
+    });
+  }else{state.pending.push(sale);savePending();updatePendingInfo();}
+}
 
 // EVENT LISTENERS
 document.getElementById('btnSales').addEventListener('click',openSalesModal);
@@ -588,6 +629,7 @@ document.getElementById('payBtnCash').addEventListener('click',function(){openPa
 document.getElementById('btnClosePayment').addEventListener('click',function(){document.getElementById('paymentModal').classList.add('hidden');});
 document.getElementById('btnCancelPayment').addEventListener('click',function(){document.getElementById('paymentModal').classList.add('hidden');});
 document.getElementById('btnConfirmPayment').addEventListener('click',confirmPayment);
+document.getElementById('btnDHZ').addEventListener('click',confirmDHZ);
 document.getElementById('btnCloseSettings').addEventListener('click',function(){document.getElementById('settingsModal').classList.add('hidden');});
 document.getElementById('btnCancelSettings').addEventListener('click',function(){document.getElementById('settingsModal').classList.add('hidden');});
 document.getElementById('btnSaveSettings').addEventListener('click',async function(){
