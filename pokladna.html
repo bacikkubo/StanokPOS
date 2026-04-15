@@ -4,194 +4,107 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>StánokPOS</title>
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;700;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #0f1117;
-    --surface: #1a1d27;
-    --surface2: #22263a;
-    --border: #2e3350;
-    --accent: #f59e0b;
-    --red: #ef4444;
-    --green: #22c55e;
-    --blue: #3b82f6;
-    --text: #f1f5f9;
-    --muted: #64748b;
-    --r: 12px;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-  body { background: var(--bg); color: var(--text); font-family: 'Barlow', sans-serif; height: 100dvh; display: flex; flex-direction: column; overflow: hidden; }
-
-  /* HEADER */
-  header { background: var(--surface); border-bottom: 2px solid var(--accent); padding: 0 14px; height: 58px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; gap: 8px; }
-  .logo { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 20px; color: var(--accent); white-space: nowrap; }
-  .logo span { color: var(--text); }
-  .stanok-badge { background: var(--accent); color: #000; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 12px; padding: 3px 8px; border-radius: 6px; white-space: nowrap; max-width: 120px; overflow: hidden; text-overflow: ellipsis; }
-  .header-btns { display: flex; gap: 6px; }
-  .btn-sm { background: var(--surface2); border: 1px solid var(--border); color: var(--text); font-family: 'Barlow', sans-serif; font-size: 12px; font-weight: 600; padding: 5px 10px; border-radius: 8px; cursor: pointer; white-space: nowrap; }
-  .btn-sm:hover { background: var(--border); }
-
-  /* SYNC STATUS */
-  .sync-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); display: inline-block; margin-right: 4px; transition: background 0.3s; }
-  .sync-dot.ok { background: var(--green); }
-  .sync-dot.syncing { background: var(--accent); animation: pulse 1s infinite; }
-  .sync-dot.err { background: var(--red); }
-  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
-
-  /* MAIN */
-  .main { display: flex; flex: 1; overflow: hidden; }
-
-  /* PRODUKTY */
-  .products-panel { flex: 1; display: flex; flex-direction: column; overflow: hidden; border-right: 2px solid var(--border); }
-  .search-bar { padding: 10px 12px; background: var(--surface); border-bottom: 1px solid var(--border); }
-  .search-bar input { width: 100%; background: var(--bg); border: 1px solid var(--border); color: var(--text); font-family: 'Barlow', sans-serif; font-size: 15px; padding: 8px 12px; border-radius: 8px; outline: none; }
-  .search-bar input:focus { border-color: var(--accent); }
-  .cats { display: flex; gap: 6px; padding: 8px 12px; overflow-x: auto; flex-shrink: 0; background: var(--surface); border-bottom: 1px solid var(--border); scrollbar-width: none; }
-  .cats::-webkit-scrollbar { display: none; }
-  .cat-btn { background: var(--surface2); border: 1px solid var(--border); color: var(--muted); font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 12px; letter-spacing: 0.5px; padding: 5px 12px; border-radius: 20px; cursor: pointer; white-space: nowrap; transition: all 0.15s; flex-shrink: 0; }
-  .cat-btn.active { background: var(--accent); border-color: var(--accent); color: #000; }
-  .products-grid { flex: 1; overflow-y: auto; padding: 10px; display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 8px; align-content: start; }
-  .product-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 12px 8px; cursor: pointer; transition: all 0.15s; text-align: center; user-select: none; display: flex; flex-direction: column; align-items: center; gap: 4px; }
-  .product-card:hover { border-color: var(--accent); transform: translateY(-1px); }
-  .product-card:active { transform: scale(0.95); background: var(--surface2); }
-  .product-emoji { font-size: 26px; }
-  .product-name { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 13px; line-height: 1.2; }
-  .product-price { color: var(--accent); font-weight: 700; font-size: 14px; }
-
-  /* KOŠÍK */
-  .cart-panel { width: 300px; display: flex; flex-direction: column; background: var(--surface); flex-shrink: 0; }
-  .cart-header { padding: 12px 14px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
-  .cart-title { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 16px; }
-  .cart-clear { background: none; border: none; color: var(--muted); font-size: 11px; cursor: pointer; font-family: 'Barlow', sans-serif; }
-  .cart-clear:hover { color: var(--red); }
-  .cart-items { flex: 1; overflow-y: auto; padding: 6px; }
-  .cart-item { display: flex; align-items: center; gap: 6px; padding: 7px 6px; border-radius: 8px; }
-  .cart-item:hover { background: var(--surface2); }
-  .cart-item-name { flex: 1; font-size: 13px; font-weight: 500; line-height: 1.2; }
-  .qty-btn { width: 24px; height: 24px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg); color: var(--text); font-size: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-  .qty-btn:hover { border-color: var(--accent); color: var(--accent); }
-  .qty-num { width: 22px; text-align: center; font-weight: 700; font-size: 14px; flex-shrink: 0; }
-  .cart-item-price { font-weight: 700; color: var(--accent); font-size: 13px; min-width: 55px; text-align: right; flex-shrink: 0; }
-  .cart-empty { text-align: center; color: var(--muted); padding: 40px 16px; font-size: 13px; line-height: 1.6; }
-
-  /* CART FOOTER */
-  .cart-footer { padding: 12px; border-top: 2px solid var(--border); }
-  .cart-total-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-  .cart-total-label { font-size: 13px; color: var(--muted); }
-  .cart-total-amount { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 28px; color: var(--accent); }
-  .pay-btns { display: flex; flex-direction: column; gap: 8px; }
-  .pay-btn { width: 100%; border: none; color: #fff; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 18px; letter-spacing: 0.5px; padding: 13px; border-radius: var(--r); cursor: pointer; transition: all 0.15s; }
-  .pay-btn.cash { background: var(--green); }
-  .pay-btn.card { background: var(--blue); }
-  .pay-btn:hover { filter: brightness(1.1); }
-  .pay-btn:active { transform: scale(0.98); }
-  .pay-btn:disabled { background: var(--border); color: var(--muted); cursor: not-allowed; }
-
-  /* STATUS BAR */
-  .status-bar { background: var(--surface2); border-top: 1px solid var(--border); padding: 3px 14px; display: flex; gap: 16px; align-items: center; flex-shrink: 0; flex-wrap: wrap; }
-  .status-item { font-size: 11px; color: var(--muted); white-space: nowrap; }
-  .status-item strong { color: var(--text); }
-
-  /* MODALY */
-  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: flex; align-items: center; justify-content: center; z-index: 100; padding: 16px; }
-  .modal-overlay.hidden { display: none; }
-  .modal { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; width: 100%; max-width: 420px; max-height: 92dvh; overflow-y: auto; }
-  .modal-header { padding: 18px 18px 14px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; background: var(--surface); z-index: 1; }
-  .modal-title { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 18px; }
-  .modal-close { background: none; border: none; color: var(--muted); font-size: 20px; cursor: pointer; line-height: 1; }
-  .modal-body { padding: 18px; }
-  .modal-footer { padding: 14px 18px; border-top: 1px solid var(--border); display: flex; gap: 10px; justify-content: flex-end; }
-
-  /* FORMS */
-  .form-group { display: flex; flex-direction: column; gap: 5px; margin-bottom: 14px; }
-  .form-group label { font-size: 12px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
-  .form-group input, .form-group select { background: var(--bg); border: 1px solid var(--border); color: var(--text); font-family: 'Barlow', sans-serif; font-size: 14px; padding: 9px 11px; border-radius: 8px; outline: none; width: 100%; }
-  .form-group input:focus { border-color: var(--accent); }
-
-  /* BUTTONS */
-  .btn { padding: 9px 18px; border-radius: 8px; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 15px; cursor: pointer; border: none; transition: all 0.15s; }
-  .btn-primary { background: var(--accent); color: #000; }
-  .btn-primary:hover { filter: brightness(1.1); }
-  .btn-secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
-  .btn-success { background: var(--green); color: #fff; }
-  .btn-danger { background: var(--red); color: #fff; }
-
-  /* PLATBA */
-  .payment-total { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 48px; color: var(--accent); text-align: center; padding: 16px; background: var(--bg); border-radius: 10px; margin-bottom: 14px; }
-  .payment-lbl { text-align: center; font-size: 12px; color: var(--muted); margin-bottom: 4px; }
-  .cash-group { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
-  .cash-input { background: var(--bg); border: 1px solid var(--border); color: var(--text); font-size: 24px; font-weight: 700; padding: 12px; border-radius: 8px; outline: none; font-family: 'Barlow', sans-serif; width: 100%; text-align: center; }
-  .cash-input:focus { border-color: var(--accent); }
-  .change-box { background: rgba(34,197,94,0.1); border: 1px solid var(--green); border-radius: 8px; padding: 10px; text-align: center; margin-top: 8px; }
-  .change-amt { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 26px; color: var(--green); }
-  .change-lbl { font-size: 11px; color: var(--muted); }
-
-  /* PRODUCT ADMIN */
-  .prod-list { display: flex; flex-direction: column; gap: 6px; max-height: 280px; overflow-y: auto; margin-bottom: 14px; }
-  .prod-item { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; display: flex; align-items: center; gap: 8px; }
-  .prod-item-emoji { font-size: 18px; flex-shrink: 0; }
-  .prod-item-info { flex: 1; min-width: 0; }
-  .prod-item-name { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .prod-item-cat { font-size: 11px; color: var(--muted); }
-  .prod-item-price { color: var(--accent); font-weight: 700; font-size: 13px; flex-shrink: 0; }
-  .prod-item-del { background: none; border: none; color: var(--muted); font-size: 16px; cursor: pointer; flex-shrink: 0; }
-  .prod-item-del:hover { color: var(--red); }
-  .add-prod-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .add-prod-grid .full { grid-column: 1/-1; }
-
-  /* REPORT */
-  .report-card { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 14px; margin-bottom: 12px; }
-  .report-card-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; margin-bottom: 4px; }
-  .report-card-value { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 28px; color: var(--accent); }
-  .report-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
-  .stanok-row { display: flex; align-items: center; gap: 8px; padding: 6px 0; border-bottom: 1px solid var(--border); }
-  .stanok-row:last-child { border-bottom: none; }
-  .stanok-name { flex: 1; font-size: 13px; font-weight: 600; }
-  .stanok-val { font-size: 13px; font-weight: 700; color: var(--accent); }
-
-  /* TOAST */
-  .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: var(--green); color: #fff; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 15px; padding: 10px 22px; border-radius: 10px; z-index: 999; opacity: 0; transition: opacity 0.3s; pointer-events: none; white-space: nowrap; }
-  .toast.show { opacity: 1; }
-  .toast.err { background: var(--red); }
-  .toast.warn { background: var(--accent); color: #000; }
-
-  @media (max-width: 580px) {
-    .cart-panel { width: 240px; }
-    .products-grid { grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); }
-    .header-btns .btn-sm:not(:first-child) { display: none; }
-  }
+:root{--bg:#0f1117;--surface:#1a1d27;--surface2:#22263a;--border:#2e3350;--accent:#f59e0b;--red:#ef4444;--green:#22c55e;--blue:#3b82f6;--text:#f1f5f9;--muted:#64748b;--r:12px}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;height:100dvh;display:flex;flex-direction:column;overflow:hidden}
+header{background:var(--surface);border-bottom:2px solid var(--accent);padding:0 14px;height:58px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;gap:8px}
+.logo{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:20px;color:var(--accent);white-space:nowrap}
+.logo span{color:var(--text)}
+.stanok-badge{background:var(--accent);color:#000;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12px;padding:3px 8px;border-radius:6px;white-space:nowrap;max-width:130px;overflow:hidden;text-overflow:ellipsis}
+.header-btns{display:flex;gap:6px;align-items:center}
+.btn-sm{background:var(--surface2);border:1px solid var(--border);color:var(--text);font-family:'Barlow',sans-serif;font-size:12px;font-weight:600;padding:5px 10px;border-radius:8px;cursor:pointer;white-space:nowrap}
+.sync-dot{width:8px;height:8px;border-radius:50%;background:var(--muted);display:inline-block;margin-right:4px;transition:background .3s}
+.sync-dot.ok{background:var(--green)}.sync-dot.syncing{background:var(--accent);animation:pulse 1s infinite}.sync-dot.err{background:var(--red)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.main{display:flex;flex:1;overflow:hidden}
+.products-panel{flex:1;display:flex;flex-direction:column;overflow:hidden;border-right:2px solid var(--border)}
+.search-bar{padding:10px 12px;background:var(--surface);border-bottom:1px solid var(--border)}
+.search-bar input{width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);font-family:'Barlow',sans-serif;font-size:15px;padding:8px 12px;border-radius:8px;outline:none}
+.search-bar input:focus{border-color:var(--accent)}
+.cats{display:flex;gap:6px;padding:8px 12px;overflow-x:auto;flex-shrink:0;background:var(--surface);border-bottom:1px solid var(--border);scrollbar-width:none}
+.cats::-webkit-scrollbar{display:none}
+.cat-btn{background:var(--surface2);border:1px solid var(--border);color:var(--muted);font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12px;padding:5px 12px;border-radius:20px;cursor:pointer;white-space:nowrap;transition:all .15s;flex-shrink:0}
+.cat-btn.active{background:var(--accent);border-color:var(--accent);color:#000}
+.products-grid{flex:1;overflow-y:auto;padding:10px;display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px;align-content:start}
+.product-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:12px 8px;cursor:pointer;transition:all .15s;text-align:center;user-select:none;display:flex;flex-direction:column;align-items:center;gap:4px}
+.product-card:hover{border-color:var(--accent);transform:translateY(-1px)}
+.product-card:active{transform:scale(.95);background:var(--surface2)}
+.product-emoji{font-size:26px}.product-name{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:13px;line-height:1.2}
+.product-price{color:var(--accent);font-weight:700;font-size:14px}
+.cart-panel{width:300px;display:flex;flex-direction:column;background:var(--surface);flex-shrink:0}
+.cart-header{padding:12px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.cart-title{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:16px}
+.cart-clear{background:none;border:none;color:var(--muted);font-size:11px;cursor:pointer;font-family:'Barlow',sans-serif}
+.cart-items{flex:1;overflow-y:auto;padding:6px}
+.cart-item{display:flex;align-items:center;gap:6px;padding:7px 6px;border-radius:8px}
+.cart-item:hover{background:var(--surface2)}
+.cart-item-name{flex:1;font-size:13px;font-weight:500;line-height:1.2}
+.qty-btn{width:24px;height:24px;border-radius:6px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.qty-btn:hover{border-color:var(--accent);color:var(--accent)}
+.qty-num{width:22px;text-align:center;font-weight:700;font-size:14px;flex-shrink:0}
+.cart-item-price{font-weight:700;color:var(--accent);font-size:13px;min-width:55px;text-align:right;flex-shrink:0}
+.cart-empty{text-align:center;color:var(--muted);padding:40px 16px;font-size:13px;line-height:1.6}
+.cart-footer{padding:12px;border-top:2px solid var(--border)}
+.cart-total-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.cart-total-label{font-size:13px;color:var(--muted)}
+.cart-total-amount{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:28px;color:var(--accent)}
+.pay-btns{display:flex;flex-direction:column;gap:8px}
+.pay-btn{width:100%;border:none;color:#fff;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:18px;padding:13px;border-radius:var(--r);cursor:pointer;transition:all .15s}
+.pay-btn.cash{background:var(--green)}.pay-btn.card{background:var(--blue)}
+.pay-btn:hover{filter:brightness(1.1)}.pay-btn:active{transform:scale(.98)}
+.pay-btn:disabled{background:var(--border);color:var(--muted);cursor:not-allowed}
+.status-bar{background:var(--surface2);border-top:1px solid var(--border);padding:3px 14px;display:flex;gap:16px;align-items:center;flex-wrap:wrap;flex-shrink:0}
+.status-item{font-size:11px;color:var(--muted);white-space:nowrap}.status-item strong{color:var(--text)}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.85);display:flex;align-items:center;justify-content:center;z-index:100;padding:16px}
+.modal-overlay.hidden{display:none}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:16px;width:100%;max-width:420px;max-height:92dvh;overflow-y:auto}
+.modal-header{padding:18px 18px 14px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:var(--surface);z-index:1}
+.modal-title{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:18px}
+.modal-close{background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer}
+.modal-body{padding:18px}.modal-footer{padding:14px 18px;border-top:1px solid var(--border);display:flex;gap:10px;justify-content:flex-end}
+.form-group{display:flex;flex-direction:column;gap:5px;margin-bottom:14px}
+.form-group label{font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+.form-group input{background:var(--bg);border:1px solid var(--border);color:var(--text);font-family:'Barlow',sans-serif;font-size:14px;padding:9px 11px;border-radius:8px;outline:none;width:100%}
+.form-group input:focus{border-color:var(--accent)}
+.btn{padding:9px 18px;border-radius:8px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;cursor:pointer;border:none;transition:all .15s}
+.btn-primary{background:var(--accent);color:#000}.btn-secondary{background:var(--surface2);color:var(--text);border:1px solid var(--border)}.btn-success{background:var(--green);color:#fff}
+.payment-total{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:48px;color:var(--accent);text-align:center;padding:16px;background:var(--bg);border-radius:10px;margin-bottom:14px}
+.payment-lbl{text-align:center;font-size:12px;color:var(--muted);margin-bottom:4px}
+.cash-group{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+.cash-input{background:var(--bg);border:1px solid var(--border);color:var(--text);font-size:24px;font-weight:700;padding:12px;border-radius:8px;outline:none;font-family:'Barlow',sans-serif;width:100%;text-align:center}
+.cash-input:focus{border-color:var(--accent)}
+.change-box{background:rgba(34,197,94,.1);border:1px solid var(--green);border-radius:8px;padding:10px;text-align:center;margin-top:8px}
+.change-amt{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:26px;color:var(--green)}
+.change-lbl{font-size:11px;color:var(--muted)}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--green);color:#fff;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;padding:10px 22px;border-radius:10px;z-index:999;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap}
+.toast.show{opacity:1}.toast.err{background:var(--red)}.toast.warn{background:var(--accent);color:#000}
+@media(max-width:580px){.cart-panel{width:220px}.products-grid{grid-template-columns:repeat(auto-fill,minmax(90px,1fr))}}
 </style>
 </head>
 <body>
-
 <header>
   <div class="logo">Stánok<span>POS</span></div>
   <div class="stanok-badge" id="stanokBadge">NASTAV STÁNOK</div>
   <div class="header-btns">
-    <span id="syncStatus" title="Stav pripojenia"><span class="sync-dot" id="syncDot"></span><span id="syncText" style="font-size:11px;color:var(--muted)">offline</span></span>
-    <button class="btn-sm" onclick="openModal('settingsModal')">⚙️</button>
-    <button class="btn-sm" onclick="openModal('productsModal')">📦</button>
-    <button class="btn-sm" onclick="openReportModal()">📊</button>
+    <span><span class="sync-dot" id="syncDot"></span><span id="syncText" style="font-size:11px;color:var(--muted)">...</span></span>
+    <button class="btn-sm" onclick="openModal('settingsModal')">⚙️ Nastavenia</button>
+    <button class="btn-sm" onclick="refreshProducts()">🔄 Tovar</button>
   </div>
 </header>
-
 <div class="main">
   <div class="products-panel">
-    <div class="search-bar">
-      <input type="text" id="searchInput" placeholder="🔍 Hľadaj produkt..." oninput="filterProducts()">
-    </div>
+    <div class="search-bar"><input type="text" id="searchInput" placeholder="🔍 Hľadaj produkt..." oninput="filterProducts()"></div>
     <div class="cats" id="catsBar"></div>
     <div class="products-grid" id="productsGrid"></div>
   </div>
-
   <div class="cart-panel">
     <div class="cart-header">
       <span class="cart-title">🛒 Košík</span>
       <button class="cart-clear" onclick="clearCart()">Vymazať</button>
     </div>
-    <div class="cart-items" id="cartItems">
-      <div class="cart-empty">Žiadne položky.<br>Klikni na produkt.</div>
-    </div>
+    <div class="cart-items" id="cartItems"><div class="cart-empty">Žiadne položky.<br>Klikni na produkt.</div></div>
     <div class="cart-footer">
       <div class="cart-total-row">
         <span class="cart-total-label">SPOLU</span>
@@ -204,26 +117,20 @@
     </div>
   </div>
 </div>
-
 <div class="status-bar">
   <span class="status-item">Predaje dnes: <strong id="salesCount">0</strong></span>
   <span class="status-item">Tržba: <strong id="totalRevenue">0,00 €</strong></span>
   <span class="status-item" id="pendingInfo" style="color:var(--accent)"></span>
   <span class="status-item" id="lastSaleEl"></span>
 </div>
-
-<!-- MODAL: PLATBA -->
 <div class="modal-overlay hidden" id="paymentModal">
   <div class="modal">
-    <div class="modal-header">
-      <span class="modal-title" id="paymentTitle">💵 Platba hotovosťou</span>
-      <button class="modal-close" onclick="closeModal('paymentModal')">✕</button>
-    </div>
+    <div class="modal-header"><span class="modal-title" id="paymentTitle">Platba</span><button class="modal-close" onclick="closeModal('paymentModal')">✕</button></div>
     <div class="modal-body">
       <div class="payment-lbl">Suma na zaplatenie</div>
       <div class="payment-total" id="payTotal">0,00 €</div>
       <div id="cashSection" class="cash-group">
-        <label style="font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.5px;">Zákazník zaplatil:</label>
+        <label style="font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.5px">Zákazník zaplatil:</label>
         <input type="number" class="cash-input" id="cashPaid" placeholder="0,00" step="0.50" min="0" oninput="calcChange()">
         <div class="change-box" id="changeBox" style="display:none">
           <div class="change-lbl" id="changeLbl">Vydať</div>
@@ -237,30 +144,13 @@
     </div>
   </div>
 </div>
-
-<!-- MODAL: NASTAVENIA -->
 <div class="modal-overlay hidden" id="settingsModal">
   <div class="modal">
-    <div class="modal-header">
-      <span class="modal-title">⚙️ Nastavenia</span>
-      <button class="modal-close" onclick="closeModal('settingsModal')">✕</button>
-    </div>
+    <div class="modal-header"><span class="modal-title">⚙️ Nastavenia</span><button class="modal-close" onclick="closeModal('settingsModal')">✕</button></div>
     <div class="modal-body">
-      <div class="form-group">
-        <label>Názov stánku</label>
-        <input type="text" id="setStanok" placeholder="napr. Stánok 1">
-      </div>
-      <div class="form-group">
-        <label>Obsluha (meno)</label>
-        <input type="text" id="setObsluha" placeholder="napr. Jana">
-      </div>
-      <div class="form-group">
-        <label>Názov akcie</label>
-        <input type="text" id="setAkcia" placeholder="napr. Letný festival 2025">
-      </div>
-      <div style="background:var(--bg);border-radius:8px;padding:12px;font-size:12px;color:var(--muted);line-height:1.6;">
-        ℹ️ Dáta sa ukladajú do Google Sheets v reálnom čase. Pri výpadku internetu sa predaje uložia lokálne a automaticky synchronizujú keď sa obnoví pripojenie.
-      </div>
+      <div class="form-group"><label>Názov stánku</label><input type="text" id="setStanok" placeholder="napr. Stánok 1"></div>
+      <div class="form-group"><label>Obsluha</label><input type="text" id="setObsluha" placeholder="napr. Jana"></div>
+      <div class="form-group"><label>Názov akcie</label><input type="text" id="setAkcia" placeholder="napr. Letný festival 2025"></div>
     </div>
     <div class="modal-footer">
       <button class="btn btn-secondary" onclick="closeModal('settingsModal')">Zrušiť</button>
@@ -268,469 +158,163 @@
     </div>
   </div>
 </div>
-
-<!-- MODAL: TOVAR -->
-<div class="modal-overlay hidden" id="productsModal">
-  <div class="modal" style="max-width:480px">
-    <div class="modal-header">
-      <span class="modal-title">📦 Správa tovaru</span>
-      <button class="modal-close" onclick="closeModal('productsModal')">✕</button>
-    </div>
-    <div class="modal-body">
-      <div class="prod-list" id="prodAdminList"></div>
-      <hr style="border-color:var(--border);margin-bottom:14px;">
-      <div style="font-size:11px;color:var(--muted);margin-bottom:10px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;">Pridať produkt</div>
-      <div class="add-prod-grid">
-        <div class="form-group full">
-          <label>Názov</label>
-          <input type="text" id="newName" placeholder="napr. Pivo 0.5L">
-        </div>
-        <div class="form-group">
-          <label>Cena (€)</label>
-          <input type="number" id="newPrice" placeholder="2.50" step="0.10" min="0">
-        </div>
-        <div class="form-group">
-          <label>Kategória</label>
-          <input type="text" id="newCat" placeholder="napr. Alko">
-        </div>
-        <div class="form-group">
-          <label>Emoji</label>
-          <input type="text" id="newEmoji" placeholder="🍺" maxlength="2">
-        </div>
-      </div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn btn-secondary" onclick="closeModal('productsModal')">Zavrieť</button>
-      <button class="btn btn-primary" onclick="addProduct()">➕ Pridať</button>
-    </div>
-  </div>
-</div>
-
-<!-- MODAL: REPORT -->
-<div class="modal-overlay hidden" id="reportModal">
-  <div class="modal" style="max-width:460px">
-    <div class="modal-header">
-      <span class="modal-title">📊 Report</span>
-      <button class="modal-close" onclick="closeModal('reportModal')">✕</button>
-    </div>
-    <div class="modal-body" id="reportBody">
-      <div style="text-align:center;padding:30px;color:var(--muted)">Načítavam...</div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn btn-secondary" onclick="closeModal('reportModal')">Zavrieť</button>
-      <button class="btn btn-primary" onclick="openReportModal()">🔄 Obnoviť</button>
-    </div>
-  </div>
-</div>
-
 <div class="toast" id="toast"></div>
-
 <script>
-// ===== CONFIG =====
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwi7SP4YflAkU2Vssopa-G9BpKhhtEFR3_WsUe55NeZIu6Phkw3y6rNCtLMmYqTxEjciQ/exec';
-
-// ===== STATE =====
+const SCRIPT_URL = window.location.href.split('?')[0];
 let state = {
   stanok: localStorage.getItem('pos_stanok') || '',
   obsluha: localStorage.getItem('pos_obsluha') || '',
   akcia: localStorage.getItem('pos_akcia') || '',
-  products: JSON.parse(localStorage.getItem('pos_products') || 'null'),
-  sales: JSON.parse(localStorage.getItem('pos_sales') || '[]'), // lokalne predaje dnes
-  pending: JSON.parse(localStorage.getItem('pos_pending') || '[]'), // cakaju na sync
-  cart: [],
-  payMethod: 'cash',
-  activeCat: 'Všetky',
-  online: false
+  products: [],
+  sales: JSON.parse(localStorage.getItem('pos_sales') || '[]'),
+  pending: JSON.parse(localStorage.getItem('pos_pending') || '[]'),
+  cart: [], activeCat: 'Všetky', online: false
 };
-
-if (!state.products) {
-  state.products = [
-    {id:1,  name:'Pivo 0.5L',        price:2.50, cat:'Alko',          emoji:'🍺'},
-    {id:2,  name:'Pivo 0.3L',        price:2.00, cat:'Alko',          emoji:'🍺'},
-    {id:3,  name:'Vino cervene',     price:2.50, cat:'Alko',          emoji:'🍷'},
-    {id:4,  name:'Vino biele',       price:2.50, cat:'Alko',          emoji:'🥂'},
-    {id:5,  name:'Slivovica',        price:2.00, cat:'Alko',          emoji:'🥃'},
-    {id:6,  name:'Borovicka',        price:2.00, cat:'Alko',          emoji:'🥃'},
-    {id:7,  name:'Rum s colou',      price:3.00, cat:'Alko',          emoji:'🍹'},
-    {id:8,  name:'Aperol Spritz',    price:4.00, cat:'Alko',          emoji:'🍹'},
-    {id:9,  name:'Kofola 0.5L',      price:1.50, cat:'Nealko',        emoji:'🥤'},
-    {id:10, name:'Kofola 0.3L',      price:1.20, cat:'Nealko',        emoji:'🥤'},
-    {id:11, name:'Voda 0.5L',        price:1.00, cat:'Nealko',        emoji:'💧'},
-    {id:12, name:'Dzus pomarancovy', price:1.50, cat:'Nealko',        emoji:'🍊'},
-    {id:13, name:'Dzus jablkovy',    price:1.50, cat:'Nealko',        emoji:'🍎'},
-    {id:14, name:'Caj horuca',       price:1.50, cat:'Nealko',        emoji:'☕'},
-    {id:15, name:'Horuca cokolada',  price:2.00, cat:'Nealko',        emoji:'🍫'},
-    {id:16, name:'Klobasa',          price:3.00, cat:'Obcerstvenie',  emoji:'🌭'},
-    {id:17, name:'Klobasa s chlebom',price:3.50, cat:'Obcerstvenie',  emoji:'🌭'},
-    {id:18, name:'Langos',           price:3.50, cat:'Obcerstvenie',  emoji:'🫓'},
-    {id:19, name:'Langos so syrom',  price:4.00, cat:'Obcerstvenie',  emoji:'🫓'},
-    {id:20, name:'Gulas s chlebom',  price:5.00, cat:'Obcerstvenie',  emoji:'🍲'},
-    {id:21, name:'Vyprazany syr',    price:4.50, cat:'Obcerstvenie',  emoji:'🧀'},
-    {id:22, name:'Hranolky',         price:3.00, cat:'Obcerstvenie',  emoji:'🍟'},
-    {id:23, name:'Chlieb',           price:0.50, cat:'Obcerstvenie',  emoji:'🍞'},
-  ];
-  saveProducts();
-}
-
-function saveProducts() { localStorage.setItem('pos_products', JSON.stringify(state.products)); }
-function saveSalesLocal() { localStorage.setItem('pos_sales', JSON.stringify(state.sales)); }
-function savePending() { localStorage.setItem('pos_pending', JSON.stringify(state.pending)); }
-
-// ===== INIT =====
-function init() {
-  updateBadge();
-  renderCats();
-  renderProducts();
-  updateStats();
+function saveSalesLocal(){localStorage.setItem('pos_sales',JSON.stringify(state.sales))}
+function savePending(){localStorage.setItem('pos_pending',JSON.stringify(state.pending))}
+async function init(){
+  updateBadge();updateStats();
+  await loadProducts();
   checkOnline();
-  setInterval(checkOnline, 30000);
-  setInterval(syncPending, 15000);
-  if (!state.stanok) setTimeout(() => openModal('settingsModal'), 400);
+  setInterval(checkOnline,30000);
+  setInterval(syncPending,15000);
+  if(!state.stanok) setTimeout(()=>openModal('settingsModal'),400);
 }
-
-function updateBadge() {
-  document.getElementById('stanokBadge').textContent = state.stanok ? state.stanok.toUpperCase() : 'NASTAV STÁNOK';
-}
-
-// ===== ONLINE CHECK =====
-async function checkOnline() {
-  try {
-    const r = await fetch(SCRIPT_URL + '?action=ping', {mode:'cors'});
-    const d = await r.json();
-    if (d.status === 'ok') {
-      setOnline(true);
-      syncPending();
-    } else setOnline(false);
-  } catch { setOnline(false); }
-}
-
-function setOnline(online) {
-  state.online = online;
-  const dot = document.getElementById('syncDot');
-  const txt = document.getElementById('syncText');
-  dot.className = 'sync-dot ' + (online ? 'ok' : 'err');
-  txt.textContent = online ? 'online' : 'offline';
-  txt.style.color = online ? 'var(--green)' : 'var(--red)';
-}
-
-function setSyncing() {
-  document.getElementById('syncDot').className = 'sync-dot syncing';
-  document.getElementById('syncText').textContent = 'sync...';
-}
-
-// ===== SYNC PENDING =====
-async function syncPending() {
-  if (!state.online || !state.pending.length) return;
-  const toSync = [...state.pending];
-  for (const sale of toSync) {
-    try {
-      setSyncing();
-      await sendSale(sale);
-      state.pending = state.pending.filter(p => p.id !== sale.id);
-      savePending();
-    } catch { break; }
+function updateBadge(){document.getElementById('stanokBadge').textContent=state.stanok?state.stanok.toUpperCase():'NASTAV STÁNOK'}
+async function loadProducts(){
+  try{
+    const r=await fetch(SCRIPT_URL+'?action=getProducts');
+    const d=await r.json();
+    if(d.status==='ok'){
+      state.products=d.products;
+      localStorage.setItem('pos_products',JSON.stringify(d.products));
+      renderCats();renderProducts();
+    }
+  }catch{
+    const cached=localStorage.getItem('pos_products');
+    if(cached){state.products=JSON.parse(cached);renderCats();renderProducts();}
   }
-  setOnline(state.online);
-  updatePendingInfo();
 }
-
-function updatePendingInfo() {
-  const el = document.getElementById('pendingInfo');
-  el.textContent = state.pending.length ? `⚠️ ${state.pending.length} predajov čaká na sync` : '';
+async function refreshProducts(){
+  toast('🔄 Aktualizujem tovar...','warn');
+  await loadProducts();
+  toast('✓ Tovar aktualizovaný!');
 }
-
-// ===== SEND SALE =====
-async function sendSale(sale) {
-  const r = await fetch(SCRIPT_URL, {
-    method: 'POST',
-    mode: 'cors',
-    headers: {'Content-Type': 'text/plain'},
-    body: JSON.stringify({ action: 'saveSale', sale })
-  });
-  const d = await r.json();
-  if (d.status !== 'ok') throw new Error(d.message);
+async function checkOnline(){
+  try{
+    const r=await fetch(SCRIPT_URL+'?action=ping');
+    const d=await r.json();
+    if(d.status==='ok'){setOnline(true);syncPending();}else setOnline(false);
+  }catch{setOnline(false);}
+}
+function setOnline(v){
+  state.online=v;
+  const dot=document.getElementById('syncDot');
+  const txt=document.getElementById('syncText');
+  dot.className='sync-dot '+(v?'ok':'err');
+  txt.textContent=v?'online':'offline';
+  txt.style.color=v?'var(--green)':'var(--red)';
+}
+function setSyncing(){document.getElementById('syncDot').className='sync-dot syncing';document.getElementById('syncText').textContent='sync...';}
+async function syncPending(){
+  if(!state.online||!state.pending.length)return;
+  for(const sale of [...state.pending]){
+    try{setSyncing();await sendSale(sale);state.pending=state.pending.filter(p=>p.id!==sale.id);savePending();}catch{break;}
+  }
+  setOnline(state.online);updatePendingInfo();
+}
+function updatePendingInfo(){document.getElementById('pendingInfo').textContent=state.pending.length?'⚠️ '+state.pending.length+' predajov čaká na sync':'';}
+async function sendSale(sale){
+  const r=await fetch(SCRIPT_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'saveSale',sale})});
+  const d=await r.json();
+  if(d.status!=='ok')throw new Error(d.message);
   return d;
 }
-
-// ===== PRODUKTY =====
-function renderCats() {
-  const cats = ['Všetky', ...new Set(state.products.map(p => p.cat))];
-  document.getElementById('catsBar').innerHTML = cats.map(c =>
-    `<button class="cat-btn ${c===state.activeCat?'active':''}" onclick="setCat('${c}')">${c}</button>`
-  ).join('');
+function renderCats(){
+  const cats=['Všetky',...new Set(state.products.map(p=>p.cat))];
+  document.getElementById('catsBar').innerHTML=cats.map(c=>'<button class="cat-btn '+(c===state.activeCat?'active':'')+'" onclick="setCat(''+c+'')">'+c+'</button>').join('');
 }
-
-function setCat(cat) { state.activeCat = cat; renderCats(); renderProducts(); }
-function filterProducts() { renderProducts(); }
-
-function renderProducts() {
-  const q = document.getElementById('searchInput').value.toLowerCase();
-  let prods = state.products;
-  if (state.activeCat !== 'Všetky') prods = prods.filter(p => p.cat === state.activeCat);
-  if (q) prods = prods.filter(p => p.name.toLowerCase().includes(q));
-  const grid = document.getElementById('productsGrid');
-  if (!prods.length) { grid.innerHTML = '<div style="color:var(--muted);font-size:13px;padding:20px;grid-column:1/-1">Žiadne produkty</div>'; return; }
-  grid.innerHTML = prods.map(p => `
-    <div class="product-card" onclick="addToCart(${p.id})">
-      <div class="product-emoji">${p.emoji||'📦'}</div>
-      <div class="product-name">${p.name}</div>
-      <div class="product-price">${fmt(p.price)}</div>
-    </div>`).join('');
+function setCat(cat){state.activeCat=cat;renderCats();renderProducts();}
+function filterProducts(){renderProducts();}
+function renderProducts(){
+  const q=document.getElementById('searchInput').value.toLowerCase();
+  let prods=state.products;
+  if(state.activeCat!=='Všetky')prods=prods.filter(p=>p.cat===state.activeCat);
+  if(q)prods=prods.filter(p=>p.name.toLowerCase().includes(q));
+  const grid=document.getElementById('productsGrid');
+  if(!prods.length){grid.innerHTML='<div style="color:var(--muted);font-size:13px;padding:20px;grid-column:1/-1">Žiadne produkty</div>';return;}
+  grid.innerHTML=prods.map(p=>'<div class="product-card" onclick="addToCart('+p.id+')"><div class="product-emoji">'+(p.emoji||'📦')+'</div><div class="product-name">'+p.name+'</div><div class="product-price">'+fmt(p.price)+'</div></div>').join('');
 }
-
-// ===== KOŠÍK =====
-function addToCart(id) {
-  const prod = state.products.find(p => p.id === id);
-  if (!prod) return;
-  const ex = state.cart.find(i => i.id === id);
-  if (ex) ex.qty++;
-  else state.cart.push({id, name: prod.name, price: prod.price, qty: 1});
+function addToCart(id){
+  const prod=state.products.find(p=>p.id===id);if(!prod)return;
+  const ex=state.cart.find(i=>i.id===id);
+  if(ex)ex.qty++;else state.cart.push({id,name:prod.name,price:prod.price,qty:1});
   renderCart();
 }
-
-function changeQty(id, delta) {
-  const item = state.cart.find(i => i.id === id);
-  if (!item) return;
-  item.qty += delta;
-  if (item.qty <= 0) state.cart = state.cart.filter(i => i.id !== id);
+function changeQty(id,delta){
+  const item=state.cart.find(i=>i.id===id);if(!item)return;
+  item.qty+=delta;
+  if(item.qty<=0)state.cart=state.cart.filter(i=>i.id!==id);
   renderCart();
 }
-
-function clearCart() { state.cart = []; renderCart(); }
-
-function renderCart() {
-  const el = document.getElementById('cartItems');
-  const total = cartTotal();
-  if (!state.cart.length) {
-    el.innerHTML = '<div class="cart-empty">Žiadne položky.<br>Klikni na produkt.</div>';
-  } else {
-    el.innerHTML = state.cart.map(i => `
-      <div class="cart-item">
-        <div class="cart-item-name">${i.name}</div>
-        <button class="qty-btn" onclick="changeQty(${i.id},-1)">−</button>
-        <span class="qty-num">${i.qty}</span>
-        <button class="qty-btn" onclick="changeQty(${i.id},1)">+</button>
-        <div class="cart-item-price">${fmt(i.price*i.qty)}</div>
-      </div>`).join('');
-  }
-  document.getElementById('cartTotal').textContent = fmt(total);
-  const disabled = !state.cart.length;
-  document.getElementById('payBtnCash').disabled = disabled;
-  document.getElementById('payBtnCard').disabled = disabled;
+function clearCart(){state.cart=[];renderCart();}
+function renderCart(){
+  const el=document.getElementById('cartItems');const total=cartTotal();
+  if(!state.cart.length){el.innerHTML='<div class="cart-empty">Žiadne položky.<br>Klikni na produkt.</div>';}
+  else{el.innerHTML=state.cart.map(i=>'<div class="cart-item"><div class="cart-item-name">'+i.name+'</div><button class="qty-btn" onclick="changeQty('+i.id+',-1)">−</button><span class="qty-num">'+i.qty+'</span><button class="qty-btn" onclick="changeQty('+i.id+',1)">+</button><div class="cart-item-price">'+fmt(i.price*i.qty)+'</div></div>').join('');}
+  document.getElementById('cartTotal').textContent=fmt(total);
+  const dis=!state.cart.length;
+  document.getElementById('payBtnCash').disabled=dis;document.getElementById('payBtnCard').disabled=dis;
 }
-
-function cartTotal() { return state.cart.reduce((s,i) => s + i.price*i.qty, 0); }
-
-// ===== PLATBA =====
-let currentPayMethod = 'cash';
-
-function openPayment(method) {
-  currentPayMethod = method;
-  const total = cartTotal();
-  document.getElementById('paymentTitle').textContent = method === 'cash' ? '💵 Platba hotovosťou' : '💳 Platba kartou';
-  document.getElementById('payTotal').textContent = fmt(total);
-  document.getElementById('cashPaid').value = '';
-  document.getElementById('changeBox').style.display = 'none';
-  document.getElementById('cashSection').style.display = method === 'cash' ? 'flex' : 'none';
+function cartTotal(){return state.cart.reduce((s,i)=>s+i.price*i.qty,0);}
+let currentPayMethod='cash';
+function openPayment(method){
+  currentPayMethod=method;
+  document.getElementById('paymentTitle').textContent=method==='cash'?'💵 Platba hotovosťou':'💳 Platba kartou';
+  document.getElementById('payTotal').textContent=fmt(cartTotal());
+  document.getElementById('cashPaid').value='';
+  document.getElementById('changeBox').style.display='none';
+  document.getElementById('cashSection').style.display=method==='cash'?'flex':'none';
   openModal('paymentModal');
 }
-
-function calcChange() {
-  const total = cartTotal();
-  const paid = parseFloat(document.getElementById('cashPaid').value) || 0;
-  const change = paid - total;
-  const box = document.getElementById('changeBox');
-  if (paid > 0) {
-    box.style.display = 'block';
-    document.getElementById('changeAmt').textContent = fmt(Math.max(0, change));
-    document.getElementById('changeLbl').textContent = change >= 0 ? 'Vydať' : '⚠️ Málo!';
-    box.style.borderColor = change >= 0 ? 'var(--green)' : 'var(--red)';
-  } else {
-    box.style.display = 'none';
-  }
+function calcChange(){
+  const total=cartTotal();const paid=parseFloat(document.getElementById('cashPaid').value)||0;
+  const change=paid-total;const box=document.getElementById('changeBox');
+  if(paid>0){box.style.display='block';document.getElementById('changeAmt').textContent=fmt(Math.max(0,change));document.getElementById('changeLbl').textContent=change>=0?'Vydať':'⚠️ Málo!';box.style.borderColor=change>=0?'var(--green)':'var(--red)';}
+  else box.style.display='none';
 }
-
-async function confirmPayment() {
-  const total = cartTotal();
-  if (currentPayMethod === 'cash') {
-    const paid = parseFloat(document.getElementById('cashPaid').value) || 0;
-    if (paid < total) { toast('Nedostatočná suma!', 'err'); return; }
-  }
-
-  const sale = {
-    id: Date.now(),
-    time: new Date().toISOString(),
-    stanok: state.stanok || 'Neznamy',
-    obsluha: state.obsluha || '',
-    akcia: state.akcia || '',
-    method: currentPayMethod,
-    items: state.cart.map(i => ({name: i.name, price: i.price, qty: i.qty})),
-    total
-  };
-
-  // Uloz lokalne
-  state.sales.push(sale);
-  saveSalesLocal();
-
-  // Posli na Google Sheets
-  if (state.online) {
-    setSyncing();
-    try {
-      await sendSale(sale);
-      setOnline(true);
-      toast(`✓ ${fmt(total)} — uložené do Google Sheets!`);
-    } catch {
-      state.pending.push(sale);
-      savePending();
-      setOnline(false);
-      toast(`✓ ${fmt(total)} — uložené lokálne (sync neskôr)`, 'warn');
-    }
-  } else {
-    state.pending.push(sale);
-    savePending();
-    toast(`✓ ${fmt(total)} — uložené lokálne (offline)`, 'warn');
-  }
-
-  updatePendingInfo();
-  state.cart = [];
-  renderCart();
-  updateStats();
-  closeModal('paymentModal');
+async function confirmPayment(){
+  const total=cartTotal();
+  if(currentPayMethod==='cash'){const paid=parseFloat(document.getElementById('cashPaid').value)||0;if(paid<total){toast('Nedostatočná suma!','err');return;}}
+  const sale={id:Date.now(),time:new Date().toISOString(),stanok:state.stanok||'Neznamy',obsluha:state.obsluha||'',akcia:state.akcia||'',method:currentPayMethod,items:state.cart.map(i=>({name:i.name,price:i.price,qty:i.qty})),total};
+  state.sales.push(sale);saveSalesLocal();
+  if(state.online){setSyncing();try{await sendSale(sale);setOnline(true);toast('✓ '+fmt(total)+' — uložené!');}catch(e){state.pending.push(sale);savePending();setOnline(false);toast('✓ '+fmt(total)+' — uložené lokálne','warn');}}
+  else{state.pending.push(sale);savePending();toast('✓ '+fmt(total)+' — offline, sync neskôr','warn');}
+  updatePendingInfo();state.cart=[];renderCart();updateStats();closeModal('paymentModal');
 }
-
-// ===== STATS =====
-function updateStats() {
-  const today = new Date().toDateString();
-  const todaySales = state.sales.filter(s => new Date(s.time).toDateString() === today);
-  document.getElementById('salesCount').textContent = todaySales.length;
-  document.getElementById('totalRevenue').textContent = fmt(todaySales.reduce((s,x) => s+x.total, 0));
-  if (state.sales.length) {
-    const last = state.sales[state.sales.length-1];
-    document.getElementById('lastSaleEl').textContent = 'Posledný: ' + new Date(last.time).toLocaleTimeString('sk-SK',{hour:'2-digit',minute:'2-digit'});
-  }
+function updateStats(){
+  const today=new Date().toDateString();
+  const ts=state.sales.filter(s=>new Date(s.time).toDateString()===today);
+  document.getElementById('salesCount').textContent=ts.length;
+  document.getElementById('totalRevenue').textContent=fmt(ts.reduce((s,x)=>s+x.total,0));
+  if(state.sales.length){const last=state.sales[state.sales.length-1];document.getElementById('lastSaleEl').textContent='Posledný: '+new Date(last.time).toLocaleTimeString('sk-SK',{hour:'2-digit',minute:'2-digit'});}
   updatePendingInfo();
 }
-
-// ===== NASTAVENIA =====
-function saveSettings() {
-  state.stanok = document.getElementById('setStanok').value.trim();
-  state.obsluha = document.getElementById('setObsluha').value.trim();
-  state.akcia = document.getElementById('setAkcia').value.trim();
-  localStorage.setItem('pos_stanok', state.stanok);
-  localStorage.setItem('pos_obsluha', state.obsluha);
-  localStorage.setItem('pos_akcia', state.akcia);
-  updateBadge();
-  closeModal('settingsModal');
-  toast('✓ Nastavenia uložené');
+function saveSettings(){
+  state.stanok=document.getElementById('setStanok').value.trim();
+  state.obsluha=document.getElementById('setObsluha').value.trim();
+  state.akcia=document.getElementById('setAkcia').value.trim();
+  localStorage.setItem('pos_stanok',state.stanok);localStorage.setItem('pos_obsluha',state.obsluha);localStorage.setItem('pos_akcia',state.akcia);
+  updateBadge();closeModal('settingsModal');toast('✓ Nastavenia uložené');
 }
-
-// ===== TOVAR =====
-function renderProdAdmin() {
-  const list = document.getElementById('prodAdminList');
-  list.innerHTML = state.products.map(p => `
-    <div class="prod-item">
-      <span class="prod-item-emoji">${p.emoji||'📦'}</span>
-      <div class="prod-item-info">
-        <div class="prod-item-name">${p.name}</div>
-        <div class="prod-item-cat">${p.cat}</div>
-      </div>
-      <span class="prod-item-price">${fmt(p.price)}</span>
-      <button class="prod-item-del" onclick="delProduct(${p.id})">🗑</button>
-    </div>`).join('') || '<div style="color:var(--muted);font-size:13px;padding:10px">Žiadne produkty</div>';
-}
-
-function addProduct() {
-  const name = document.getElementById('newName').value.trim();
-  const price = parseFloat(document.getElementById('newPrice').value);
-  const cat = document.getElementById('newCat').value.trim() || 'Ostatne';
-  const emoji = document.getElementById('newEmoji').value.trim() || '📦';
-  if (!name || isNaN(price)) { toast('Vyplň názov a cenu!', 'err'); return; }
-  state.products.push({id: Date.now(), name, price, cat, emoji});
-  saveProducts();
-  document.getElementById('newName').value = '';
-  document.getElementById('newPrice').value = '';
-  document.getElementById('newEmoji').value = '';
-  renderProdAdmin(); renderCats(); renderProducts();
-  toast('✓ Produkt pridaný');
-}
-
-function delProduct(id) {
-  state.products = state.products.filter(p => p.id !== id);
-  saveProducts();
-  renderProdAdmin(); renderCats(); renderProducts();
-}
-
-// ===== REPORT =====
-async function openReportModal() {
-  openModal('reportModal');
-  document.getElementById('reportBody').innerHTML = '<div style="text-align:center;padding:30px;color:var(--muted)">⏳ Načítavam z Google Sheets...</div>';
-  try {
-    const r = await fetch(SCRIPT_URL + '?action=getReport', {mode:'cors'});
-    const d = await r.json();
-    if (d.status !== 'ok') throw new Error(d.message);
-    renderReport(d);
-  } catch (e) {
-    document.getElementById('reportBody').innerHTML = `<div style="color:var(--red);padding:20px;text-align:center">❌ Chyba: ${e.message}<br><small style="color:var(--muted)">Skontroluj internetové pripojenie</small></div>`;
-  }
-}
-
-function renderReport(d) {
-  const stankyRows = Object.entries(d.byStanok || {})
-    .sort((a,b) => b[1].rev - a[1].rev)
-    .map(([name, v]) => `
-      <div class="stanok-row">
-        <div class="stanok-name">${name}</div>
-        <div style="font-size:12px;color:var(--muted);margin-right:8px">${v.count} predajov</div>
-        <div class="stanok-val">${fmt(v.rev)}</div>
-      </div>`).join('');
-
-  const recentSales = (d.sales || []).slice(-10).reverse().map(s => `
-    <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--border);font-size:12px">
-      <span style="color:var(--muted)">${new Date(s.time).toLocaleString('sk-SK',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</span>
-      <span>${s.stanok}</span>
-      <span style="color:var(--accent);font-weight:700">${fmt(s.total)}</span>
-    </div>`).join('');
-
-  document.getElementById('reportBody').innerHTML = `
-    <div class="report-grid">
-      <div class="report-card">
-        <div class="report-card-label">Celková tržba</div>
-        <div class="report-card-value" style="color:var(--green)">${fmt(d.totalRev||0)}</div>
-      </div>
-      <div class="report-card">
-        <div class="report-card-label">Transakcií</div>
-        <div class="report-card-value">${d.count||0}</div>
-      </div>
-    </div>
-    ${stankyRows ? `<div style="font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Stánky</div><div style="margin-bottom:14px">${stankyRows}</div>` : ''}
-    ${recentSales ? `<div style="font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Posledných 10 predajov</div>${recentSales}` : ''}
-    <div style="margin-top:14px;font-size:11px;color:var(--muted);text-align:center">
-      Všetky dáta sú v Google Sheets — otvor ich pre export do Excelu
-    </div>`;
-}
-
-// ===== MODAL HELPERS =====
-function openModal(id) {
+function openModal(id){
   document.getElementById(id).classList.remove('hidden');
-  if (id === 'settingsModal') {
-    document.getElementById('setStanok').value = state.stanok;
-    document.getElementById('setObsluha').value = state.obsluha;
-    document.getElementById('setAkcia').value = state.akcia;
-  }
-  if (id === 'productsModal') renderProdAdmin();
+  if(id==='settingsModal'){document.getElementById('setStanok').value=state.stanok;document.getElementById('setObsluha').value=state.obsluha;document.getElementById('setAkcia').value=state.akcia;}
 }
-function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
-document.querySelectorAll('.modal-overlay').forEach(o => o.addEventListener('click', e => { if (e.target === o) o.classList.add('hidden'); }));
-
-// ===== UTILS =====
-function fmt(n) { return (Math.round(n*100)/100).toFixed(2).replace('.',',') + ' €'; }
-function toast(msg, type='') {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className = 'toast show' + (type ? ' '+type : '');
-  setTimeout(() => t.className = 'toast', 2800);
-}
-
+function closeModal(id){document.getElementById(id).classList.add('hidden');}
+document.querySelectorAll('.modal-overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.add('hidden');}));
+function fmt(n){return(Math.round(n*100)/100).toFixed(2).replace('.',',')+' €';}
+function toast(msg,type=''){const t=document.getElementById('toast');t.textContent=msg;t.className='toast show'+(type?' '+type:'');setTimeout(()=>t.className='toast',2800);}
 init();
 </script>
 </body>
