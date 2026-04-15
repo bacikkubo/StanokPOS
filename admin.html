@@ -397,12 +397,7 @@ document.getElementById('btnCopyFrom').addEventListener('click', async function(
   if (!selectedAkciaId) { toast('Vyber cieľovú akciu!', 'err'); return; }
   const otherAkcie = akcie.filter(a => a.id !== selectedAkciaId);
   if (!otherAkcie.length) { toast('Žiadna iná akcia', 'warn'); return; }
-  const name = prompt('Kopírovať z akcie:
-
-' + otherAkcie.map((a,i)=>(i+1)+'. '+a.name).join('
-') + '
-
-Zadaj číslo:');
+  const name = prompt('Kopirovat z akcie:\n\n' + otherAkcie.map((a,i)=>(i+1)+'. '+a.name).join('\n') + '\n\nZadaj cislo:');
   if (!name) return;
   const idx = parseInt(name) - 1;
   if (isNaN(idx)||idx<0||idx>=otherAkcie.length) { toast('Neplatná voľba', 'err'); return; }
