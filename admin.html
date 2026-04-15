@@ -402,28 +402,84 @@ document.getElementById('btnSaveProducts').addEventListener('click', async funct
   finally { this.textContent = '💾 Uložiť a synchronizovať'; this.disabled = false; }
 });
 
-// Kopirovanie produktov z inej akcie
-document.getElementById('btnCopyFrom').addEventListener('click', async function() {
+// Kopirovanie produktov - modal
+let copySourceProds = [];
+
+document.getElementById('btnCopyFrom').addEventListener('click', function() {
   if (!selectedAkciaId) { toast('Vyber cieľovú akciu!', 'err'); return; }
   const otherAkcie = akcie.filter(a => a.id !== selectedAkciaId);
   if (!otherAkcie.length) { toast('Žiadna iná akcia na kopírovanie', 'warn'); return; }
-  const opts = otherAkcie.map(a => a.name).join('\n');
-  const name = prompt('Kopírovať produkty z akcie:\n\n' + otherAkcie.map((a,i)=>(i+1)+'. '+a.name).join('\n') + '\n\nZadaj číslo:');
-  if (!name) return;
-  const idx = parseInt(name) - 1;
-  if (isNaN(idx) || idx < 0 || idx >= otherAkcie.length) { toast('Neplatná voľba', 'err'); return; }
-  const srcAkcia = otherAkcie[idx];
+  const sel = document.getElementById('copyFromSelect');
+  sel.innerHTML = '<option value="">— Vyber zdrojovú akciu —</option>' +
+    otherAkcie.map(a => '<option value="'+a.id+'">'+escHtml(a.name)+(a.datum?' ('+a.datum+')':'')+'</option>').join('');
+  document.getElementById('copyProductsList').innerHTML = '<div style="padding:20px;text-align:center;color:#7a7568;font-size:13px">Vyber zdrojovú akciu</div>';
+  document.getElementById('copySelectedCount').textContent = '';
+  copySourceProds = [];
+  const modal = document.getElementById('copyModal');
+  modal.style.display = 'flex';
+});
+
+function closeCopyModal() {
+  document.getElementById('copyModal').style.display = 'none';
+}
+
+async function loadCopyProducts() {
+  const akciaId = document.getElementById('copyFromSelect').value;
+  if (!akciaId) {
+    document.getElementById('copyProductsList').innerHTML = '<div style="padding:20px;text-align:center;color:#7a7568;font-size:13px">Vyber zdrojovú akciu</div>';
+    return;
+  }
+  document.getElementById('copyProductsList').innerHTML = '<div style="padding:20px;text-align:center;color:#7a7568;font-size:13px">⏳ Načítavam...</div>';
   try {
-    const r = await fetch(SCRIPT_URL + '?action=getProducts&akcia=' + encodeURIComponent(srcAkcia.id));
+    const r = await fetch(SCRIPT_URL + '?action=getProducts&akcia=' + encodeURIComponent(akciaId));
     const d = await r.json();
     if (d.status === 'ok' && d.products.length) {
-      const copied = d.products.map(p => ({...p, id: Date.now() + Math.random(), akciaId: selectedAkciaId}));
-      products = [...products, ...copied];
-      renderProducts(); updateCatSuggestions();
-      toast('✓ Skopírovaných ' + copied.length + ' produktov z "' + srcAkcia.name + '" — nezabudni Uložiť!', 'warn');
-    } else toast('Zdrojová akcia nemá žiadne produkty', 'warn');
-  } catch(e) { toast('Chyba kopírovania', 'err'); }
-});
+      copySourceProds = d.products;
+      let html = '';
+      const cats = [...new Set(d.products.map(p => p.cat))];
+      cats.forEach(cat => {
+        html += '<div style="background:#f1efe8;font-size:11px;color:#7a7568;font-weight:600;text-transform:uppercase;letter-spacing:.5px;padding:5px 14px">'+escHtml(cat)+'</div>';
+        d.products.filter(p => p.cat === cat).forEach(p => {
+          html += '<label style="display:flex;align-items:center;gap:10px;padding:9px 14px;border-bottom:1px solid #f1efe8;cursor:pointer;background:#fff" onmouseover="this.style.background='#f8f7f2'" onmouseout="this.style.background='#fff'">' +
+            '<input type="checkbox" data-pid="'+p.id+'" onchange="updateCopyCount()" style="width:17px;height:17px;cursor:pointer;accent-color:#d4500a;flex-shrink:0">' +
+            '<span style="font-size:20px">'+escHtml(p.emoji||'📦')+'</span>' +
+            '<span style="flex:1;font-size:14px;font-weight:500;color:#1c1a17">'+escHtml(p.name)+'</span>' +
+            '<span style="font-size:12px;color:#7a7568;margin-right:8px">'+escHtml(p.cat)+'</span>' +
+            '<span style="font-weight:700;color:#d4500a;font-size:14px">'+fmt(p.price)+'</span>' +
+            '</label>';
+        });
+      });
+      document.getElementById('copyProductsList').innerHTML = html;
+      updateCopyCount();
+    } else {
+      document.getElementById('copyProductsList').innerHTML = '<div style="padding:20px;text-align:center;color:#7a7568;font-size:13px">Táto akcia nemá žiadne produkty</div>';
+    }
+  } catch(e) {
+    document.getElementById('copyProductsList').innerHTML = '<div style="padding:20px;text-align:center;color:#ef4444;font-size:13px">Chyba načítania</div>';
+  }
+}
+
+function updateCopyCount() {
+  const n = document.querySelectorAll('#copyProductsList input[type=checkbox]:checked').length;
+  document.getElementById('copySelectedCount').textContent = n ? 'Vybrané: '+n : '';
+}
+
+function selectAllCopy(checked) {
+  document.querySelectorAll('#copyProductsList input[type=checkbox]').forEach(cb => cb.checked = checked);
+  updateCopyCount();
+}
+
+function confirmCopy() {
+  const selected = [...document.querySelectorAll('#copyProductsList input[type=checkbox]:checked')].map(cb => cb.dataset.pid);
+  if (!selected.length) { toast('Vyber aspoň jeden produkt!', 'err'); return; }
+  const copied = copySourceProds
+    .filter(p => selected.includes(p.id.toString()))
+    .map(p => ({...p, id: Date.now() + Math.random(), akciaId: selectedAkciaId}));
+  products = [...products, ...copied];
+  renderProducts(); updateCatSuggestions();
+  closeCopyModal();
+  toast('✓ Skopírovaných ' + copied.length + ' produktov — nezabudni Uložiť!', 'warn');
+}
 
 // ===== REPORT =====
 async function loadReport() {
@@ -502,5 +558,38 @@ function toast(msg,type){const t=document.getElementById('toast');t.textContent=
 
 init();
 </script>
+
+<!-- MODAL: KOPÍROVANIE -->
+<div id="copyModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:999;align-items:center;justify-content:center;padding:16px">
+  <div style="background:#fff;border-radius:14px;width:100%;max-width:500px;max-height:88vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.3)">
+    <div style="padding:16px 18px;border-bottom:1px solid #e2ddd4;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:#fff;z-index:1">
+      <div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:18px;color:#1c1a17">📋 Kopírovať produkty</div>
+        <div style="font-size:12px;color:#7a7568;margin-top:2px">Zaškrtni produkty ktoré chceš skopírovať</div>
+      </div>
+      <button onclick="closeCopyModal()" style="background:none;border:none;font-size:22px;cursor:pointer;color:#7a7568;line-height:1">✕</button>
+    </div>
+    <div style="padding:16px 18px">
+      <div style="margin-bottom:14px">
+        <label style="font-size:11px;color:#7a7568;font-weight:600;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:5px">Kopírovať z akcie:</label>
+        <select id="copyFromSelect" onchange="loadCopyProducts()" style="background:#f8f7f2;border:1px solid #e2ddd4;color:#1c1a17;font-family:'Barlow',sans-serif;font-size:14px;padding:9px 11px;border-radius:8px;outline:none;width:100%">
+          <option value="">— Vyber zdrojovú akciu —</option>
+        </select>
+      </div>
+      <div style="display:flex;gap:8px;margin-bottom:12px">
+        <button onclick="selectAllCopy(true)" style="background:#f1efe8;border:1px solid #e2ddd4;color:#1c1a17;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:13px;padding:5px 12px;border-radius:8px;cursor:pointer">✓ Všetky</button>
+        <button onclick="selectAllCopy(false)" style="background:#f1efe8;border:1px solid #e2ddd4;color:#1c1a17;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:13px;padding:5px 12px;border-radius:8px;cursor:pointer">✕ Žiadne</button>
+        <span id="copySelectedCount" style="font-size:13px;color:#7a7568;align-self:center;margin-left:4px"></span>
+      </div>
+      <div id="copyProductsList" style="border:1px solid #e2ddd4;border-radius:8px;overflow:hidden;min-height:60px">
+        <div style="padding:20px;text-align:center;color:#7a7568;font-size:13px">Vyber zdrojovú akciu</div>
+      </div>
+    </div>
+    <div style="padding:14px 18px;border-top:1px solid #e2ddd4;display:flex;gap:10px;justify-content:flex-end">
+      <button onclick="closeCopyModal()" style="background:#f1efe8;border:1px solid #e2ddd4;color:#1c1a17;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;padding:9px 18px;border-radius:8px;cursor:pointer">Zrušiť</button>
+      <button onclick="confirmCopy()" style="background:#d4500a;border:none;color:#fff;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;padding:9px 18px;border-radius:8px;cursor:pointer">📋 Kopírovať vybrané</button>
+    </div>
+  </div>
+</div>
 </body>
 </html>
