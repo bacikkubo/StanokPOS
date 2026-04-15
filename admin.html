@@ -470,8 +470,14 @@ function parseItems(itemsStr) {
   const result = [];
   if (!itemsStr) return result;
   itemsStr.split(', ').forEach(item => {
-    const m = item.match(/^(.+) x(\d+)$/);
-    if (m) result.push({ name: m[1].trim(), qty: parseInt(m[2]) });
+    // Novy format: "Pivo x2 @2.50EUR" alebo stary: "Pivo x2"
+    const mNew = item.match(/^(.+) x(\d+) @([\d.]+)EUR$/);
+    const mOld = item.match(/^(.+) x(\d+)$/);
+    if (mNew) {
+      result.push({ name: mNew[1].trim(), qty: parseInt(mNew[2]), price: parseFloat(mNew[3]) });
+    } else if (mOld) {
+      result.push({ name: mOld[1].trim(), qty: parseInt(mOld[2]), price: null });
+    }
   });
   return result;
 }
@@ -505,15 +511,18 @@ function renderReport(sales) {
     '</div>'
   ).join('') : '<div style="color:var(--muted);text-align:center;padding:20px">Žiadne dáta</div>';
 
-  // Mapa cien produktov podla nazvu
+  // Mapa cien zo Sheets produktov (fallback pre stare predaje bez ceny)
   const priceMap = {};
   allProductsData.forEach(p => { priceMap[p.name] = p.price; });
 
   const byProduct = {};
   sales.forEach(s => {
     parseItems(s.itemsStr).forEach(item => {
-      if (!byProduct[item.name]) byProduct[item.name] = { qty: 0, dhzQty: 0, cashRev: 0, dhzRev: 0 };
-      const price = priceMap[item.name] || 0;
+      if (!byProduct[item.name]) byProduct[item.name] = { qty: 0, dhzQty: 0, cashRev: 0, dhzRev: 0, hasPrice: false };
+      // Pouzi cenu z predaja (nova), alebo z produktov (fallback pre stare)
+      const price = item.price !== null ? item.price : (priceMap[item.name] || 0);
+      const hasPrice = item.price !== null || priceMap[item.name] !== undefined;
+      if (hasPrice) byProduct[item.name].hasPrice = true;
       if (s.method === 'dhz') {
         byProduct[item.name].dhzQty += item.qty;
         byProduct[item.name].dhzRev += price * item.qty;
