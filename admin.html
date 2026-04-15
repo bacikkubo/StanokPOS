@@ -6,43 +6,41 @@
 <title>StánokPOS — Back Office</title>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;700;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#f8f7f2;--surface:#ffffff;--surface2:#f1efe8;--border:#e2ddd4;--accent:#d4500a;--green:#1a472a;--text:#1c1a17;--muted:#7a7568;--r:10px;--red:#ef4444}
+:root{--bg:#f8f7f2;--surface:#fff;--surface2:#f1efe8;--border:#e2ddd4;--accent:#d4500a;--green:#1a472a;--text:#1c1a17;--muted:#7a7568;--r:10px;--red:#ef4444;--blue:#3b82f6}
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;min-height:100vh}
-header{background:var(--text);padding:0 32px;height:60px;display:flex;align-items:center;justify-content:space-between}
+header{background:var(--text);padding:0 28px;height:58px;display:flex;align-items:center;justify-content:space-between}
 .logo{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:22px;color:#fff}
 .logo span{color:#f59e0b}
-.logo-sub{font-size:12px;color:#888;margin-left:10px;font-weight:400}
+.logo-sub{font-size:12px;color:#888;margin-left:8px}
 .nav{display:flex;gap:4px}
-.nav-btn{background:rgba(255,255,255,.1);border:none;color:#fff;font-family:'Barlow',sans-serif;font-size:13px;font-weight:600;padding:7px 16px;border-radius:8px;cursor:pointer;transition:all .15s}
+.nav-btn{background:rgba(255,255,255,.1);border:none;color:#fff;font-family:'Barlow',sans-serif;font-size:13px;font-weight:600;padding:7px 14px;border-radius:8px;cursor:pointer;transition:all .15s}
 .nav-btn:hover,.nav-btn.active{background:var(--accent)}
-.main{max-width:1000px;margin:0 auto;padding:28px 20px}
-.section{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);margin-bottom:20px;overflow:hidden}
-.section-header{padding:14px 20px;background:var(--surface2);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
-.section-title{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:17px}
-.section-body{padding:20px}
-.form-row{display:grid;grid-template-columns:2fr 1fr 1fr 1fr auto;gap:12px;align-items:end;margin-bottom:16px}
-.form-group{display:flex;flex-direction:column;gap:5px}
-.form-group label{font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.5px}
-.form-group input,.form-group select{background:var(--bg);border:1px solid var(--border);color:var(--text);font-family:'Barlow',sans-serif;font-size:14px;padding:9px 11px;border-radius:8px;outline:none;width:100%}
-.form-group input:focus{border-color:var(--accent)}
-.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 18px;border-radius:8px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;cursor:pointer;border:none;transition:all .15s;white-space:nowrap}
-.btn-primary{background:var(--accent);color:#fff}
-.btn-primary:hover{filter:brightness(1.1)}
-.btn-success{background:var(--green);color:#fff}
-.btn-success:hover{filter:brightness(1.2)}
+.main{max-width:1060px;margin:0 auto;padding:24px 20px}
+.section{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);margin-bottom:18px;overflow:hidden}
+.section-header{padding:13px 18px;background:var(--surface2);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.section-title{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:16px}
+.section-body{padding:18px}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:8px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:14px;cursor:pointer;border:none;transition:all .15s;white-space:nowrap}
+.btn-primary{background:var(--accent);color:#fff}.btn-primary:hover{filter:brightness(1.1)}
+.btn-success{background:var(--green);color:#fff}.btn-success:hover{filter:brightness(1.2)}
 .btn-secondary{background:var(--surface2);color:var(--text);border:1px solid var(--border)}
 .btn-danger{background:var(--red);color:#fff}
-.btn-sm{padding:6px 12px;font-size:13px}
+.btn-blue{background:var(--blue);color:#fff}
+.btn-sm{padding:5px 11px;font-size:13px}
+.form-group{display:flex;flex-direction:column;gap:5px}
+.form-group label{font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+.form-group input,.form-group select{background:var(--bg);border:1px solid var(--border);color:var(--text);font-family:'Barlow',sans-serif;font-size:14px;padding:8px 11px;border-radius:8px;outline:none;width:100%}
+.form-group input:focus,.form-group select:focus{border-color:var(--accent)}
 table{width:100%;border-collapse:collapse}
-th{padding:10px 14px;text-align:left;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;font-weight:600;border-bottom:1px solid var(--border);background:var(--surface2)}
-td{padding:8px 14px;font-size:14px;border-bottom:1px solid var(--border);vertical-align:middle}
+th{padding:9px 13px;text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;font-weight:600;border-bottom:1px solid var(--border);background:var(--surface2)}
+td{padding:8px 13px;font-size:14px;border-bottom:1px solid var(--border);vertical-align:middle}
 tr:last-child td{border-bottom:none}
 tr:hover td{background:var(--surface2)}
 .edit-input{border:none;background:transparent;font-size:14px;width:100%;outline:none;font-family:'Barlow',sans-serif;padding:2px 4px;border-radius:4px}
 .edit-input:focus{background:var(--surface2)}
 .price-input{color:var(--accent);font-weight:700;width:70px}
-.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:20px}
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:18px}
 .stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px}
 .stat-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;font-weight:600;margin-bottom:4px}
 .stat-value{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:26px;color:var(--accent)}
@@ -53,142 +51,123 @@ tr:hover td{background:var(--surface2)}
 .stanok-fill{height:100%;background:var(--accent);border-radius:3px;display:flex;align-items:center;padding-left:6px;transition:width .5s}
 .stanok-fill span{font-size:11px;color:#fff;font-weight:700;white-space:nowrap}
 .stanok-val{min-width:80px;text-align:right;font-weight:700;font-size:13px;color:var(--accent);font-family:'Barlow Condensed',sans-serif}
-.page{display:none}
-.page.active{display:block}
-.toast{position:fixed;bottom:20px;right:20px;background:#22c55e;color:#fff;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;padding:12px 24px;border-radius:10px;z-index:999;opacity:0;transition:opacity .3s;pointer-events:none;box-shadow:0 4px 20px rgba(0,0,0,.2)}
-.toast.show{opacity:1}
-.toast.err{background:var(--red)}
-.toast.warn{background:#f59e0b;color:#000}
-.url-box{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-family:monospace;font-size:12px;word-break:break-all;color:var(--muted)}
-.info-box{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px 14px;font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:16px}
-.cat-header{background:var(--surface2);font-weight:700;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;padding:6px 14px}
+.akcia-card{background:var(--surface2);border:2px solid var(--border);border-radius:var(--r);padding:14px;cursor:pointer;transition:all .15s;position:relative}
+.akcia-card:hover{border-color:var(--accent)}
+.akcia-card.active{border-color:var(--accent);background:#fff8f0}
+.akcia-card-name{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:16px;margin-bottom:4px}
+.akcia-card-datum{font-size:12px;color:var(--muted)}
+.akcie-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin-bottom:16px}
+.cat-header-row{background:var(--surface2);font-weight:700;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;padding:5px 13px}
+.page{display:none}.page.active{display:block}
+.toast{position:fixed;bottom:20px;right:20px;background:#22c55e;color:#fff;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;padding:11px 22px;border-radius:10px;z-index:999;opacity:0;transition:opacity .3s;pointer-events:none;box-shadow:0 4px 20px rgba(0,0,0,.15)}
+.toast.show{opacity:1}.toast.err{background:var(--red)}.toast.warn{background:#f59e0b;color:#000}
+.badge{display:inline-block;background:var(--accent);color:#fff;border-radius:20px;padding:2px 10px;font-size:12px;font-weight:700;margin-left:6px}
+.info{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px 14px;font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:14px}
 </style>
 </head>
 <body>
 
 <header>
-  <div>
-    <span class="logo">Stánok<span>POS</span></span>
-    <span class="logo-sub">Back Office</span>
-  </div>
+  <div><span class="logo">Stánok<span>POS</span></span><span class="logo-sub">Back Office</span></div>
   <div class="nav">
-    <button class="nav-btn active" id="navProducts" onclick="showPage('products')">📦 Produkty</button>
-    <button class="nav-btn" id="navSettings" onclick="showPage('settings')">⚙️ Nastavenia</button>
-    <button class="nav-btn" id="navReport" onclick="showPage('report')">📊 Report</button>
+    <button class="nav-btn active" id="navAkcie">🎪 Akcie</button>
+    <button class="nav-btn" id="navProducts">📦 Produkty</button>
+    <button class="nav-btn" id="navReport">📊 Report</button>
   </div>
 </header>
 
 <div class="main">
 
-  <!-- PRODUKTY -->
-  <div class="page active" id="page-products">
+  <!-- AKCIE -->
+  <div class="page active" id="page-akcie">
     <div class="section">
       <div class="section-header">
-        <span class="section-title">📦 Správa produktov</span>
-        <button class="btn btn-success" id="saveBtn" onclick="saveAllProducts()">💾 Uložiť a synchronizovať</button>
+        <span class="section-title">🎪 Správa akcií</span>
+        <button class="btn btn-success" id="btnSaveAkcie">💾 Uložiť akcie</button>
       </div>
       <div class="section-body">
-        <div class="info-box">
-          ℹ️ Zmeň produkty tu a klikni <strong>Uložiť a synchronizovať</strong>. Tablety si stiahnu aktualizované produkty keď kliknú na 🔄 Tovar.
+        <div class="info">
+          ℹ️ Vytvor akcie (eventy). Ku každej akcii potom v záložke <strong>📦 Produkty</strong> priradíš vlastný tovar. Na tablete si obsluha vyberie akciu a načíta sa správny tovar.
         </div>
 
-        <!-- Pridaj nový produkt -->
-        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:16px;margin-bottom:16px">
-          <div style="font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px">Pridať nový produkt</div>
-          <div class="form-row">
-            <div class="form-group">
-              <label>Názov</label>
-              <input type="text" id="newName" placeholder="napr. Pivo 0.5L">
-            </div>
-            <div class="form-group">
-              <label>Cena (€)</label>
-              <input type="number" id="newPrice" placeholder="2.50" step="0.10" min="0">
-            </div>
-            <div class="form-group">
-              <label>Kategória</label>
-              <input type="text" id="newCat" placeholder="napr. Alko" list="catSuggestions">
-              <datalist id="catSuggestions"></datalist>
-            </div>
-            <div class="form-group">
-              <label>Emoji</label>
-              <input type="text" id="newEmoji" placeholder="🍺" maxlength="2" style="width:70px">
-            </div>
-            <div class="form-group">
-              <label>&nbsp;</label>
-              <button class="btn btn-primary" onclick="addProduct()">➕ Pridať</button>
-            </div>
+        <!-- Pridaj akciu -->
+        <div style="display:flex;gap:12px;align-items:flex-end;margin-bottom:16px;flex-wrap:wrap">
+          <div class="form-group" style="flex:1;min-width:180px">
+            <label>Názov akcie</label>
+            <input type="text" id="newAkciaName" placeholder="napr. Letný festival 2025">
           </div>
+          <div class="form-group" style="min-width:150px">
+            <label>Dátum</label>
+            <input type="date" id="newAkciaDatum">
+          </div>
+          <button class="btn btn-primary" id="btnAddAkcia">➕ Pridať akciu</button>
         </div>
 
-        <!-- Tabulka produktov -->
-        <div id="productsContainer"></div>
+        <div class="akcie-grid" id="akcieGrid">
+          <div style="color:var(--muted);font-size:13px;padding:10px">Načítavam...</div>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- NASTAVENIA -->
-  <div class="page" id="page-settings">
+  <!-- PRODUKTY -->
+  <div class="page" id="page-products">
     <div class="section">
       <div class="section-header">
-        <span class="section-title">⚙️ Nastavenia akcie</span>
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+          <span class="section-title">📦 Produkty pre akciu:</span>
+          <select id="selectAkciaProducts" style="background:var(--bg);border:1px solid var(--border);color:var(--text);font-family:'Barlow',sans-serif;font-size:14px;padding:6px 11px;border-radius:8px;outline:none">
+            <option value="">— Vyber akciu —</option>
+          </select>
+          <button class="btn btn-blue btn-sm" id="btnCopyFrom">📋 Kopírovať z inej akcie</button>
+        </div>
+        <button class="btn btn-success" id="btnSaveProducts">💾 Uložiť a synchronizovať</button>
       </div>
       <div class="section-body">
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
-          <div class="form-group">
-            <label>Názov akcie / eventu</label>
-            <input type="text" id="settingAkcia" placeholder="napr. Letný festival 2025">
-          </div>
-          <div class="form-group">
-            <label>Dátum akcie</label>
-            <input type="date" id="settingDatum">
-          </div>
-        </div>
-        <div class="form-group" style="margin-bottom:16px">
-          <label>Miesto / poznámka</label>
-          <input type="text" id="settingPoznamka" placeholder="napr. Hlavné námestie, Trenčín">
-        </div>
-        <div class="info-box">
-          💡 Zadaj rovnaký <strong>názov akcie</strong> aj na každom tablete v Nastaveniach pokladne. Používa sa na filtrovanie reportov.
-        </div>
-        <button class="btn btn-success" onclick="saveSettingsAdmin()">💾 Uložiť nastavenia</button>
-      </div>
-    </div>
+        <div class="info" id="productInfo">Vyber akciu pre správu produktov.</div>
 
-    <div class="section">
-      <div class="section-header"><span class="section-title">🔗 URL adresy</span></div>
-      <div class="section-body">
-        <div class="form-group" style="margin-bottom:14px">
-          <label>Pokladňa (pre tablety)</label>
-          <div class="url-box" id="urlPos">—</div>
+        <!-- Pridaj produkt -->
+        <div id="addProductSection" style="display:none;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:14px;margin-bottom:14px">
+          <div style="font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">Pridať produkt</div>
+          <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr auto;gap:10px;align-items:flex-end">
+            <div class="form-group"><label>Názov</label><input type="text" id="newName" placeholder="napr. Pivo 0.5L"></div>
+            <div class="form-group"><label>Cena (€)</label><input type="number" id="newPrice" placeholder="2.50" step="0.10" min="0"></div>
+            <div class="form-group"><label>Kategória</label><input type="text" id="newCat" placeholder="napr. Alko" list="catSuggestions"><datalist id="catSuggestions"></datalist></div>
+            <div class="form-group"><label>Emoji</label><input type="text" id="newEmoji" placeholder="🍺" maxlength="2" style="width:60px"></div>
+            <button class="btn btn-primary" id="btnAddProduct">➕</button>
+          </div>
         </div>
-        <div class="form-group">
-          <label>Back Office (pre teba)</label>
-          <div class="url-box" id="urlAdmin">—</div>
-        </div>
+
+        <div id="productsContainer"><div style="color:var(--muted);font-size:13px;padding:20px;text-align:center">Vyber akciu pre zobrazenie produktov</div></div>
       </div>
     </div>
   </div>
 
   <!-- REPORT -->
   <div class="page" id="page-report">
-    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:20px;display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap">
-      <div class="form-group" style="margin:0;flex:1;min-width:200px">
-        <label>Filtrovať podľa akcie</label>
-        <select id="filterAkcia" style="background:var(--bg);border:1px solid var(--border);color:var(--text);font-family:'Barlow',sans-serif;font-size:14px;padding:9px 11px;border-radius:8px;outline:none;width:100%">
-          <option value="">— Všetky akcie —</option>
-        </select>
+    <div class="section">
+      <div class="section-header"><span class="section-title">🔍 Filter</span></div>
+      <div class="section-body">
+        <div style="display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap">
+          <div class="form-group" style="flex:1;min-width:180px">
+            <label>Akcia</label>
+            <select id="filterAkcia"><option value="">— Všetky akcie —</option></select>
+          </div>
+          <div class="form-group" style="min-width:140px">
+            <label>Od dátumu</label>
+            <input type="date" id="filterOd">
+          </div>
+          <div class="form-group" style="min-width:140px">
+            <label>Do dátumu</label>
+            <input type="date" id="filterDo">
+          </div>
+          <button class="btn btn-primary" id="btnFilter">🔍 Filtrovať</button>
+          <button class="btn btn-secondary" id="btnClearFilter">✕ Zrušiť</button>
+          <button class="btn btn-secondary btn-sm" id="btnRefreshReport">🔄 Obnoviť</button>
+        </div>
       </div>
-      <div class="form-group" style="margin:0;min-width:120px">
-        <label>Od dátumu</label>
-        <input type="date" id="filterDatumOd" style="background:var(--bg);border:1px solid var(--border);color:var(--text);font-family:'Barlow',sans-serif;font-size:14px;padding:9px 11px;border-radius:8px;outline:none;width:100%">
-      </div>
-      <div class="form-group" style="margin:0;min-width:120px">
-        <label>Do dátumu</label>
-        <input type="date" id="filterDatumDo" style="background:var(--bg);border:1px solid var(--border);color:var(--text);font-family:'Barlow',sans-serif;font-size:14px;padding:9px 11px;border-radius:8px;outline:none;width:100%">
-      </div>
-      <button class="btn btn-primary" onclick="applyFilter()">🔍 Filtrovať</button>
-      <button class="btn btn-secondary" onclick="clearFilter()">✕ Zrušiť filter</button>
     </div>
+
     <div class="stat-grid">
       <div class="stat-card"><div class="stat-label">Celková tržba</div><div class="stat-value" id="statTotal">—</div></div>
       <div class="stat-card"><div class="stat-label">Transakcií</div><div class="stat-value" id="statCount">—</div></div>
@@ -197,301 +176,329 @@ tr:hover td{background:var(--surface2)}
     </div>
 
     <div class="section">
-      <div class="section-header">
-        <span class="section-title">📍 Tržby podľa stánku</span>
-        <button class="btn btn-secondary btn-sm" onclick="loadReport()">🔄 Obnoviť</button>
-      </div>
-      <div class="section-body" id="stankyReport">
-        <div style="color:var(--muted);text-align:center;padding:20px">Klikni Obnoviť pre načítanie dát</div>
-      </div>
+      <div class="section-header"><span class="section-title">📍 Tržby podľa stánku</span></div>
+      <div class="section-body" id="stankyReport"><div style="color:var(--muted);text-align:center;padding:20px">Klikni Obnoviť</div></div>
     </div>
 
     <div class="section">
-      <div class="section-header"><span class="section-title">🧾 Posledné predaje</span></div>
+      <div class="section-header"><span class="section-title">🧾 Predaje</span></div>
       <div style="overflow-x:auto">
         <table>
-          <thead><tr><th>Čas</th><th>Stánok</th><th>Obsluha</th><th>Platba</th><th>Položky</th><th>Suma</th></tr></thead>
-          <tbody id="salesBody"><tr><td colspan="6" style="text-align:center;color:var(--muted);padding:20px">Načítaj report</td></tr></tbody>
+          <thead><tr><th>Čas</th><th>Stánok</th><th>Obsluha</th><th>Akcia</th><th>Platba</th><th>Položky</th><th>Suma</th></tr></thead>
+          <tbody id="salesBody"><tr><td colspan="7" style="text-align:center;color:var(--muted);padding:20px">Načítaj report</td></tr></tbody>
         </table>
       </div>
     </div>
   </div>
 
 </div>
-
 <div class="toast" id="toast"></div>
 
 <script>
-// ===== KONFIGURÁCIA =====
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwi7SP4YflAkU2Vssopa-G9BpKhhtEFR3_WsUe55NeZIu6Phkw3y6rNCtLMmYqTxEjciQ/exec';
 
+let akcie = [];
 let products = [];
+let selectedAkciaId = null;
+let allSalesData = [];
 
 // ===== INIT =====
-function init() {
-  document.getElementById('urlPos').textContent = SCRIPT_URL;
-  document.getElementById('urlAdmin').textContent = window.location.href;
-  loadProducts();
-  loadSettingsAdmin();
+async function init() {
+  await loadAkcie();
 }
 
-// ===== NAVIGÁCIA =====
+// ===== NAV =====
+document.getElementById('navAkcie').addEventListener('click', function() { showPage('akcie'); });
+document.getElementById('navProducts').addEventListener('click', function() { showPage('products'); });
+document.getElementById('navReport').addEventListener('click', function() { showPage('report'); loadReport(); });
+
 function showPage(page) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('page-' + page).classList.add('active');
-  document.getElementById('nav-' + page.charAt(0).toUpperCase() + page.slice(1)).classList.add('active');
-  if (page === 'report') loadReport();
+  document.getElementById('nav' + page.charAt(0).toUpperCase() + page.slice(1)).classList.add('active');
 }
 
-// ===== PRODUKTY =====
-async function loadProducts() {
+// ===== AKCIE =====
+async function loadAkcie() {
   try {
-    const r = await fetch(SCRIPT_URL + '?action=getProducts');
+    const r = await fetch(SCRIPT_URL + '?action=getAkcie');
     const d = await r.json();
-    if (d.status === 'ok') {
-      products = d.products;
-      renderProducts();
-      updateCatSuggestions();
-    }
-  } catch(e) {
-    toast('Chyba načítania produktov: ' + e.message, 'err');
+    if (d.status === 'ok') { akcie = d.akcie; renderAkcie(); updateAkcieSelects(); }
+  } catch(e) { toast('Chyba načítania akcií', 'err'); }
+}
+
+function renderAkcie() {
+  const grid = document.getElementById('akcieGrid');
+  if (!akcie.length) {
+    grid.innerHTML = '<div style="color:var(--muted);font-size:13px;padding:10px;grid-column:1/-1">Žiadne akcie. Pridaj prvú akciu.</div>';
+    return;
   }
+  grid.innerHTML = akcie.map(a =>
+    '<div class="akcia-card" data-id="' + a.id + '">' +
+    '<div style="position:absolute;top:8px;right:8px"><button class="btn btn-danger btn-sm" data-del="' + a.id + '">🗑</button></div>' +
+    '<div class="akcia-card-name">🎪 ' + escHtml(a.name) + '</div>' +
+    '<div class="akcia-card-datum">' + (a.datum || 'Bez dátumu') + '</div>' +
+    '</div>'
+  ).join('');
+
+  document.querySelectorAll('.akcia-card').forEach(card => {
+    card.addEventListener('click', function(e) {
+      if (e.target.dataset.del) return;
+      const id = this.dataset.id;
+      showPage('products');
+      document.getElementById('navProducts').classList.add('active');
+      document.getElementById('navAkcie').classList.remove('active');
+      document.getElementById('selectAkciaProducts').value = id;
+      loadProductsForAkcia(id);
+    });
+  });
+
+  document.querySelectorAll('[data-del]').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      const id = this.dataset.del;
+      if (!confirm('Vymazať akciu? Produkty pre túto akciu zostanú v databáze.')) return;
+      akcie = akcie.filter(a => a.id !== id);
+      renderAkcie();
+      updateAkcieSelects();
+      toast('Akcia vymazaná — nezabudni Uložiť!', 'warn');
+    });
+  });
+}
+
+function updateAkcieSelects() {
+  const opts = '<option value="">— Vyber akciu —</option>' +
+    akcie.map(a => '<option value="' + a.id + '">' + escHtml(a.name) + (a.datum ? ' ('+a.datum+')' : '') + '</option>').join('');
+  document.getElementById('selectAkciaProducts').innerHTML = opts;
+  document.getElementById('filterAkcia').innerHTML = '<option value="">— Všetky akcie —</option>' +
+    akcie.map(a => '<option value="' + escHtml(a.name) + '">' + escHtml(a.name) + '</option>').join('');
+}
+
+document.getElementById('btnAddAkcia').addEventListener('click', function() {
+  const name = document.getElementById('newAkciaName').value.trim();
+  if (!name) { toast('Zadaj názov akcie!', 'err'); return; }
+  const datum = document.getElementById('newAkciaDatum').value;
+  const id = 'akcia_' + Date.now();
+  akcie.push({ id, name, datum });
+  document.getElementById('newAkciaName').value = '';
+  document.getElementById('newAkciaDatum').value = '';
+  renderAkcie();
+  updateAkcieSelects();
+  toast('✓ Akcia pridaná — nezabudni Uložiť!', 'warn');
+});
+
+document.getElementById('btnSaveAkcie').addEventListener('click', async function() {
+  this.textContent = '⏳ Ukladám...';
+  this.disabled = true;
+  try {
+    const r = await fetch(SCRIPT_URL, { method:'POST', headers:{'Content-Type':'text/plain'}, body: JSON.stringify({ action:'saveAkcie', akcie }) });
+    const d = await r.json();
+    if (d.status === 'ok') toast('✓ Akcie uložené!');
+    else throw new Error(d.message);
+  } catch(e) { toast('Chyba: ' + e.message, 'err'); }
+  finally { this.textContent = '💾 Uložiť akcie'; this.disabled = false; }
+});
+
+// ===== PRODUKTY =====
+document.getElementById('selectAkciaProducts').addEventListener('change', function() {
+  if (this.value) loadProductsForAkcia(this.value);
+  else {
+    products = [];
+    document.getElementById('productsContainer').innerHTML = '<div style="color:var(--muted);font-size:13px;padding:20px;text-align:center">Vyber akciu</div>';
+    document.getElementById('addProductSection').style.display = 'none';
+    document.getElementById('productInfo').textContent = 'Vyber akciu pre správu produktov.';
+  }
+});
+
+async function loadProductsForAkcia(akciaId) {
+  selectedAkciaId = akciaId;
+  document.getElementById('addProductSection').style.display = 'block';
+  const akcia = akcie.find(a => a.id === akciaId);
+  document.getElementById('productInfo').innerHTML = 'Produkty pre akciu: <strong>' + escHtml(akcia?.name || akciaId) + '</strong>';
+  try {
+    const r = await fetch(SCRIPT_URL + '?action=getProducts&akcia=' + encodeURIComponent(akciaId));
+    const d = await r.json();
+    if (d.status === 'ok') { products = d.products; renderProducts(); updateCatSuggestions(); }
+  } catch(e) { toast('Chyba načítania produktov', 'err'); }
 }
 
 function renderProducts() {
   const container = document.getElementById('productsContainer');
-  const cats = [...new Set(products.map(p => p.cat))];
-
   if (!products.length) {
-    container.innerHTML = '<div style="text-align:center;color:var(--muted);padding:30px">Žiadne produkty. Pridaj prvý produkt vyššie.</div>';
+    container.innerHTML = '<div style="text-align:center;color:var(--muted);padding:24px">Žiadne produkty pre túto akciu. Pridaj prvý produkt.</div>';
     return;
   }
-
-  let html = '<table><thead><tr><th style="width:50px">Emoji</th><th>Názov</th><th>Kategória</th><th>Cena (€)</th><th style="width:60px">Akcia</th></tr></thead><tbody>';
-
+  const cats = [...new Set(products.map(p => p.cat))];
+  let html = '<table><thead><tr><th style="width:46px">Emoji</th><th>Názov</th><th>Kategória</th><th>Cena (€)</th><th style="width:56px"></th></tr></thead><tbody>';
   cats.forEach(cat => {
-    const catProds = products.filter(p => p.cat === cat);
-    html += '<tr><td colspan="5" class="cat-header">' + cat + ' — ' + catProds.length + ' produktov</td></tr>';
-    catProds.forEach(p => {
+    html += '<tr><td colspan="5" class="cat-header-row">' + escHtml(cat) + ' — ' + products.filter(p=>p.cat===cat).length + ' ks</td></tr>';
+    products.filter(p => p.cat === cat).forEach(p => {
       html += '<tr data-id="' + p.id + '">' +
-        '<td style="text-align:center;font-size:20px"><input class="edit-input" style="width:40px;text-align:center;font-size:18px" value="' + (p.emoji||'📦') + '" onchange="updateField(' + p.id + ',\'emoji\',this.value)"></td>' +
-        '<td><input class="edit-input" value="' + escHtml(p.name) + '" onchange="updateField(' + p.id + ',\'name\',this.value)"></td>' +
-        '<td><input class="edit-input" value="' + escHtml(p.cat) + '" onchange="updateField(' + p.id + ',\'cat\',this.value)" list="catSuggestions"></td>' +
-        '<td><input class="edit-input price-input" type="number" step="0.10" min="0" value="' + p.price + '" onchange="updateField(' + p.id + ',\'price\',parseFloat(this.value))"> €</td>' +
-        '<td><button class="btn btn-danger btn-sm" onclick="deleteProduct(' + p.id + ')">🗑</button></td>' +
+        '<td style="text-align:center"><input class="edit-input" style="width:36px;text-align:center;font-size:18px" value="' + escHtml(p.emoji||'📦') + '" data-field="emoji"></td>' +
+        '<td><input class="edit-input" value="' + escHtml(p.name) + '" data-field="name"></td>' +
+        '<td><input class="edit-input" value="' + escHtml(p.cat) + '" data-field="cat" list="catSuggestions"></td>' +
+        '<td><input class="edit-input price-input" type="number" step="0.10" min="0" value="' + p.price + '" data-field="price"> €</td>' +
+        '<td><button class="btn btn-danger btn-sm" data-del="' + p.id + '">🗑</button></td>' +
         '</tr>';
     });
   });
-
   html += '</tbody></table>';
   container.innerHTML = html;
+
+  container.querySelectorAll('.edit-input').forEach(input => {
+    input.addEventListener('change', function() {
+      const id = this.closest('tr').dataset.id;
+      const field = this.dataset.field;
+      const p = products.find(p => p.id == id);
+      if (p) {
+        p[field] = field === 'price' ? parseFloat(this.value) : this.value;
+        if (field === 'cat') { renderProducts(); updateCatSuggestions(); }
+      }
+    });
+  });
+
+  container.querySelectorAll('[data-del]').forEach(btn => {
+    btn.addEventListener('click', function() {
+      if (!confirm('Vymazať produkt?')) return;
+      products = products.filter(p => p.id != this.dataset.del);
+      renderProducts(); updateCatSuggestions();
+      toast('Produkt vymazaný — nezabudni Uložiť!', 'warn');
+    });
+  });
 }
 
 function updateCatSuggestions() {
   const cats = [...new Set(products.map(p => p.cat))];
-  document.getElementById('catSuggestions').innerHTML = cats.map(c => '<option value="' + c + '">').join('');
+  document.getElementById('catSuggestions').innerHTML = cats.map(c => '<option value="' + escHtml(c) + '">').join('');
 }
 
-function updateField(id, field, value) {
-  const p = products.find(p => p.id === id);
-  if (p) {
-    p[field] = value;
-    if (field === 'cat') { renderProducts(); updateCatSuggestions(); }
-  }
-}
-
-function addProduct() {
+document.getElementById('btnAddProduct').addEventListener('click', function() {
+  if (!selectedAkciaId) { toast('Vyber akciu!', 'err'); return; }
   const name = document.getElementById('newName').value.trim();
   const price = parseFloat(document.getElementById('newPrice').value);
   const cat = document.getElementById('newCat').value.trim() || 'Ostatne';
   const emoji = document.getElementById('newEmoji').value.trim() || '📦';
-  if (!name) { toast('Zadaj názov produktu!', 'err'); return; }
-  if (isNaN(price) || price < 0) { toast('Zadaj správnu cenu!', 'err'); return; }
-  products.push({ id: Date.now(), name, price, cat, emoji });
+  if (!name) { toast('Zadaj názov!', 'err'); return; }
+  if (isNaN(price)||price<0) { toast('Zadaj správnu cenu!', 'err'); return; }
+  products.push({ id: Date.now(), akciaId: selectedAkciaId, name, price, cat, emoji });
   document.getElementById('newName').value = '';
   document.getElementById('newPrice').value = '';
   document.getElementById('newEmoji').value = '';
-  renderProducts();
-  updateCatSuggestions();
+  renderProducts(); updateCatSuggestions();
   toast('✓ Produkt pridaný — nezabudni Uložiť!', 'warn');
-}
+});
 
-function deleteProduct(id) {
-  if (!confirm('Naozaj vymazať tento produkt?')) return;
-  products = products.filter(p => p.id !== id);
-  renderProducts();
-  updateCatSuggestions();
-  toast('Produkt vymazaný — nezabudni Uložiť!', 'warn');
-}
-
-async function saveAllProducts() {
-  const btn = document.getElementById('saveBtn');
-  btn.textContent = '⏳ Ukladám...';
-  btn.disabled = true;
+document.getElementById('btnSaveProducts').addEventListener('click', async function() {
+  if (!selectedAkciaId) { toast('Vyber akciu!', 'err'); return; }
+  this.textContent = '⏳ Ukladám...'; this.disabled = true;
   try {
-    const r = await fetch(SCRIPT_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain' },
-      body: JSON.stringify({ action: 'saveProducts', products })
-    });
+    const r = await fetch(SCRIPT_URL, { method:'POST', headers:{'Content-Type':'text/plain'},
+      body: JSON.stringify({ action:'saveProducts', akciaId: selectedAkciaId, products }) });
     const d = await r.json();
-    if (d.status === 'ok') {
-      toast('✓ Produkty uložené! Tablety si ich stiahnu pri ďalšom obnovení.');
-    } else throw new Error(d.message);
-  } catch(e) {
-    toast('Chyba ukladania: ' + e.message, 'err');
-  } finally {
-    btn.textContent = '💾 Uložiť a synchronizovať';
-    btn.disabled = false;
-  }
-}
-
-// ===== NASTAVENIA =====
-async function loadSettingsAdmin() {
-  try {
-    const r = await fetch(SCRIPT_URL + '?action=getSettings');
-    const d = await r.json();
-    if (d.status === 'ok') {
-      document.getElementById('settingAkcia').value = d.settings.akcia || '';
-      document.getElementById('settingDatum').value = d.settings.datum || '';
-      document.getElementById('settingPoznamka').value = d.settings.poznamka || '';
-    }
-  } catch(e) {}
-}
-
-async function saveSettingsAdmin() {
-  const settings = {
-    akcia: document.getElementById('settingAkcia').value.trim(),
-    datum: document.getElementById('settingDatum').value,
-    poznamka: document.getElementById('settingPoznamka').value.trim()
-  };
-  try {
-    const r = await fetch(SCRIPT_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain' },
-      body: JSON.stringify({ action: 'saveSettings', settings })
-    });
-    const d = await r.json();
-    if (d.status === 'ok') toast('✓ Nastavenia uložené!');
+    if (d.status === 'ok') toast('✓ Produkty uložené! Tablety si ich stiahnu pri obnovení.');
     else throw new Error(d.message);
-  } catch(e) {
-    toast('Chyba: ' + e.message, 'err');
-  }
-}
+  } catch(e) { toast('Chyba: ' + e.message, 'err'); }
+  finally { this.textContent = '💾 Uložiť a synchronizovať'; this.disabled = false; }
+});
+
+// Kopirovanie produktov z inej akcie
+document.getElementById('btnCopyFrom').addEventListener('click', async function() {
+  if (!selectedAkciaId) { toast('Vyber cieľovú akciu!', 'err'); return; }
+  const otherAkcie = akcie.filter(a => a.id !== selectedAkciaId);
+  if (!otherAkcie.length) { toast('Žiadna iná akcia na kopírovanie', 'warn'); return; }
+  const opts = otherAkcie.map(a => a.name).join('\n');
+  const name = prompt('Kopírovať produkty z akcie:\n\n' + otherAkcie.map((a,i)=>(i+1)+'. '+a.name).join('\n') + '\n\nZadaj číslo:');
+  if (!name) return;
+  const idx = parseInt(name) - 1;
+  if (isNaN(idx) || idx < 0 || idx >= otherAkcie.length) { toast('Neplatná voľba', 'err'); return; }
+  const srcAkcia = otherAkcie[idx];
+  try {
+    const r = await fetch(SCRIPT_URL + '?action=getProducts&akcia=' + encodeURIComponent(srcAkcia.id));
+    const d = await r.json();
+    if (d.status === 'ok' && d.products.length) {
+      const copied = d.products.map(p => ({...p, id: Date.now() + Math.random(), akciaId: selectedAkciaId}));
+      products = [...products, ...copied];
+      renderProducts(); updateCatSuggestions();
+      toast('✓ Skopírovaných ' + copied.length + ' produktov z "' + srcAkcia.name + '" — nezabudni Uložiť!', 'warn');
+    } else toast('Zdrojová akcia nemá žiadne produkty', 'warn');
+  } catch(e) { toast('Chyba kopírovania', 'err'); }
+});
 
 // ===== REPORT =====
-let allSalesData = [];
-
 async function loadReport() {
-  document.getElementById('stankyReport').innerHTML = '<div style="color:var(--muted);text-align:center;padding:20px">⏳ Načítavam dáta...</div>';
-  document.getElementById('salesBody').innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:20px">⏳ Načítavam...</td></tr>';
+  document.getElementById('stankyReport').innerHTML = '<div style="color:var(--muted);text-align:center;padding:20px">⏳ Načítavam...</div>';
+  document.getElementById('salesBody').innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:20px">⏳ Načítavam...</td></tr>';
   try {
     const r = await fetch(SCRIPT_URL + '?action=getReport');
     const d = await r.json();
     if (d.status !== 'ok') throw new Error(d.message);
     allSalesData = d.sales || [];
-
-    // Naplniť dropdown akciami
-    const akcie = [...new Set(allSalesData.map(s => s.akcia).filter(a => a))];
+    const akcieInSales = [...new Set(allSalesData.map(s => s.akcia).filter(a => a))];
     const sel = document.getElementById('filterAkcia');
     sel.innerHTML = '<option value="">— Všetky akcie —</option>' +
-      akcie.map(a => '<option value="' + escHtml(a) + '">' + escHtml(a) + '</option>').join('');
-
+      akcieInSales.map(a => '<option value="' + escHtml(a) + '">' + escHtml(a) + '</option>').join('');
     renderReport(allSalesData);
   } catch(e) {
     document.getElementById('stankyReport').innerHTML = '<div style="color:var(--red);padding:20px;text-align:center">❌ ' + e.message + '</div>';
   }
 }
 
-function applyFilter() {
+document.getElementById('btnRefreshReport').addEventListener('click', loadReport);
+document.getElementById('btnFilter').addEventListener('click', function() {
   let filtered = [...allSalesData];
   const akcia = document.getElementById('filterAkcia').value;
-  const od = document.getElementById('filterDatumOd').value;
-  const doo = document.getElementById('filterDatumDo').value;
+  const od = document.getElementById('filterOd').value;
+  const doo = document.getElementById('filterDo').value;
   if (akcia) filtered = filtered.filter(s => s.akcia === akcia);
   if (od) filtered = filtered.filter(s => new Date(s.time) >= new Date(od));
   if (doo) filtered = filtered.filter(s => new Date(s.time) <= new Date(doo + 'T23:59:59'));
   renderReport(filtered);
-}
-
-function clearFilter() {
+});
+document.getElementById('btnClearFilter').addEventListener('click', function() {
   document.getElementById('filterAkcia').value = '';
-  document.getElementById('filterDatumOd').value = '';
-  document.getElementById('filterDatumDo').value = '';
+  document.getElementById('filterOd').value = '';
+  document.getElementById('filterDo').value = '';
   renderReport(allSalesData);
-}
+});
 
 function renderReport(sales) {
-  const total = sales.reduce((s, x) => s + x.total, 0);
+  const total = sales.reduce((s,x)=>s+x.total,0);
   const count = sales.length;
-
   document.getElementById('statTotal').textContent = fmt(total);
   document.getElementById('statCount').textContent = count;
-  document.getElementById('statAvg').textContent = count ? fmt(total / count) : '—';
-
-  // Trzby podla stanku
+  document.getElementById('statAvg').textContent = count ? fmt(total/count) : '—';
   const byStanok = {};
   sales.forEach(s => {
-    if (!byStanok[s.stanok]) byStanok[s.stanok] = { count: 0, rev: 0 };
-    byStanok[s.stanok].count++;
-    byStanok[s.stanok].rev += s.total;
+    if (!byStanok[s.stanok]) byStanok[s.stanok]={count:0,rev:0};
+    byStanok[s.stanok].count++; byStanok[s.stanok].rev+=s.total;
   });
   document.getElementById('statStanky').textContent = Object.keys(byStanok).length;
-
-  const stankyArr = Object.entries(byStanok).sort((a,b) => b[1].rev - a[1].rev);
+  const stankyArr = Object.entries(byStanok).sort((a,b)=>b[1].rev-a[1].rev);
   const maxRev = stankyArr[0]?.[1].rev || 1;
+  document.getElementById('stankyReport').innerHTML = stankyArr.length ? stankyArr.map(([name,v]) =>
+    '<div class="stanok-bar"><div class="stanok-name">'+escHtml(name)+'</div>' +
+    '<div class="stanok-track"><div class="stanok-fill" style="width:'+(v.rev/maxRev*100).toFixed(0)+'%"><span>'+v.count+' predajov</span></div></div>' +
+    '<div class="stanok-val">'+fmt(v.rev)+'</div></div>'
+  ).join('') : '<div style="color:var(--muted);text-align:center;padding:20px">Žiadne dáta</div>';
 
-  document.getElementById('stankyReport').innerHTML = stankyArr.length ? stankyArr.map(([name, v]) =>
-    '<div class="stanok-bar">' +
-    '<div class="stanok-name">' + escHtml(name) + '</div>' +
-    '<div class="stanok-track"><div class="stanok-fill" style="width:' + (v.rev/maxRev*100).toFixed(0) + '%"><span>' + v.count + ' predajov</span></div></div>' +
-    '<div class="stanok-val">' + fmt(v.rev) + '</div>' +
-    '</div>'
-  ).join('') : '<div style="color:var(--muted);text-align:center;padding:20px">Žiadne dáta pre zvolený filter</div>';
-
-  // Top produkty
-  const byProduct = {};
-  sales.forEach(s => {
-    (s.itemsStr || '').split(', ').forEach(item => {
-      const m = item.match(/^(.+) x(\d+)$/);
-      if (m) {
-        const name = m[1]; const qty = parseInt(m[2]);
-        if (!byProduct[name]) byProduct[name] = 0;
-        byProduct[name] += qty;
-      }
-    });
-  });
-  const topProds = Object.entries(byProduct).sort((a,b) => b[1]-a[1]).slice(0,5);
-
-  // Posledne predaje
-  const recent = [...sales].sort((a,b) => new Date(b.time)-new Date(a.time)).slice(0, 50);
+  const recent = [...sales].sort((a,b)=>new Date(b.time)-new Date(a.time)).slice(0,50);
   document.getElementById('salesBody').innerHTML = recent.length ? recent.map(s =>
-    '<tr>' +
-    '<td style="font-size:12px;white-space:nowrap">' + fmtDate(s.time) + '</td>' +
-    '<td><strong>' + escHtml(s.stanok) + '</strong></td>' +
-    '<td style="color:var(--muted)">' + escHtml(s.obsluha || '—') + '</td>' +
-    '<td>' + (s.method === 'cash' ? '💵 Hotovosť' : '💳 Karta') + '</td>' +
-    '<td style="font-size:12px;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + escHtml(s.itemsStr || '') + '</td>' +
-    '<td style="font-weight:700;color:var(--accent)">' + fmt(s.total) + '</td>' +
-    '</tr>'
-  ).join('') : '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:20px">Žiadne predaje pre zvolený filter</td></tr>';
+    '<tr><td style="font-size:12px;white-space:nowrap">'+fmtDate(s.time)+'</td>' +
+    '<td><strong>'+escHtml(s.stanok)+'</strong></td>' +
+    '<td style="color:var(--muted)">'+escHtml(s.obsluha||'—')+'</td>' +
+    '<td style="font-size:12px">'+escHtml(s.akcia||'—')+'</td>' +
+    '<td>'+(s.method==='cash'?'💵':'💳')+'</td>' +
+    '<td style="font-size:12px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+escHtml(s.itemsStr||'')+'</td>' +
+    '<td style="font-weight:700;color:var(--accent)">'+fmt(s.total)+'</td></tr>'
+  ).join('') : '<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:20px">Žiadne predaje</td></tr>';
 }
 
 // ===== UTILS =====
-function fmt(n) { return (Math.round(n * 100) / 100).toFixed(2).replace('.', ',') + '\u00a0€'; }
-function fmtDate(t) {
-  try { return new Date(t).toLocaleString('sk-SK', {day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}); }
-  catch { return t; }
-}
-function escHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-function toast(msg, type) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className = 'toast show' + (type ? ' ' + type : '');
-  clearTimeout(t._timer);
-  t._timer = setTimeout(() => t.className = 'toast', 3500);
-}
+function fmt(n){return(Math.round(n*100)/100).toFixed(2).replace('.',',')+'\u00a0€';}
+function fmtDate(t){try{return new Date(t).toLocaleString('sk-SK',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});}catch{return t;}}
+function escHtml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function toast(msg,type){const t=document.getElementById('toast');t.textContent=msg;t.className='toast show'+(type?' '+type:'');clearTimeout(t._t);t._t=setTimeout(()=>t.className='toast',3500);}
 
 init();
 </script>

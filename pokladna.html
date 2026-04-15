@@ -12,7 +12,7 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;heig
 header{background:var(--surface);border-bottom:2px solid var(--accent);padding:0 14px;height:58px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;gap:8px}
 .logo{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:20px;color:var(--accent);white-space:nowrap}
 .logo span{color:var(--text)}
-.stanok-badge{background:var(--accent);color:#000;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12px;padding:3px 8px;border-radius:6px;white-space:nowrap;max-width:130px;overflow:hidden;text-overflow:ellipsis}
+.stanok-badge{background:var(--accent);color:#000;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:11px;padding:3px 8px;border-radius:6px;white-space:nowrap;max-width:140px;overflow:hidden;text-overflow:ellipsis}
 .header-btns{display:flex;gap:6px;align-items:center}
 .btn-sm{background:var(--surface2);border:1px solid var(--border);color:var(--text);font-family:'Barlow',sans-serif;font-size:12px;font-weight:600;padding:5px 10px;border-radius:8px;cursor:pointer;white-space:nowrap}
 .sync-dot{width:8px;height:8px;border-radius:50%;background:var(--muted);display:inline-block;margin-right:4px;transition:background .3s}
@@ -66,8 +66,8 @@ header{background:var(--surface);border-bottom:2px solid var(--accent);padding:0
 .modal-body{padding:18px}.modal-footer{padding:14px 18px;border-top:1px solid var(--border);display:flex;gap:10px;justify-content:flex-end}
 .form-group{display:flex;flex-direction:column;gap:5px;margin-bottom:14px}
 .form-group label{font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.5px}
-.form-group input{background:var(--bg);border:1px solid var(--border);color:var(--text);font-family:'Barlow',sans-serif;font-size:14px;padding:9px 11px;border-radius:8px;outline:none;width:100%}
-.form-group input:focus{border-color:var(--accent)}
+.form-group input,.form-group select{background:var(--bg);border:1px solid var(--border);color:var(--text);font-family:'Barlow',sans-serif;font-size:14px;padding:9px 11px;border-radius:8px;outline:none;width:100%}
+.form-group input:focus,.form-group select:focus{border-color:var(--accent)}
 .btn{padding:9px 18px;border-radius:8px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;cursor:pointer;border:none;transition:all .15s}
 .btn-primary{background:var(--accent);color:#000}.btn-secondary{background:var(--surface2);color:var(--text);border:1px solid var(--border)}.btn-success{background:var(--green);color:#fff}
 .payment-total{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:48px;color:var(--accent);text-align:center;padding:16px;background:var(--bg);border-radius:10px;margin-bottom:14px}
@@ -150,11 +150,25 @@ header{background:var(--surface);border-bottom:2px solid var(--accent);padding:0
 <!-- NASTAVENIA -->
 <div class="modal-overlay hidden" id="settingsModal">
   <div class="modal">
-    <div class="modal-header"><span class="modal-title">⚙️ Nastavenia</span><button class="modal-close" id="btnCloseSettings">✕</button></div>
+    <div class="modal-header"><span class="modal-title">⚙️ Nastavenia stánku</span><button class="modal-close" id="btnCloseSettings">✕</button></div>
     <div class="modal-body">
-      <div class="form-group"><label>Názov stánku</label><input type="text" id="setStanok" placeholder="napr. Stánok 1"></div>
-      <div class="form-group"><label>Obsluha</label><input type="text" id="setObsluha" placeholder="napr. Jana"></div>
-      <div class="form-group"><label>Názov akcie</label><input type="text" id="setAkcia" placeholder="napr. Letný festival 2025"></div>
+      <div class="form-group">
+        <label>Názov stánku</label>
+        <input type="text" id="setStanok" placeholder="napr. Stánok 1">
+      </div>
+      <div class="form-group">
+        <label>Obsluha (meno)</label>
+        <input type="text" id="setObsluha" placeholder="napr. Jana">
+      </div>
+      <div class="form-group">
+        <label>Vyber akciu</label>
+        <select id="setAkcia">
+          <option value="">— Načítavam akcie... —</option>
+        </select>
+      </div>
+      <div style="background:var(--surface2);border-radius:8px;padding:10px;font-size:12px;color:var(--muted);line-height:1.5">
+        ℹ️ Po výbere akcie klikni Uložiť — automaticky sa načíta správny tovar pre túto akciu.
+      </div>
     </div>
     <div class="modal-footer">
       <button class="btn btn-secondary" id="btnCancelSettings">Zrušiť</button>
@@ -171,296 +185,305 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwi7SP4YflAkU2Vssopa
 let state = {
   stanok: localStorage.getItem('pos_stanok') || '',
   obsluha: localStorage.getItem('pos_obsluha') || '',
-  akcia: localStorage.getItem('pos_akcia') || '',
+  akciaId: localStorage.getItem('pos_akciaId') || '',
+  akciaName: localStorage.getItem('pos_akciaName') || '',
   products: [],
   sales: JSON.parse(localStorage.getItem('pos_sales') || '[]'),
   pending: JSON.parse(localStorage.getItem('pos_pending') || '[]'),
   cart: [],
   activeCat: 'Všetky',
   online: false,
-  payMethod: 'cash'
+  payMethod: 'cash',
+  akcie: []
 };
 
-function saveSalesLocal() { localStorage.setItem('pos_sales', JSON.stringify(state.sales)); }
-function savePending() { localStorage.setItem('pos_pending', JSON.stringify(state.pending)); }
-function fmt(n) { return (Math.round(n*100)/100).toFixed(2).replace('.',',') + '\u00a0€'; }
+function saveSalesLocal(){localStorage.setItem('pos_sales',JSON.stringify(state.sales));}
+function savePending(){localStorage.setItem('pos_pending',JSON.stringify(state.pending));}
+function fmt(n){return(Math.round(n*100)/100).toFixed(2).replace('.',',')+'\u00a0€';}
 
-function toast(msg, type) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className = 'toast show' + (type ? ' ' + type : '');
-  clearTimeout(t._t);
-  t._t = setTimeout(() => t.className = 'toast', 2800);
+function toast(msg,type){
+  const t=document.getElementById('toast');t.textContent=msg;
+  t.className='toast show'+(type?' '+type:'');
+  clearTimeout(t._t);t._t=setTimeout(()=>t.className='toast',2800);
 }
 
-function updateBadge() {
-  document.getElementById('stanokBadge').textContent = state.stanok ? state.stanok.toUpperCase() : 'NASTAV STÁNOK';
+function updateBadge(){
+  const txt = state.stanok ? state.stanok.toUpperCase() : 'NASTAV STÁNOK';
+  const akcia = state.akciaName ? ' | ' + state.akciaName : '';
+  document.getElementById('stanokBadge').textContent = txt + akcia;
 }
 
-function setOnline(v) {
-  state.online = v;
-  document.getElementById('syncDot').className = 'sync-dot ' + (v ? 'ok' : 'err');
-  document.getElementById('syncText').textContent = v ? 'online' : 'offline';
-  document.getElementById('syncText').style.color = v ? 'var(--green)' : 'var(--red)';
+function setOnline(v){
+  state.online=v;
+  document.getElementById('syncDot').className='sync-dot '+(v?'ok':'err');
+  document.getElementById('syncText').textContent=v?'online':'offline';
+  document.getElementById('syncText').style.color=v?'var(--green)':'var(--red)';
 }
 
-function setSyncing() {
-  document.getElementById('syncDot').className = 'sync-dot syncing';
-  document.getElementById('syncText').textContent = 'sync...';
+function setSyncing(){
+  document.getElementById('syncDot').className='sync-dot syncing';
+  document.getElementById('syncText').textContent='sync...';
 }
 
-async function checkOnline() {
-  try {
-    const r = await fetch(SCRIPT_URL + '?action=ping');
-    const d = await r.json();
-    if (d.status === 'ok') { setOnline(true); syncPending(); } else setOnline(false);
-  } catch { setOnline(false); }
+async function checkOnline(){
+  try{
+    const r=await fetch(SCRIPT_URL+'?action=ping');
+    const d=await r.json();
+    if(d.status==='ok'){setOnline(true);syncPending();}else setOnline(false);
+  }catch{setOnline(false);}
 }
 
-async function syncPending() {
-  if (!state.online || !state.pending.length) return;
-  for (const sale of [...state.pending]) {
-    try {
-      setSyncing();
-      await sendSale(sale);
-      state.pending = state.pending.filter(p => p.id !== sale.id);
-      savePending();
-    } catch { break; }
+async function syncPending(){
+  if(!state.online||!state.pending.length)return;
+  for(const sale of [...state.pending]){
+    try{setSyncing();await sendSale(sale);state.pending=state.pending.filter(p=>p.id!==sale.id);savePending();}catch{break;}
   }
-  setOnline(state.online);
-  updatePendingInfo();
+  setOnline(state.online);updatePendingInfo();
 }
 
-function updatePendingInfo() {
-  document.getElementById('pendingInfo').textContent = state.pending.length ? '⚠️ ' + state.pending.length + ' predajov čaká na sync' : '';
+function updatePendingInfo(){
+  document.getElementById('pendingInfo').textContent=state.pending.length?'⚠️ '+state.pending.length+' predajov čaká na sync':'';
 }
 
-async function sendSale(sale) {
-  const r = await fetch(SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify({ action: 'saveSale', sale }) });
-  const d = await r.json();
-  if (d.status !== 'ok') throw new Error(d.message);
+async function sendSale(sale){
+  const r=await fetch(SCRIPT_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'saveSale',sale})});
+  const d=await r.json();
+  if(d.status!=='ok')throw new Error(d.message);
   return d;
 }
 
-async function loadProducts() {
-  try {
-    const r = await fetch(SCRIPT_URL + '?action=getProducts');
-    const d = await r.json();
-    if (d.status === 'ok') {
-      state.products = d.products;
-      localStorage.setItem('pos_products', JSON.stringify(d.products));
-      renderCats();
-      renderProducts();
-      toast('✓ Tovar aktualizovaný (' + d.products.length + ' produktov)');
+async function loadAkcie(){
+  try{
+    const r=await fetch(SCRIPT_URL+'?action=getAkcie');
+    const d=await r.json();
+    if(d.status==='ok'){
+      state.akcie=d.akcie;
+      const sel=document.getElementById('setAkcia');
+      sel.innerHTML='<option value="">— Vyber akciu —</option>'+
+        d.akcie.map(a=>'<option value="'+a.id+'" data-name="'+escHtml(a.name)+'">'+escHtml(a.name)+(a.datum?' ('+a.datum+')':'')+'</option>').join('');
+      if(state.akciaId) sel.value=state.akciaId;
     }
-  } catch {
-    const cached = localStorage.getItem('pos_products');
-    if (cached) { state.products = JSON.parse(cached); renderCats(); renderProducts(); toast('Offline — načítaný uložený tovar', 'warn'); }
-    else toast('Chyba načítania tovaru', 'err');
+  }catch(e){console.log('Chyba načítania akcií',e);}
+}
+
+async function loadProducts(){
+  const akciaId = state.akciaId;
+  if(!akciaId){
+    const cached=localStorage.getItem('pos_products');
+    if(cached){state.products=JSON.parse(cached);renderCats();renderProducts();}
+    return;
+  }
+  try{
+    const r=await fetch(SCRIPT_URL+'?action=getProducts&akcia='+encodeURIComponent(akciaId));
+    const d=await r.json();
+    if(d.status==='ok'){
+      state.products=d.products;
+      localStorage.setItem('pos_products',JSON.stringify(d.products));
+      renderCats();renderProducts();
+      toast('✓ Tovar načítaný pre '+state.akciaName+' ('+d.products.length+' produktov)');
+    }
+  }catch{
+    const cached=localStorage.getItem('pos_products');
+    if(cached){state.products=JSON.parse(cached);renderCats();renderProducts();toast('Offline — načítaný uložený tovar','warn');}
+    else toast('Chyba načítania tovaru','err');
   }
 }
 
-function renderCats() {
-  const cats = ['Všetky', ...new Set(state.products.map(p => p.cat))];
-  document.getElementById('catsBar').innerHTML = cats.map(c =>
-    '<button class="cat-btn ' + (c === state.activeCat ? 'active' : '') + '" data-cat="' + c + '">' + c + '</button>'
+function renderCats(){
+  const cats=['Všetky',...new Set(state.products.map(p=>p.cat))];
+  document.getElementById('catsBar').innerHTML=cats.map(c=>
+    '<button class="cat-btn '+(c===state.activeCat?'active':'')+'" data-cat="'+c+'">'+c+'</button>'
   ).join('');
-  document.querySelectorAll('.cat-btn').forEach(btn => {
-    btn.addEventListener('click', function() {
-      state.activeCat = this.dataset.cat;
-      renderCats();
-      renderProducts();
-    });
+  document.querySelectorAll('.cat-btn').forEach(btn=>{
+    btn.addEventListener('click',function(){state.activeCat=this.dataset.cat;renderCats();renderProducts();});
   });
 }
 
-function renderProducts() {
-  const q = document.getElementById('searchInput').value.toLowerCase();
-  let prods = state.products;
-  if (state.activeCat !== 'Všetky') prods = prods.filter(p => p.cat === state.activeCat);
-  if (q) prods = prods.filter(p => p.name.toLowerCase().includes(q));
-  const grid = document.getElementById('productsGrid');
-  if (!prods.length) { grid.innerHTML = '<div style="color:var(--muted);font-size:13px;padding:20px;grid-column:1/-1">Žiadne produkty</div>'; return; }
-  grid.innerHTML = prods.map(p =>
-    '<div class="product-card" data-id="' + p.id + '">' +
-    '<div class="product-emoji">' + (p.emoji || '📦') + '</div>' +
-    '<div class="product-name">' + p.name + '</div>' +
-    '<div class="product-price">' + fmt(p.price) + '</div>' +
+function renderProducts(){
+  const q=document.getElementById('searchInput').value.toLowerCase();
+  let prods=state.products;
+  if(state.activeCat!=='Všetky')prods=prods.filter(p=>p.cat===state.activeCat);
+  if(q)prods=prods.filter(p=>p.name.toLowerCase().includes(q));
+  const grid=document.getElementById('productsGrid');
+  if(!prods.length){
+    grid.innerHTML='<div style="color:var(--muted);font-size:13px;padding:20px;grid-column:1/-1">'+(state.akciaId?'Žiadne produkty pre túto akciu':'Vyber akciu v Nastaveniach')+'</div>';
+    return;
+  }
+  grid.innerHTML=prods.map(p=>
+    '<div class="product-card" data-id="'+p.id+'">' +
+    '<div class="product-emoji">'+(p.emoji||'📦')+'</div>' +
+    '<div class="product-name">'+p.name+'</div>' +
+    '<div class="product-price">'+fmt(p.price)+'</div>' +
     '</div>'
   ).join('');
-  document.querySelectorAll('.product-card').forEach(card => {
-    card.addEventListener('click', function() { addToCart(parseInt(this.dataset.id)); });
+  document.querySelectorAll('.product-card').forEach(card=>{
+    card.addEventListener('click',function(){addToCart(parseInt(this.dataset.id));});
   });
 }
 
-function addToCart(id) {
-  const prod = state.products.find(p => p.id === id);
-  if (!prod) return;
-  const ex = state.cart.find(i => i.id === id);
-  if (ex) ex.qty++;
-  else state.cart.push({ id, name: prod.name, price: prod.price, qty: 1 });
+function addToCart(id){
+  const prod=state.products.find(p=>p.id==id);if(!prod)return;
+  const ex=state.cart.find(i=>i.id==id);
+  if(ex)ex.qty++;else state.cart.push({id,name:prod.name,price:prod.price,qty:1});
   renderCart();
 }
 
-function changeQty(id, delta) {
-  const item = state.cart.find(i => i.id === id);
-  if (!item) return;
-  item.qty += delta;
-  if (item.qty <= 0) state.cart = state.cart.filter(i => i.id !== id);
+function changeQty(id,delta){
+  const item=state.cart.find(i=>i.id==id);if(!item)return;
+  item.qty+=delta;
+  if(item.qty<=0)state.cart=state.cart.filter(i=>i.id!=id);
   renderCart();
 }
 
-function renderCart() {
-  const el = document.getElementById('cartItems');
-  const total = state.cart.reduce((s, i) => s + i.price * i.qty, 0);
-  if (!state.cart.length) {
-    el.innerHTML = '<div class="cart-empty">Žiadne položky.<br>Klikni na produkt.</div>';
-  } else {
-    el.innerHTML = state.cart.map(i =>
+function renderCart(){
+  const el=document.getElementById('cartItems');
+  const total=state.cart.reduce((s,i)=>s+i.price*i.qty,0);
+  if(!state.cart.length){
+    el.innerHTML='<div class="cart-empty">Žiadne položky.<br>Klikni na produkt.</div>';
+  }else{
+    el.innerHTML=state.cart.map(i=>
       '<div class="cart-item">' +
-      '<div class="cart-item-name">' + i.name + '</div>' +
-      '<button class="qty-btn" data-id="' + i.id + '" data-delta="-1">−</button>' +
-      '<span class="qty-num">' + i.qty + '</span>' +
-      '<button class="qty-btn" data-id="' + i.id + '" data-delta="1">+</button>' +
-      '<div class="cart-item-price">' + fmt(i.price * i.qty) + '</div>' +
+      '<div class="cart-item-name">'+i.name+'</div>' +
+      '<button class="qty-btn" data-id="'+i.id+'" data-delta="-1">−</button>' +
+      '<span class="qty-num">'+i.qty+'</span>' +
+      '<button class="qty-btn" data-id="'+i.id+'" data-delta="1">+</button>' +
+      '<div class="cart-item-price">'+fmt(i.price*i.qty)+'</div>' +
       '</div>'
     ).join('');
-    document.querySelectorAll('.qty-btn').forEach(btn => {
-      btn.addEventListener('click', function() { changeQty(parseInt(this.dataset.id), parseInt(this.dataset.delta)); });
+    document.querySelectorAll('.qty-btn').forEach(btn=>{
+      btn.addEventListener('click',function(){changeQty(parseInt(this.dataset.id),parseInt(this.dataset.delta));});
     });
   }
-  document.getElementById('cartTotal').textContent = fmt(total);
-  document.getElementById('payBtnCash').disabled = !state.cart.length;
-  document.getElementById('payBtnCard').disabled = !state.cart.length;
+  document.getElementById('cartTotal').textContent=fmt(total);
+  document.getElementById('payBtnCash').disabled=!state.cart.length;
+  document.getElementById('payBtnCard').disabled=!state.cart.length;
 }
 
-function cartTotal() { return state.cart.reduce((s, i) => s + i.price * i.qty, 0); }
+function cartTotal(){return state.cart.reduce((s,i)=>s+i.price*i.qty,0);}
 
-function openPayment(method) {
-  state.payMethod = method;
-  document.getElementById('paymentTitle').textContent = method === 'cash' ? '💵 Platba hotovosťou' : '💳 Platba kartou';
-  document.getElementById('payTotal').textContent = fmt(cartTotal());
-  document.getElementById('cashPaid').value = '';
-  document.getElementById('changeBox').style.display = 'none';
-  document.getElementById('cashSection').style.display = method === 'cash' ? 'flex' : 'none';
+function openPayment(method){
+  state.payMethod=method;
+  document.getElementById('paymentTitle').textContent=method==='cash'?'💵 Platba hotovosťou':'💳 Platba kartou';
+  document.getElementById('payTotal').textContent=fmt(cartTotal());
+  document.getElementById('cashPaid').value='';
+  document.getElementById('changeBox').style.display='none';
+  document.getElementById('cashSection').style.display=method==='cash'?'flex':'none';
   document.getElementById('paymentModal').classList.remove('hidden');
 }
 
-document.getElementById('cashPaid').addEventListener('input', function() {
-  const total = cartTotal();
-  const paid = parseFloat(this.value) || 0;
-  const change = paid - total;
-  const box = document.getElementById('changeBox');
-  if (paid > 0) {
-    box.style.display = 'block';
-    document.getElementById('changeAmt').textContent = fmt(Math.max(0, change));
-    document.getElementById('changeLbl').textContent = change >= 0 ? 'Vydať' : '⚠️ Málo!';
-    box.style.borderColor = change >= 0 ? 'var(--green)' : 'var(--red)';
-  } else {
-    box.style.display = 'none';
-  }
+document.getElementById('cashPaid').addEventListener('input',function(){
+  const total=cartTotal();const paid=parseFloat(this.value)||0;const change=paid-total;
+  const box=document.getElementById('changeBox');
+  if(paid>0){
+    box.style.display='block';
+    document.getElementById('changeAmt').textContent=fmt(Math.max(0,change));
+    document.getElementById('changeLbl').textContent=change>=0?'Vydať':'⚠️ Málo!';
+    box.style.borderColor=change>=0?'var(--green)':'var(--red)';
+  }else box.style.display='none';
 });
 
-async function confirmPayment() {
-  const total = cartTotal();
-  if (state.payMethod === 'cash') {
-    const paid = parseFloat(document.getElementById('cashPaid').value) || 0;
-    if (paid < total) { toast('Nedostatočná suma!', 'err'); return; }
+async function confirmPayment(){
+  const total=cartTotal();
+  if(state.payMethod==='cash'){
+    const paid=parseFloat(document.getElementById('cashPaid').value)||0;
+    if(paid<total){toast('Nedostatočná suma!','err');return;}
   }
-  const sale = {
-    id: Date.now(),
-    time: new Date().toISOString(),
-    stanok: state.stanok || 'Neznamy',
-    obsluha: state.obsluha || '',
-    akcia: state.akcia || '',
-    method: state.payMethod,
-    items: state.cart.map(i => ({ name: i.name, price: i.price, qty: i.qty })),
-    total
+  const sale={
+    id:Date.now(),time:new Date().toISOString(),
+    stanok:state.stanok||'Neznamy',obsluha:state.obsluha||'',
+    akcia:state.akciaName||'',method:state.payMethod,
+    items:state.cart.map(i=>({name:i.name,price:i.price,qty:i.qty})),total
   };
-  state.sales.push(sale);
-  saveSalesLocal();
-  if (state.online) {
+  state.sales.push(sale);saveSalesLocal();
+  if(state.online){
     setSyncing();
-    try {
-      await sendSale(sale);
-      setOnline(true);
-      toast('✓ ' + fmt(total) + ' — uložené!');
-    } catch {
-      state.pending.push(sale);
-      savePending();
-      setOnline(false);
-      toast('✓ ' + fmt(total) + ' — uložené lokálne', 'warn');
-    }
-  } else {
-    state.pending.push(sale);
-    savePending();
-    toast('✓ ' + fmt(total) + ' — offline, sync neskôr', 'warn');
-  }
-  updatePendingInfo();
-  state.cart = [];
-  renderCart();
-  updateStats();
+    try{await sendSale(sale);setOnline(true);toast('✓ '+fmt(total)+' — uložené!');}
+    catch{state.pending.push(sale);savePending();setOnline(false);toast('✓ '+fmt(total)+' — uložené lokálne','warn');}
+  }else{state.pending.push(sale);savePending();toast('✓ '+fmt(total)+' — offline, sync neskôr','warn');}
+  updatePendingInfo();state.cart=[];renderCart();updateStats();
   document.getElementById('paymentModal').classList.add('hidden');
 }
 
-function updateStats() {
-  const today = new Date().toDateString();
-  const ts = state.sales.filter(s => new Date(s.time).toDateString() === today);
-  document.getElementById('salesCount').textContent = ts.length;
-  document.getElementById('totalRevenue').textContent = fmt(ts.reduce((s, x) => s + x.total, 0));
-  if (state.sales.length) {
-    const last = state.sales[state.sales.length - 1];
-    document.getElementById('lastSaleEl').textContent = 'Posledný: ' + new Date(last.time).toLocaleTimeString('sk-SK', { hour: '2-digit', minute: '2-digit' });
+function updateStats(){
+  const today=new Date().toDateString();
+  const ts=state.sales.filter(s=>new Date(s.time).toDateString()===today);
+  document.getElementById('salesCount').textContent=ts.length;
+  document.getElementById('totalRevenue').textContent=fmt(ts.reduce((s,x)=>s+x.total,0));
+  if(state.sales.length){
+    const last=state.sales[state.sales.length-1];
+    document.getElementById('lastSaleEl').textContent='Posledný: '+new Date(last.time).toLocaleTimeString('sk-SK',{hour:'2-digit',minute:'2-digit'});
   }
   updatePendingInfo();
 }
 
+function escHtml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
 // EVENT LISTENERS
-document.getElementById('btnSettings').addEventListener('click', function() {
-  document.getElementById('setStanok').value = state.stanok;
-  document.getElementById('setObsluha').value = state.obsluha;
-  document.getElementById('setAkcia').value = state.akcia;
+document.getElementById('btnSettings').addEventListener('click',function(){
+  document.getElementById('setStanok').value=state.stanok;
+  document.getElementById('setObsluha').value=state.obsluha;
+  if(state.akciaId) document.getElementById('setAkcia').value=state.akciaId;
   document.getElementById('settingsModal').classList.remove('hidden');
 });
-document.getElementById('btnRefresh').addEventListener('click', loadProducts);
-document.getElementById('btnClearCart').addEventListener('click', function() { state.cart = []; renderCart(); });
-document.getElementById('payBtnCash').addEventListener('click', function() { openPayment('cash'); });
-document.getElementById('payBtnCard').addEventListener('click', function() { openPayment('card'); });
-document.getElementById('btnClosePayment').addEventListener('click', function() { document.getElementById('paymentModal').classList.add('hidden'); });
-document.getElementById('btnCancelPayment').addEventListener('click', function() { document.getElementById('paymentModal').classList.add('hidden'); });
-document.getElementById('btnConfirmPayment').addEventListener('click', confirmPayment);
-document.getElementById('btnCloseSettings').addEventListener('click', function() { document.getElementById('settingsModal').classList.add('hidden'); });
-document.getElementById('btnCancelSettings').addEventListener('click', function() { document.getElementById('settingsModal').classList.add('hidden'); });
-document.getElementById('btnSaveSettings').addEventListener('click', function() {
-  state.stanok = document.getElementById('setStanok').value.trim();
-  state.obsluha = document.getElementById('setObsluha').value.trim();
-  state.akcia = document.getElementById('setAkcia').value.trim();
-  localStorage.setItem('pos_stanok', state.stanok);
-  localStorage.setItem('pos_obsluha', state.obsluha);
-  localStorage.setItem('pos_akcia', state.akcia);
+
+document.getElementById('btnRefresh').addEventListener('click',async function(){
+  toast('🔄 Aktualizujem tovar...','warn');
+  await loadProducts();
+});
+
+document.getElementById('btnClearCart').addEventListener('click',function(){state.cart=[];renderCart();});
+document.getElementById('payBtnCash').addEventListener('click',function(){openPayment('cash');});
+document.getElementById('payBtnCard').addEventListener('click',function(){openPayment('card');});
+document.getElementById('btnClosePayment').addEventListener('click',function(){document.getElementById('paymentModal').classList.add('hidden');});
+document.getElementById('btnCancelPayment').addEventListener('click',function(){document.getElementById('paymentModal').classList.add('hidden');});
+document.getElementById('btnConfirmPayment').addEventListener('click',confirmPayment);
+document.getElementById('btnCloseSettings').addEventListener('click',function(){document.getElementById('settingsModal').classList.add('hidden');});
+document.getElementById('btnCancelSettings').addEventListener('click',function(){document.getElementById('settingsModal').classList.add('hidden');});
+
+document.getElementById('btnSaveSettings').addEventListener('click',async function(){
+  state.stanok=document.getElementById('setStanok').value.trim();
+  state.obsluha=document.getElementById('setObsluha').value.trim();
+  const sel=document.getElementById('setAkcia');
+  const newAkciaId=sel.value;
+  const selectedOpt=sel.options[sel.selectedIndex];
+  const newAkciaName=selectedOpt?selectedOpt.text.replace(/ \(.*\)$/,''):'';
+
+  const akciaChanged = newAkciaId !== state.akciaId;
+  state.akciaId=newAkciaId;
+  state.akciaName=newAkciaName;
+
+  localStorage.setItem('pos_stanok',state.stanok);
+  localStorage.setItem('pos_obsluha',state.obsluha);
+  localStorage.setItem('pos_akciaId',state.akciaId);
+  localStorage.setItem('pos_akciaName',state.akciaName);
+
   updateBadge();
   document.getElementById('settingsModal').classList.add('hidden');
   toast('✓ Nastavenia uložené');
+
+  if(akciaChanged && newAkciaId){
+    toast('🔄 Načítavam tovar pre '+newAkciaName+'...','warn');
+    await loadProducts();
+  }
 });
-document.getElementById('searchInput').addEventListener('input', renderProducts);
-document.querySelectorAll('.modal-overlay').forEach(o => {
-  o.addEventListener('click', function(e) { if (e.target === o) o.classList.add('hidden'); });
+
+document.getElementById('searchInput').addEventListener('input',renderProducts);
+document.querySelectorAll('.modal-overlay').forEach(o=>{
+  o.addEventListener('click',function(e){if(e.target===o)o.classList.add('hidden');});
 });
 
 // INIT
-async function init() {
-  updateBadge();
-  updateStats();
-  const cached = localStorage.getItem('pos_products');
-  if (cached) { state.products = JSON.parse(cached); renderCats(); renderProducts(); }
+async function init(){
+  updateBadge();updateStats();
+  const cached=localStorage.getItem('pos_products');
+  if(cached){state.products=JSON.parse(cached);renderCats();renderProducts();}
+  await loadAkcie();
   await checkOnline();
-  await loadProducts();
-  setInterval(checkOnline, 30000);
-  setInterval(syncPending, 15000);
-  if (!state.stanok) {
-    document.getElementById('setStanok').value = '';
-    document.getElementById('setObsluha').value = '';
-    document.getElementById('setAkcia').value = '';
+  if(state.akciaId) await loadProducts();
+  setInterval(checkOnline,30000);
+  setInterval(syncPending,15000);
+  if(!state.stanok){
+    await loadAkcie();
     document.getElementById('settingsModal').classList.remove('hidden');
   }
 }
