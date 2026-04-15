@@ -171,6 +171,24 @@ tr:hover td{background:var(--surface2)}
 
   <!-- REPORT -->
   <div class="page" id="page-report">
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:20px;display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap">
+      <div class="form-group" style="margin:0;flex:1;min-width:200px">
+        <label>Filtrovať podľa akcie</label>
+        <select id="filterAkcia" style="background:var(--bg);border:1px solid var(--border);color:var(--text);font-family:'Barlow',sans-serif;font-size:14px;padding:9px 11px;border-radius:8px;outline:none;width:100%">
+          <option value="">— Všetky akcie —</option>
+        </select>
+      </div>
+      <div class="form-group" style="margin:0;min-width:120px">
+        <label>Od dátumu</label>
+        <input type="date" id="filterDatumOd" style="background:var(--bg);border:1px solid var(--border);color:var(--text);font-family:'Barlow',sans-serif;font-size:14px;padding:9px 11px;border-radius:8px;outline:none;width:100%">
+      </div>
+      <div class="form-group" style="margin:0;min-width:120px">
+        <label>Do dátumu</label>
+        <input type="date" id="filterDatumDo" style="background:var(--bg);border:1px solid var(--border);color:var(--text);font-family:'Barlow',sans-serif;font-size:14px;padding:9px 11px;border-radius:8px;outline:none;width:100%">
+      </div>
+      <button class="btn btn-primary" onclick="applyFilter()">🔍 Filtrovať</button>
+      <button class="btn btn-secondary" onclick="clearFilter()">✕ Zrušiť filter</button>
+    </div>
     <div class="stat-grid">
       <div class="stat-card"><div class="stat-label">Celková tržba</div><div class="stat-value" id="statTotal">—</div></div>
       <div class="stat-card"><div class="stat-label">Transakcií</div><div class="stat-value" id="statCount">—</div></div>
@@ -363,6 +381,8 @@ async function saveSettingsAdmin() {
 }
 
 // ===== REPORT =====
+let allSalesData = [];
+
 async function loadReport() {
   document.getElementById('stankyReport').innerHTML = '<div style="color:var(--muted);text-align:center;padding:20px">⏳ Načítavam dáta...</div>';
   document.getElementById('salesBody').innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:20px">⏳ Načítavam...</td></tr>';
@@ -370,40 +390,92 @@ async function loadReport() {
     const r = await fetch(SCRIPT_URL + '?action=getReport');
     const d = await r.json();
     if (d.status !== 'ok') throw new Error(d.message);
+    allSalesData = d.sales || [];
 
-    const total = d.totalRev || 0;
-    const count = d.count || 0;
-    document.getElementById('statTotal').textContent = fmt(total);
-    document.getElementById('statCount').textContent = count;
-    document.getElementById('statStanky').textContent = Object.keys(d.byStanok || {}).length;
-    document.getElementById('statAvg').textContent = count ? fmt(total / count) : '—';
+    // Naplniť dropdown akciami
+    const akcie = [...new Set(allSalesData.map(s => s.akcia).filter(a => a))];
+    const sel = document.getElementById('filterAkcia');
+    sel.innerHTML = '<option value="">— Všetky akcie —</option>' +
+      akcie.map(a => '<option value="' + escHtml(a) + '">' + escHtml(a) + '</option>').join('');
 
-    const stankyArr = Object.entries(d.byStanok || {}).sort((a,b) => b[1].rev - a[1].rev);
-    const maxRev = stankyArr[0]?.[1].rev || 1;
-
-    document.getElementById('stankyReport').innerHTML = stankyArr.length ? stankyArr.map(([name, v]) =>
-      '<div class="stanok-bar">' +
-      '<div class="stanok-name">' + escHtml(name) + '</div>' +
-      '<div class="stanok-track"><div class="stanok-fill" style="width:' + (v.rev/maxRev*100).toFixed(0) + '%"><span>' + v.count + ' predajov</span></div></div>' +
-      '<div class="stanok-val">' + fmt(v.rev) + '</div>' +
-      '</div>'
-    ).join('') : '<div style="color:var(--muted);text-align:center;padding:20px">Žiadne dáta</div>';
-
-    const recent = (d.sales || []).slice(-30).reverse();
-    document.getElementById('salesBody').innerHTML = recent.length ? recent.map(s =>
-      '<tr>' +
-      '<td style="font-size:12px;white-space:nowrap">' + fmtDate(s.time) + '</td>' +
-      '<td><strong>' + escHtml(s.stanok) + '</strong></td>' +
-      '<td style="color:var(--muted)">' + escHtml(s.obsluha || '—') + '</td>' +
-      '<td>' + (s.method === 'cash' ? '💵 Hotovosť' : '💳 Karta') + '</td>' +
-      '<td style="font-size:12px;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + escHtml(s.itemsStr || '') + '</td>' +
-      '<td style="font-weight:700;color:var(--accent)">' + fmt(s.total) + '</td>' +
-      '</tr>'
-    ).join('') : '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:20px">Žiadne predaje</td></tr>';
-
+    renderReport(allSalesData);
   } catch(e) {
     document.getElementById('stankyReport').innerHTML = '<div style="color:var(--red);padding:20px;text-align:center">❌ ' + e.message + '</div>';
   }
+}
+
+function applyFilter() {
+  let filtered = [...allSalesData];
+  const akcia = document.getElementById('filterAkcia').value;
+  const od = document.getElementById('filterDatumOd').value;
+  const doo = document.getElementById('filterDatumDo').value;
+  if (akcia) filtered = filtered.filter(s => s.akcia === akcia);
+  if (od) filtered = filtered.filter(s => new Date(s.time) >= new Date(od));
+  if (doo) filtered = filtered.filter(s => new Date(s.time) <= new Date(doo + 'T23:59:59'));
+  renderReport(filtered);
+}
+
+function clearFilter() {
+  document.getElementById('filterAkcia').value = '';
+  document.getElementById('filterDatumOd').value = '';
+  document.getElementById('filterDatumDo').value = '';
+  renderReport(allSalesData);
+}
+
+function renderReport(sales) {
+  const total = sales.reduce((s, x) => s + x.total, 0);
+  const count = sales.length;
+
+  document.getElementById('statTotal').textContent = fmt(total);
+  document.getElementById('statCount').textContent = count;
+  document.getElementById('statAvg').textContent = count ? fmt(total / count) : '—';
+
+  // Trzby podla stanku
+  const byStanok = {};
+  sales.forEach(s => {
+    if (!byStanok[s.stanok]) byStanok[s.stanok] = { count: 0, rev: 0 };
+    byStanok[s.stanok].count++;
+    byStanok[s.stanok].rev += s.total;
+  });
+  document.getElementById('statStanky').textContent = Object.keys(byStanok).length;
+
+  const stankyArr = Object.entries(byStanok).sort((a,b) => b[1].rev - a[1].rev);
+  const maxRev = stankyArr[0]?.[1].rev || 1;
+
+  document.getElementById('stankyReport').innerHTML = stankyArr.length ? stankyArr.map(([name, v]) =>
+    '<div class="stanok-bar">' +
+    '<div class="stanok-name">' + escHtml(name) + '</div>' +
+    '<div class="stanok-track"><div class="stanok-fill" style="width:' + (v.rev/maxRev*100).toFixed(0) + '%"><span>' + v.count + ' predajov</span></div></div>' +
+    '<div class="stanok-val">' + fmt(v.rev) + '</div>' +
+    '</div>'
+  ).join('') : '<div style="color:var(--muted);text-align:center;padding:20px">Žiadne dáta pre zvolený filter</div>';
+
+  // Top produkty
+  const byProduct = {};
+  sales.forEach(s => {
+    (s.itemsStr || '').split(', ').forEach(item => {
+      const m = item.match(/^(.+) x(\d+)$/);
+      if (m) {
+        const name = m[1]; const qty = parseInt(m[2]);
+        if (!byProduct[name]) byProduct[name] = 0;
+        byProduct[name] += qty;
+      }
+    });
+  });
+  const topProds = Object.entries(byProduct).sort((a,b) => b[1]-a[1]).slice(0,5);
+
+  // Posledne predaje
+  const recent = [...sales].sort((a,b) => new Date(b.time)-new Date(a.time)).slice(0, 50);
+  document.getElementById('salesBody').innerHTML = recent.length ? recent.map(s =>
+    '<tr>' +
+    '<td style="font-size:12px;white-space:nowrap">' + fmtDate(s.time) + '</td>' +
+    '<td><strong>' + escHtml(s.stanok) + '</strong></td>' +
+    '<td style="color:var(--muted)">' + escHtml(s.obsluha || '—') + '</td>' +
+    '<td>' + (s.method === 'cash' ? '💵 Hotovosť' : '💳 Karta') + '</td>' +
+    '<td style="font-size:12px;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + escHtml(s.itemsStr || '') + '</td>' +
+    '<td style="font-weight:700;color:var(--accent)">' + fmt(s.total) + '</td>' +
+    '</tr>'
+  ).join('') : '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:20px">Žiadne predaje pre zvolený filter</td></tr>';
 }
 
 // ===== UTILS =====
