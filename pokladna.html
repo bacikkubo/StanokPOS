@@ -417,13 +417,22 @@ async function confirmPayment(){
     items:state.cart.map(i=>({name:i.name,price:i.price,qty:i.qty})),total
   };
   state.sales.push(sale);saveSalesLocal();
-  if(state.online){
-    setSyncing();
-    try{await sendSale(sale);setOnline(true);toast('✓ '+fmt(total)+' — ulozene!');}
-    catch{state.pending.push(sale);savePending();setOnline(false);toast('✓ '+fmt(total)+' — ulozene lokalne','warn');}
-  }else{state.pending.push(sale);savePending();toast('✓ '+fmt(total)+' — offline, sync neskor','warn');}
-  updatePendingInfo();state.cart=[];renderCart();updateStats();
+  state.cart=[];renderCart();updateStats();
   document.getElementById('paymentModal').classList.add('hidden');
+  toast('✓ '+fmt(total)+' — zaznamenane!');
+
+  // Sync na pozadi bez cakania
+  if(state.online){
+    sendSale(sale).then(()=>{
+      setOnline(true);
+    }).catch(()=>{
+      state.pending.push(sale);savePending();setOnline(false);
+      updatePendingInfo();
+    });
+  }else{
+    state.pending.push(sale);savePending();
+    updatePendingInfo();
+  }
 }
 
 function updateStats(){
