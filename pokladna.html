@@ -350,7 +350,7 @@ async function loadProducts(){
     return;
   }
   try{
-    const r=await fetch(SCRIPT_URL+'?action=getProducts&akcia='+encodeURIComponent(akciaId));
+    const r=await fetch(SCRIPT_URL+'?action=getProductsForAkcia&akcia='+encodeURIComponent(akciaId));
     const d=await r.json();
     if(d.status==='ok'){
       state.products=d.products;

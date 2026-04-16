@@ -51,11 +51,11 @@ tr:hover td{background:var(--surface2)}
 .stanok-fill{height:100%;background:var(--accent);border-radius:3px;display:flex;align-items:center;padding-left:6px;transition:width .5s}
 .stanok-fill span{font-size:11px;color:#fff;font-weight:700;white-space:nowrap}
 .stanok-val{min-width:80px;text-align:right;font-weight:700;font-size:13px;color:var(--accent);font-family:'Barlow Condensed',sans-serif}
-.akcia-card{background:var(--surface2);border:2px solid var(--border);border-radius:var(--r);padding:14px;cursor:pointer;transition:all .15s;position:relative}
+.akcia-card{background:var(--surface2);border:2px solid var(--border);border-radius:var(--r);padding:14px;transition:all .15s;position:relative}
 .akcia-card:hover{border-color:var(--accent)}
 .akcia-card-name{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:16px;margin-bottom:4px}
-.akcia-card-datum{font-size:12px;color:var(--muted)}
-.akcie-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin-bottom:16px}
+.akcia-card-datum{font-size:12px;color:var(--muted);margin-bottom:10px}
+.akcie-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-bottom:16px}
 .cat-header-row{background:var(--surface2);font-weight:700;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;padding:5px 13px}
 .page{display:none}.page.active{display:block}
 .toast{position:fixed;bottom:20px;right:20px;background:#22c55e;color:#fff;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;padding:11px 22px;border-radius:10px;z-index:999;opacity:0;transition:opacity .3s;pointer-events:none;box-shadow:0 4px 20px rgba(0,0,0,.15)}
@@ -67,8 +67,10 @@ tr:hover td{background:var(--surface2)}
 .prod-bar-track{width:140px;background:var(--surface2);border-radius:4px;height:16px;overflow:hidden;border:1px solid var(--border)}
 .prod-bar-fill{height:100%;background:var(--green);border-radius:3px;display:flex;align-items:center;padding-left:4px}
 .prod-bar-fill span{font-size:10px;color:#fff;font-weight:700;white-space:nowrap}
-.prod-bar-qty{min-width:50px;text-align:right;font-size:13px;font-weight:700;color:var(--green)}
 .dhz-badge{display:inline-block;background:var(--purple);color:#fff;border-radius:4px;padding:1px 6px;font-size:11px;font-weight:700;margin-left:4px}
+.assign-btn{width:32px;height:32px;border-radius:8px;border:none;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0}
+.assign-btn.add{background:#dcfce7;color:var(--green)}.assign-btn.add:hover{background:var(--green);color:#fff}
+.assign-btn.remove{background:#fee2e2;color:var(--red)}.assign-btn.remove:hover{background:var(--red);color:#fff}
 .login-overlay{position:fixed;inset:0;background:#1c1a17;display:flex;align-items:center;justify-content:center;z-index:9999}
 .login-box{background:#fff;border:1px solid #e2ddd4;border-radius:16px;padding:32px;width:100%;max-width:340px;text-align:center;box-shadow:0 10px 40px rgba(0,0,0,.15)}
 .login-logo{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:32px;color:#d4500a;margin-bottom:4px}
@@ -112,7 +114,7 @@ tr:hover td{background:var(--surface2)}
         <button class="btn btn-success" id="btnSaveAkcie">💾 Uložiť akcie</button>
       </div>
       <div class="section-body">
-        <div class="info">ℹ️ Vytvor akcie (eventy). Ku každej akcii potom v záložke <strong>📦 Produkty</strong> priradíš vlastný tovar.</div>
+        <div class="info">ℹ️ Vytvor akcie. Pri každej akcii klikni <strong>📦 Tovar</strong> a prirad produkty zo centrálneho zoznamu.</div>
         <div style="display:flex;gap:12px;align-items:flex-end;margin-bottom:16px;flex-wrap:wrap">
           <div class="form-group" style="flex:1;min-width:180px">
             <label>Názov akcie</label>
@@ -133,18 +135,17 @@ tr:hover td{background:var(--surface2)}
   <div class="page" id="page-products">
     <div class="section">
       <div class="section-header">
-        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-          <span class="section-title">📦 Produkty pre akciu:</span>
-          <select id="selectAkciaProducts" style="background:var(--bg);border:1px solid var(--border);color:var(--text);font-family:'Barlow',sans-serif;font-size:14px;padding:6px 11px;border-radius:8px;outline:none">
-            <option value="">— Vyber akciu —</option>
-          </select>
-          <button class="btn btn-blue btn-sm" id="btnCopyFrom">📋 Kopírovať z inej akcie</button>
+        <span class="section-title" id="productsPageTitle">📦 Centrálny zoznam produktov</span>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <button class="btn btn-secondary btn-sm" id="btnBackToAkcie" style="display:none">← Späť na akcie</button>
+          <button class="btn btn-success" id="btnSaveProducts">💾 Uložiť produkty</button>
         </div>
-        <button class="btn btn-success" id="btnSaveProducts">💾 Uložiť a synchronizovať</button>
       </div>
       <div class="section-body">
-        <div class="info" id="productInfo">Vyber akciu pre správu produktov.</div>
-        <div id="addProductSection" style="display:none;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:14px;margin-bottom:14px">
+        <div class="info" id="productInfo">Centrálny zoznam všetkých produktov. Pridaj produkty tu a potom ich prirad k akciám.</div>
+
+        <!-- Pridaj produkt -->
+        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:14px;margin-bottom:14px">
           <div style="font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">Pridať produkt</div>
           <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr auto;gap:10px;align-items:flex-end;margin-bottom:10px">
             <div class="form-group"><label>Názov</label><input type="text" id="newName" placeholder="napr. Pivo 0.5L"></div>
@@ -155,10 +156,23 @@ tr:hover td{background:var(--surface2)}
           </div>
           <div class="form-group">
             <label>URL obrázka (nepovinné)</label>
-            <input type="text" id="newImg" placeholder="napr. https://bacikkubo.github.io/StanokPOS/img/pivo.jpg">
+            <input type="text" id="newImg" placeholder="napr. https://bacikkubo.github.io/StanokPOS/img/pivo.jpeg">
           </div>
         </div>
-        <div id="productsContainer"><div style="color:var(--muted);font-size:13px;padding:20px;text-align:center">Vyber akciu pre zobrazenie produktov</div></div>
+
+        <div id="productsContainer"></div>
+      </div>
+    </div>
+
+    <!-- PRIRADENIE K AKCII (zobrazi sa ked pride z akcie) -->
+    <div class="section" id="assignSection" style="display:none">
+      <div class="section-header">
+        <span class="section-title" id="assignTitle">📦 Tovar pre akciu</span>
+        <button class="btn btn-success" id="btnSaveAssign">💾 Uložiť priradenie</button>
+      </div>
+      <div class="section-body">
+        <div class="info">Klikni ➕ pre pridanie produktu do akcie, alebo ✕ pre odobratie.</div>
+        <div id="assignContainer"></div>
       </div>
     </div>
   </div>
@@ -232,12 +246,21 @@ tr:hover td{background:var(--surface2)}
 
 <script>
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwi7SP4YflAkU2Vssopa-G9BpKhhtEFR3_WsUe55NeZIu6Phkw3y6rNCtLMmYqTxEjciQ/exec';
-let akcie = [], products = [], selectedAkciaId = null, allSalesData = [], allProductsData = [];
+let akcie = [], products = [], allSalesData = [], allProductsData = [];
+let akciaLinks = []; // [{akciaId, produktId}]
+let currentAssignAkciaId = null;
 
-async function init() { await loadAkcie(); }
+async function init() { await Promise.all([loadAkcie(), loadProducts(), loadAkciaLinks()]); }
 
 document.getElementById('navAkcie').addEventListener('click', function() { showPage('akcie'); });
-document.getElementById('navProducts').addEventListener('click', function() { showPage('products'); });
+document.getElementById('navProducts').addEventListener('click', function() {
+  showPage('products');
+  document.getElementById('assignSection').style.display = 'none';
+  document.getElementById('btnBackToAkcie').style.display = 'none';
+  document.getElementById('productsPageTitle').textContent = '📦 Centrálny zoznam produktov';
+  document.getElementById('productInfo').textContent = 'Centrálny zoznam všetkých produktov. Pridaj produkty tu a potom ich prirad k akciám.';
+  currentAssignAkciaId = null;
+});
 document.getElementById('navReport').addEventListener('click', function() { showPage('report'); loadReport(); });
 
 function showPage(page) {
@@ -247,6 +270,7 @@ function showPage(page) {
   document.getElementById('nav' + page.charAt(0).toUpperCase() + page.slice(1)).classList.add('active');
 }
 
+// AKCIE
 async function loadAkcie() {
   try {
     const r = await fetch(SCRIPT_URL + '?action=getAkcie');
@@ -258,27 +282,30 @@ async function loadAkcie() {
 function renderAkcie() {
   const grid = document.getElementById('akcieGrid');
   if (!akcie.length) { grid.innerHTML = '<div style="color:var(--muted);font-size:13px;padding:10px;grid-column:1/-1">Žiadne akcie.</div>'; return; }
-  grid.innerHTML = akcie.map(a =>
-    '<div class="akcia-card" data-id="' + a.id + '">' +
-    '<div style="position:absolute;top:8px;right:8px"><button class="btn btn-danger btn-sm" data-del="' + a.id + '">🗑</button></div>' +
-    '<div class="akcia-card-name">🎪 ' + escHtml(a.name) + '</div>' +
-    '<div class="akcia-card-datum">' + (a.datum || 'Bez dátumu') + '</div></div>'
-  ).join('');
-  document.querySelectorAll('.akcia-card').forEach(card => {
-    card.addEventListener('click', function(e) {
-      if (e.target.dataset.del) return;
-      showPage('products');
-      document.getElementById('navProducts').classList.add('active');
-      document.getElementById('navAkcie').classList.remove('active');
-      document.getElementById('selectAkciaProducts').value = this.dataset.id;
-      loadProductsForAkcia(this.dataset.id);
+  grid.innerHTML = akcie.map(a => {
+    const count = akciaLinks.filter(l => l.akciaId === a.id).length;
+    return '<div class="akcia-card" data-id="' + a.id + '">' +
+      '<div style="position:absolute;top:8px;right:8px"><button class="btn btn-danger btn-sm" data-del="' + a.id + '">🗑</button></div>' +
+      '<div class="akcia-card-name">🎪 ' + escHtml(a.name) + '</div>' +
+      '<div class="akcia-card-datum">' + (a.datum || 'Bez dátumu') + '</div>' +
+      '<div style="font-size:12px;color:var(--muted);margin-bottom:8px">📦 ' + count + ' produktov</div>' +
+      '<button class="btn btn-blue btn-sm assign-akcia-btn" data-id="' + a.id + '" data-name="' + escHtml(a.name) + '">📦 Spravovať tovar</button>' +
+      '</div>';
+  }).join('');
+
+  document.querySelectorAll('.assign-akcia-btn').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      openAssign(this.dataset.id, this.dataset.name);
     });
   });
+
   document.querySelectorAll('[data-del]').forEach(btn => {
     btn.addEventListener('click', function(e) {
       e.stopPropagation();
       if (!confirm('Vymazať akciu?')) return;
       akcie = akcie.filter(a => a.id !== this.dataset.del);
+      akciaLinks = akciaLinks.filter(l => l.akciaId !== this.dataset.del);
       renderAkcie(); updateAkcieSelects();
       toast('Akcia vymazaná — nezabudni Uložiť!', 'warn');
     });
@@ -286,9 +313,6 @@ function renderAkcie() {
 }
 
 function updateAkcieSelects() {
-  const opts = '<option value="">— Vyber akciu —</option>' +
-    akcie.map(a => '<option value="' + a.id + '">' + escHtml(a.name) + (a.datum?' ('+a.datum+')':'') + '</option>').join('');
-  document.getElementById('selectAkciaProducts').innerHTML = opts;
   document.getElementById('filterAkcia').innerHTML = '<option value="">— Všetky akcie —</option>' +
     akcie.map(a => '<option value="' + escHtml(a.name) + '">' + escHtml(a.name) + '</option>').join('');
 }
@@ -312,60 +336,61 @@ document.getElementById('btnSaveAkcie').addEventListener('click', async function
   finally { this.textContent = '💾 Uložiť akcie'; this.disabled = false; }
 });
 
-document.getElementById('selectAkciaProducts').addEventListener('change', function() {
-  if (this.value) loadProductsForAkcia(this.value);
-  else {
-    products = [];
-    document.getElementById('productsContainer').innerHTML = '<div style="color:var(--muted);font-size:13px;padding:20px;text-align:center">Vyber akciu</div>';
-    document.getElementById('addProductSection').style.display = 'none';
-    document.getElementById('productInfo').textContent = 'Vyber akciu pre správu produktov.';
-  }
-});
-
-async function loadProductsForAkcia(akciaId) {
-  selectedAkciaId = akciaId;
-  document.getElementById('addProductSection').style.display = 'block';
-  const akcia = akcie.find(a => a.id === akciaId);
-  document.getElementById('productInfo').innerHTML = 'Produkty pre akciu: <strong>' + escHtml(akcia?.name || akciaId) + '</strong>';
+// PRODUKTY
+async function loadProducts() {
   try {
-    const r = await fetch(SCRIPT_URL + '?action=getProducts&akcia=' + encodeURIComponent(akciaId));
+    const r = await fetch(SCRIPT_URL + '?action=getProducts');
     const d = await r.json();
     if (d.status === 'ok') { products = d.products; renderProducts(); updateCatSuggestions(); }
   } catch(e) { toast('Chyba načítania produktov', 'err'); }
+}
+
+async function loadAkciaLinks() {
+  try {
+    const r = await fetch(SCRIPT_URL + '?action=getAkciaProducts');
+    const d = await r.json();
+    if (d.status === 'ok') { akciaLinks = d.links; }
+  } catch(e) {}
 }
 
 function renderProducts() {
   const container = document.getElementById('productsContainer');
   if (!products.length) { container.innerHTML = '<div style="text-align:center;color:var(--muted);padding:24px">Žiadne produkty. Pridaj prvý.</div>'; return; }
   const cats = [...new Set(products.map(p => p.cat))];
-  let html = '<table><thead><tr><th style="width:60px">Obr./Emoji</th><th>Názov</th><th>Kategória</th><th>Cena (€)</th><th>URL obrázka</th><th style="width:56px"></th></tr></thead><tbody>';
-  cats.forEach(cat => {
-    html += '<tr><td colspan="6" class="cat-header-row">' + escHtml(cat) + ' — ' + products.filter(p=>p.cat===cat).length + ' ks</td></tr>';
-    products.filter(p => p.cat === cat).forEach(p => {
-      html += '<tr data-id="' + p.id + '">' +
-        '<td style="text-align:center">' +
-          (p.img ? '<img src="' + escHtml(p.img) + '" style="width:40px;height:40px;object-fit:cover;border-radius:6px">' : '<span style="font-size:22px">' + escHtml(p.emoji||'📦') + '</span>') +
-          '<input type="hidden" value="' + escHtml(p.emoji||'📦') + '" data-field="emoji">' +
-        '</td>' +
-        '<td><input class="edit-input" value="' + escHtml(p.name) + '" data-field="name"></td>' +
-        '<td><input class="edit-input" value="' + escHtml(p.cat) + '" data-field="cat" list="catSuggestions"></td>' +
-        '<td><input class="edit-input price-input" type="number" step="0.10" min="0" value="' + p.price + '" data-field="price"> €</td>' +
-        '<td><input class="edit-input" value="' + escHtml(p.img||'') + '" placeholder="URL obrázka..." data-field="img" style="font-size:12px;color:var(--muted)"></td>' +
-        '<td><button class="btn btn-danger btn-sm" data-del="' + p.id + '">🗑</button></td></tr>';
+  let html = '<table><thead><tr><th style="width:50px">Obr.</th><th>Názov</th><th>Kat.</th><th>Cena</th><th>URL obrázka</th><th style="width:50px"></th></tr></thead><tbody>';
+  cats.forEach(function(cat) {
+    html += '<tr><td colspan="6" class="cat-header-row">' + escHtml(cat) + ' — ' + products.filter(function(p){return p.cat===cat;}).length + ' ks</td></tr>';
+    products.filter(function(p){return p.cat===cat;}).forEach(function(p) {
+      var imgCell = p.img ? '<img src="' + escHtml(p.img) + '" style="width:36px;height:36px;object-fit:cover;border-radius:5px">' : '<span style="font-size:20px">' + escHtml(p.emoji||'📦') + '</span>';
+      html += '<tr data-id="' + p.id + '">';
+      html += '<td style="text-align:center">' + imgCell + '</td>';
+      html += '<td><input class="edit-input" value="' + escHtml(p.name) + '" data-field="name"></td>';
+      html += '<td><input class="edit-input" value="' + escHtml(p.cat) + '" data-field="cat" list="catSuggestions" style="width:90px"></td>';
+      html += '<td><input class="edit-input price-input" type="number" step="0.10" min="0" value="' + p.price + '" data-field="price" style="width:65px"> €</td>';
+      html += '<td><input class="edit-input" value="' + escHtml(p.img||'') + '" placeholder="URL..." data-field="img" style="font-size:12px;color:var(--muted)"></td>';
+      html += '<td><button class="btn btn-danger btn-sm" data-del="' + p.id + '">🗑</button></td>';
+      html += '</tr>';
     });
   });
   container.innerHTML = html + '</tbody></table>';
-  container.querySelectorAll('.edit-input').forEach(input => {
+
+  container.querySelectorAll('.edit-input').forEach(function(input) {
     input.addEventListener('change', function() {
-      const id = this.closest('tr').dataset.id;
-      const p = products.find(p => p.id == id);
-      if (p) { p[this.dataset.field] = this.dataset.field === 'price' ? parseFloat(this.value) : this.value; if (this.dataset.field === 'cat') { renderProducts(); updateCatSuggestions(); } }
+      var id = this.closest('tr').dataset.id;
+      var p = products.find(function(p){return p.id == id;});
+      if (p) {
+        p[this.dataset.field] = this.dataset.field === 'price' ? parseFloat(this.value) : this.value;
+        if (this.dataset.field === 'cat') { renderProducts(); updateCatSuggestions(); }
+      }
     });
   });
-  container.querySelectorAll('[data-del]').forEach(btn => {
+
+  container.querySelectorAll('[data-del]').forEach(function(btn) {
     btn.addEventListener('click', function() {
       if (!confirm('Vymazať produkt?')) return;
-      products = products.filter(p => p.id != this.dataset.del);
+      var id = this.dataset.del;
+      products = products.filter(function(p){return p.id != id;});
+      akciaLinks = akciaLinks.filter(function(l){return l.produktId != id;});
       renderProducts(); updateCatSuggestions();
       toast('Produkt vymazaný — nezabudni Uložiť!', 'warn');
     });
@@ -377,48 +402,121 @@ function updateCatSuggestions() {
 }
 
 document.getElementById('btnAddProduct').addEventListener('click', function() {
-  if (!selectedAkciaId) { toast('Vyber akciu!', 'err'); return; }
-  const name = document.getElementById('newName').value.trim();
-  const price = parseFloat(document.getElementById('newPrice').value);
-  const cat = document.getElementById('newCat').value.trim() || 'Ostatne';
-  const emoji = document.getElementById('newEmoji').value.trim() || '📦';
-  const img = document.getElementById('newImg').value.trim();
+  var name = document.getElementById('newName').value.trim();
+  var price = parseFloat(document.getElementById('newPrice').value);
+  var cat = document.getElementById('newCat').value.trim() || 'Ostatne';
+  var emoji = document.getElementById('newEmoji').value.trim() || '📦';
+  var img = document.getElementById('newImg').value.trim();
   if (!name) { toast('Zadaj názov!', 'err'); return; }
   if (isNaN(price)||price<0) { toast('Zadaj správnu cenu!', 'err'); return; }
-  products.push({ id: Date.now(), akciaId: selectedAkciaId, name, price, cat, emoji, img });
-  document.getElementById('newName').value = ''; document.getElementById('newPrice').value = ''; document.getElementById('newEmoji').value = ''; document.getElementById('newImg').value = '';
+  products.push({ id: 'p_' + Date.now(), name, price, cat, emoji, img });
+  document.getElementById('newName').value = ''; document.getElementById('newPrice').value = '';
+  document.getElementById('newEmoji').value = ''; document.getElementById('newImg').value = '';
   renderProducts(); updateCatSuggestions();
   toast('✓ Produkt pridaný — nezabudni Uložiť!', 'warn');
 });
 
 document.getElementById('btnSaveProducts').addEventListener('click', async function() {
-  if (!selectedAkciaId) { toast('Vyber akciu!', 'err'); return; }
   this.textContent = '⏳ Ukladám...'; this.disabled = true;
   try {
-    const r = await fetch(SCRIPT_URL, { method:'POST', headers:{'Content-Type':'text/plain'}, body: JSON.stringify({ action:'saveProducts', akciaId: selectedAkciaId, products }) });
+    const r = await fetch(SCRIPT_URL, { method:'POST', headers:{'Content-Type':'text/plain'}, body: JSON.stringify({ action:'saveProducts', products }) });
     const d = await r.json();
     if (d.status === 'ok') toast('✓ Produkty uložené!'); else throw new Error(d.message);
   } catch(e) { toast('Chyba: ' + e.message, 'err'); }
-  finally { this.textContent = '💾 Uložiť a synchronizovať'; this.disabled = false; }
+  finally { this.textContent = '💾 Uložiť produkty'; this.disabled = false; }
 });
 
-document.getElementById('btnCopyFrom').addEventListener('click', async function() {
-  if (!selectedAkciaId) { toast('Vyber cieľovú akciu!', 'err'); return; }
-  const otherAkcie = akcie.filter(a => a.id !== selectedAkciaId);
-  if (!otherAkcie.length) { toast('Žiadna iná akcia', 'warn'); return; }
-  const name = prompt('Kopirovat z akcie:\n\n' + otherAkcie.map((a,i)=>(i+1)+'. '+a.name).join('\n') + '\n\nZadaj cislo:');
-  if (!name) return;
-  const idx = parseInt(name) - 1;
-  if (isNaN(idx)||idx<0||idx>=otherAkcie.length) { toast('Neplatná voľba', 'err'); return; }
+// PRIRADENIE PRODUKTOV K AKCII
+function openAssign(akciaId, akciaName) {
+  currentAssignAkciaId = akciaId;
+  showPage('products');
+  document.getElementById('navProducts').classList.add('active');
+  document.getElementById('navAkcie').classList.remove('active');
+  document.getElementById('assignSection').style.display = 'block';
+  document.getElementById('btnBackToAkcie').style.display = 'inline-flex';
+  document.getElementById('productsPageTitle').textContent = '📦 Produkty';
+  document.getElementById('productInfo').textContent = 'Centrálny zoznam. Produkty pridaj/uprav tu.';
+  document.getElementById('assignTitle').textContent = '📦 Tovar pre akciu: ' + akciaName;
+  renderAssign();
+}
+
+document.getElementById('btnBackToAkcie').addEventListener('click', function() {
+  showPage('akcie');
+  document.getElementById('assignSection').style.display = 'none';
+  document.getElementById('btnBackToAkcie').style.display = 'none';
+  currentAssignAkciaId = null;
+});
+
+function renderAssign() {
+  if (!currentAssignAkciaId) return;
+  const assignedIds = akciaLinks.filter(l => l.akciaId === currentAssignAkciaId).map(l => l.produktId);
+  const assigned = products.filter(p => assignedIds.includes(p.id.toString()));
+  const unassigned = products.filter(p => !assignedIds.includes(p.id.toString()));
+
+  let html = '';
+
+  if (assigned.length) {
+    html += '<div style="font-size:11px;color:var(--green);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">✓ Priradené (' + assigned.length + ')</div>';
+    html += '<table style="margin-bottom:16px"><tbody>';
+    assigned.forEach(function(p) {
+      var imgCell = p.img ? '<img src="' + escHtml(p.img) + '" style="width:30px;height:30px;object-fit:cover;border-radius:4px">' : '<span style="font-size:18px">' + escHtml(p.emoji||'📦') + '</span>';
+      html += '<tr style="background:#f0fdf4">' +
+        '<td style="width:40px;text-align:center">' + imgCell + '</td>' +
+        '<td><strong>' + escHtml(p.name) + '</strong></td>' +
+        '<td style="color:var(--muted);font-size:12px">' + escHtml(p.cat) + '</td>' +
+        '<td style="color:var(--accent);font-weight:700">' + fmt(p.price) + '</td>' +
+        '<td style="width:44px"><button class="assign-btn remove" data-pid="' + p.id + '">✕</button></td>' +
+        '</tr>';
+    });
+    html += '</tbody></table>';
+  }
+
+  if (unassigned.length) {
+    html += '<div style="font-size:11px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Nepriradené (' + unassigned.length + ')</div>';
+    html += '<table><tbody>';
+    unassigned.forEach(function(p) {
+      var imgCell = p.img ? '<img src="' + escHtml(p.img) + '" style="width:30px;height:30px;object-fit:cover;border-radius:4px">' : '<span style="font-size:18px">' + escHtml(p.emoji||'📦') + '</span>';
+      html += '<tr>' +
+        '<td style="width:40px;text-align:center">' + imgCell + '</td>' +
+        '<td>' + escHtml(p.name) + '</td>' +
+        '<td style="color:var(--muted);font-size:12px">' + escHtml(p.cat) + '</td>' +
+        '<td style="color:var(--accent);font-weight:700">' + fmt(p.price) + '</td>' +
+        '<td style="width:44px"><button class="assign-btn add" data-pid="' + p.id + '">➕</button></td>' +
+        '</tr>';
+    });
+    html += '</tbody></table>';
+  }
+
+  if (!products.length) html = '<div style="color:var(--muted);text-align:center;padding:20px">Žiadne produkty v centrálnom zozname.</div>';
+
+  document.getElementById('assignContainer').innerHTML = html;
+
+  document.querySelectorAll('.assign-btn.add').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var pid = this.dataset.pid.toString();
+      akciaLinks.push({ akciaId: currentAssignAkciaId, produktId: pid });
+      renderAssign(); renderAkcie();
+    });
+  });
+
+  document.querySelectorAll('.assign-btn.remove').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var pid = this.dataset.pid.toString();
+      akciaLinks = akciaLinks.filter(function(l){ return !(l.akciaId === currentAssignAkciaId && l.produktId === pid); });
+      renderAssign(); renderAkcie();
+    });
+  });
+}
+
+document.getElementById('btnSaveAssign').addEventListener('click', async function() {
+  this.textContent = '⏳ Ukladám...'; this.disabled = true;
   try {
-    const r = await fetch(SCRIPT_URL + '?action=getProducts&akcia=' + encodeURIComponent(otherAkcie[idx].id));
+    const r = await fetch(SCRIPT_URL, { method:'POST', headers:{'Content-Type':'text/plain'}, body: JSON.stringify({ action:'saveAkciaProducts', links: akciaLinks }) });
     const d = await r.json();
-    if (d.status === 'ok' && d.products.length) {
-      products = [...products, ...d.products.map(p => ({...p, id: Date.now() + Math.random(), akciaId: selectedAkciaId}))];
-      renderProducts(); updateCatSuggestions();
-      toast('✓ Skopírovaných ' + d.products.length + ' produktov — nezabudni Uložiť!', 'warn');
-    } else toast('Zdrojová akcia nemá produkty', 'warn');
-  } catch(e) { toast('Chyba kopírovania', 'err'); }
+    if (d.status === 'ok') toast('✓ Priradenie uložené! Tablety si stiahnu tovar pri obnovení.');
+    else throw new Error(d.message);
+  } catch(e) { toast('Chyba: ' + e.message, 'err'); }
+  finally { this.textContent = '💾 Uložiť priradenie'; this.disabled = false; }
 });
 
 // REPORT
@@ -427,7 +525,6 @@ async function loadReport() {
   document.getElementById('productsReport').innerHTML = '<div style="color:var(--muted);text-align:center;padding:20px">⏳ Načítavam...</div>';
   document.getElementById('salesBody').innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:20px">⏳ Načítavam...</td></tr>';
   try {
-    // Nacitaj report aj vsetky produkty naraz
     const [reportRes, prodsRes] = await Promise.all([
       fetch(SCRIPT_URL + '?action=getReport'),
       fetch(SCRIPT_URL + '?action=getProducts')
@@ -452,12 +549,12 @@ async function loadReport() {
 document.getElementById('btnRefreshReport').addEventListener('click', loadReport);
 
 document.getElementById('btnFilter').addEventListener('click', function() {
-  let f = [...allSalesData];
-  const akcia = document.getElementById('filterAkcia').value;
-  const stanok = document.getElementById('filterStanok').value;
-  const platba = document.getElementById('filterPlatba').value;
-  const od = document.getElementById('filterOd').value;
-  const doo = document.getElementById('filterDo').value;
+  var f = [...allSalesData];
+  var akcia = document.getElementById('filterAkcia').value;
+  var stanok = document.getElementById('filterStanok').value;
+  var platba = document.getElementById('filterPlatba').value;
+  var od = document.getElementById('filterOd').value;
+  var doo = document.getElementById('filterDo').value;
   if (akcia) f = f.filter(s => s.akcia === akcia);
   if (stanok) f = f.filter(s => s.stanok === stanok);
   if (platba) f = f.filter(s => s.method === platba);
@@ -476,33 +573,28 @@ document.getElementById('btnClearFilter').addEventListener('click', function() {
 });
 
 function parseItems(itemsStr) {
-  const result = [];
+  var result = [];
   if (!itemsStr) return result;
-  itemsStr.split(', ').forEach(item => {
-    // Novy format: "Pivo x2 @2.50EUR" alebo stary: "Pivo x2"
-    const mNew = item.match(/^(.+) x(\d+) @([\d.]+)EUR$/);
-    const mOld = item.match(/^(.+) x(\d+)$/);
-    if (mNew) {
-      result.push({ name: mNew[1].trim(), qty: parseInt(mNew[2]), price: parseFloat(mNew[3]) });
-    } else if (mOld) {
-      result.push({ name: mOld[1].trim(), qty: parseInt(mOld[2]), price: null });
-    }
+  itemsStr.split(', ').forEach(function(item) {
+    var mNew = item.match(/^(.+) x(\d+) @([\d.]+)EUR$/);
+    var mOld = item.match(/^(.+) x(\d+)$/);
+    if (mNew) result.push({ name: mNew[1].trim(), qty: parseInt(mNew[2]), price: parseFloat(mNew[3]) });
+    else if (mOld) result.push({ name: mOld[1].trim(), qty: parseInt(mOld[2]), price: null });
   });
   return result;
 }
 
 function renderReport(sales) {
-  const cashSales = sales.filter(s => s.method !== 'dhz');
-  const dhzSales = sales.filter(s => s.method === 'dhz');
-  const cashTotal = cashSales.reduce((s,x) => s+x.total, 0);
-  const dhzTotal = dhzSales.reduce((s,x) => s+x.total, 0);
-
+  var cashSales = sales.filter(s => s.method !== 'dhz');
+  var dhzSales = sales.filter(s => s.method === 'dhz');
+  var cashTotal = cashSales.reduce((s,x) => s+x.total, 0);
+  var dhzTotal = dhzSales.reduce((s,x) => s+x.total, 0);
   document.getElementById('statTotal').textContent = fmt(cashTotal);
   document.getElementById('statDhz').textContent = fmt(dhzTotal);
   document.getElementById('statCount').textContent = sales.length;
 
-  const byStanok = {};
-  sales.forEach(s => {
+  var byStanok = {};
+  sales.forEach(function(s) {
     if (!byStanok[s.stanok]) byStanok[s.stanok] = {count:0, cash:0, dhz:0};
     byStanok[s.stanok].count++;
     if (s.method === 'dhz') byStanok[s.stanok].dhz += s.total;
@@ -510,97 +602,84 @@ function renderReport(sales) {
   });
   document.getElementById('statStanky').textContent = Object.keys(byStanok).length;
 
-  const stankyArr = Object.entries(byStanok).sort((a,b) => (b[1].cash+b[1].dhz) - (a[1].cash+a[1].dhz));
-  const maxRev = stankyArr[0] ? (stankyArr[0][1].cash + stankyArr[0][1].dhz) : 1;
-  document.getElementById('stankyReport').innerHTML = stankyArr.length ? stankyArr.map(([name,v]) =>
-    '<div class="stanok-bar">' +
-    '<div class="stanok-name">' + escHtml(name) + '</div>' +
-    '<div class="stanok-track"><div class="stanok-fill" style="width:' + ((v.cash+v.dhz)/maxRev*100).toFixed(0) + '%"><span>' + v.count + ' predajov</span></div></div>' +
-    '<div class="stanok-val">' + fmt(v.cash) + (v.dhz > 0 ? ' <span style="color:var(--purple);font-size:11px">+' + fmt(v.dhz) + ' DHZ</span>' : '') + '</div>' +
-    '</div>'
-  ).join('') : '<div style="color:var(--muted);text-align:center;padding:20px">Žiadne dáta</div>';
+  var stankyArr = Object.entries(byStanok).sort((a,b) => (b[1].cash+b[1].dhz) - (a[1].cash+a[1].dhz));
+  var maxRev = stankyArr[0] ? (stankyArr[0][1].cash + stankyArr[0][1].dhz) : 1;
+  document.getElementById('stankyReport').innerHTML = stankyArr.length ? stankyArr.map(function(entry) {
+    var name = entry[0], v = entry[1];
+    return '<div class="stanok-bar"><div class="stanok-name">' + escHtml(name) + '</div>' +
+      '<div class="stanok-track"><div class="stanok-fill" style="width:' + ((v.cash+v.dhz)/maxRev*100).toFixed(0) + '%"><span>' + v.count + ' predajov</span></div></div>' +
+      '<div class="stanok-val">' + fmt(v.cash) + (v.dhz > 0 ? ' <span style="color:var(--purple);font-size:11px">+' + fmt(v.dhz) + ' DHZ</span>' : '') + '</div></div>';
+  }).join('') : '<div style="color:var(--muted);text-align:center;padding:20px">Žiadne dáta</div>';
 
-  // Mapa cien zo Sheets produktov (fallback pre stare predaje bez ceny)
-  const priceMap = {};
-  allProductsData.forEach(p => { priceMap[p.name] = p.price; });
+  var priceMap = {};
+  allProductsData.forEach(function(p) { priceMap[p.name] = p.price; });
 
-  const byProduct = {};
-  sales.forEach(s => {
-    parseItems(s.itemsStr).forEach(item => {
-      if (!byProduct[item.name]) byProduct[item.name] = { qty: 0, dhzQty: 0, cashRev: 0, dhzRev: 0, hasPrice: false };
-      // Pouzi cenu z predaja (nova), alebo z produktov (fallback pre stare)
-      const price = item.price !== null ? item.price : (priceMap[item.name] || 0);
-      const hasPrice = item.price !== null || priceMap[item.name] !== undefined;
+  var byProduct = {};
+  sales.forEach(function(s) {
+    parseItems(s.itemsStr).forEach(function(item) {
+      if (!byProduct[item.name]) byProduct[item.name] = { qty:0, dhzQty:0, cashRev:0, dhzRev:0, hasPrice:false };
+      var price = item.price !== null ? item.price : (priceMap[item.name] || 0);
+      var hasPrice = item.price !== null || priceMap[item.name] !== undefined;
       if (hasPrice) byProduct[item.name].hasPrice = true;
-      if (s.method === 'dhz') {
-        byProduct[item.name].dhzQty += item.qty;
-        byProduct[item.name].dhzRev += price * item.qty;
-      } else {
-        byProduct[item.name].qty += item.qty;
-        byProduct[item.name].cashRev += price * item.qty;
-      }
+      if (s.method === 'dhz') { byProduct[item.name].dhzQty += item.qty; byProduct[item.name].dhzRev += price * item.qty; }
+      else { byProduct[item.name].qty += item.qty; byProduct[item.name].cashRev += price * item.qty; }
     });
   });
-  const prodArr = Object.entries(byProduct).sort((a,b) => (b[1].qty+b[1].dhzQty) - (a[1].qty+a[1].dhzQty));
-  const maxQty = prodArr[0] ? (prodArr[0][1].qty + prodArr[0][1].dhzQty) : 1;
+
+  var prodArr = Object.entries(byProduct).sort((a,b) => (b[1].qty+b[1].dhzQty) - (a[1].qty+a[1].dhzQty));
+  var maxQty = prodArr[0] ? (prodArr[0][1].qty + prodArr[0][1].dhzQty) : 1;
+
   if (prodArr.length) {
-    const totalKs = prodArr.reduce((s,x) => s+x[1].qty+x[1].dhzQty, 0);
-    const totalDhzKs = prodArr.reduce((s,x) => s+x[1].dhzQty, 0);
-    const totalCashRev = prodArr.reduce((s,x) => s+x[1].cashRev, 0);
-    const totalDhzRev = prodArr.reduce((s,x) => s+x[1].dhzRev, 0);
-    let html = '<div style="margin-bottom:14px;display:flex;gap:16px;flex-wrap:wrap">' +
+    var totalKs = prodArr.reduce((s,x) => s+x[1].qty+x[1].dhzQty, 0);
+    var totalDhzKs = prodArr.reduce((s,x) => s+x[1].dhzQty, 0);
+    var totalCashRev = prodArr.reduce((s,x) => s+x[1].cashRev, 0);
+    var totalDhzRev = prodArr.reduce((s,x) => s+x[1].dhzRev, 0);
+    var html = '<div style="margin-bottom:14px;display:flex;gap:16px;flex-wrap:wrap">' +
       '<span style="font-size:12px;color:var(--muted)">Celkovo: <strong style="color:var(--text)">' + totalKs + ' ks</strong></span>' +
-      '<span style="font-size:12px;color:var(--muted)">Tržba z predaja: <strong style="color:var(--accent)">' + fmt(totalCashRev) + '</strong></span>' +
-      (totalDhzKs > 0 ? '<span style="font-size:12px;color:var(--muted)">DHZ ks: <strong style="color:var(--purple)">' + totalDhzKs + ' ks</strong></span>' +
-      '<span style="font-size:12px;color:var(--muted)">Hodnota DHZ: <strong style="color:var(--purple)">' + fmt(totalDhzRev) + '</strong></span>' : '') +
+      '<span style="font-size:12px;color:var(--muted)">Tržba: <strong style="color:var(--accent)">' + fmt(totalCashRev) + '</strong></span>' +
+      (totalDhzKs > 0 ? '<span style="font-size:12px;color:var(--muted)">DHZ ks: <strong style="color:var(--purple)">' + totalDhzKs + ' ks</strong></span><span style="font-size:12px;color:var(--muted)">Hodnota DHZ: <strong style="color:var(--purple)">' + fmt(totalDhzRev) + '</strong></span>' : '') +
       '</div>';
-
-    // Hlavicka tabulky
     html += '<div style="display:grid;grid-template-columns:1fr 120px 60px 80px 80px;gap:6px;padding:5px 0;border-bottom:2px solid var(--border);font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.5px">' +
-      '<div>Produkt</div><div style="text-align:center">Predaj</div><div style="text-align:right">Ks</div><div style="text-align:right">Tržba</div><div style="text-align:right">DHZ</div></div>';
-
-    html += prodArr.map(([name, v]) => {
-      const hasPrice = priceMap[name] !== undefined;
-      const totalQty = v.qty + v.dhzQty;
+      '<div>Produkt</div><div style="text-align:center">Graf</div><div style="text-align:right">Ks</div><div style="text-align:right">Tržba</div><div style="text-align:right">DHZ</div></div>';
+    html += prodArr.map(function(entry) {
+      var name = entry[0], v = entry[1];
+      var totalQty = v.qty + v.dhzQty;
       return '<div style="display:grid;grid-template-columns:1fr 120px 60px 80px 80px;gap:6px;align-items:center;padding:7px 0;border-bottom:1px solid var(--border)">' +
         '<div style="font-size:13px;font-weight:500">' + escHtml(name) + '</div>' +
-        '<div style="text-align:center">' +
-          '<div class="prod-bar-track" style="width:100%"><div class="prod-bar-fill" style="width:' + (totalQty/maxQty*100).toFixed(0) + '%"><span>' + totalQty + ' ks</span></div></div>' +
-        '</div>' +
+        '<div><div style="background:var(--surface2);border-radius:4px;height:16px;overflow:hidden;border:1px solid var(--border)"><div style="height:100%;background:var(--green);border-radius:3px;width:' + (totalQty/maxQty*100).toFixed(0) + '%"></div></div></div>' +
         '<div style="text-align:right;font-weight:700;font-size:13px;color:var(--green)">' + v.qty + (v.dhzQty > 0 ? '<span style="color:var(--purple);font-size:11px"> +' + v.dhzQty + '</span>' : '') + '</div>' +
-        '<div style="text-align:right;font-weight:700;font-size:13px;color:var(--accent)">' + (hasPrice && v.cashRev > 0 ? fmt(v.cashRev) : (v.qty > 0 ? '<span style="color:var(--muted);font-size:11px">—</span>' : '')) + '</div>' +
-        '<div style="text-align:right;font-weight:700;font-size:13px;color:var(--purple)">' + (hasPrice && v.dhzRev > 0 ? fmt(v.dhzRev) : (v.dhzQty > 0 ? '<span style="color:var(--muted);font-size:11px">—</span>' : '')) + '</div>' +
+        '<div style="text-align:right;font-weight:700;font-size:13px;color:var(--accent)">' + (v.hasPrice && v.cashRev > 0 ? fmt(v.cashRev) : (v.qty > 0 ? '<span style="color:var(--muted);font-size:11px">—</span>' : '')) + '</div>' +
+        '<div style="text-align:right;font-weight:700;font-size:13px;color:var(--purple)">' + (v.hasPrice && v.dhzRev > 0 ? fmt(v.dhzRev) : (v.dhzQty > 0 ? '<span style="color:var(--muted);font-size:11px">—</span>' : '')) + '</div>' +
         '</div>';
     }).join('');
-
     document.getElementById('productsReport').innerHTML = html;
   } else {
     document.getElementById('productsReport').innerHTML = '<div style="color:var(--muted);text-align:center;padding:20px">Žiadne dáta</div>';
   }
 
-  const recent = [...sales].sort((a,b) => new Date(b.time)-new Date(a.time)).slice(0,50);
-  document.getElementById('salesBody').innerHTML = recent.length ? recent.map(s =>
-    '<tr><td style="font-size:12px;white-space:nowrap">' + fmtDate(s.time) + '</td>' +
-    '<td><strong>' + escHtml(s.stanok) + '</strong></td>' +
-    '<td style="color:var(--muted)">' + escHtml(s.obsluha||'—') + '</td>' +
-    '<td style="font-size:12px">' + escHtml(s.akcia||'—') + '</td>' +
-    '<td>' + (s.method==='dhz' ? '<span class="dhz-badge">🎫 DHZ</span>' : '💵') + '</td>' +
-    '<td style="font-size:12px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + escHtml(s.itemsStr||'') + '</td>' +
-    '<td style="font-weight:700;color:' + (s.method==='dhz'?'var(--purple)':'var(--accent)') + '">' + fmt(s.total) + '</td></tr>'
-  ).join('') : '<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:20px">Žiadne predaje</td></tr>';
+  var recent = [...sales].sort((a,b) => new Date(b.time)-new Date(a.time)).slice(0,50);
+  document.getElementById('salesBody').innerHTML = recent.length ? recent.map(function(s) {
+    return '<tr><td style="font-size:12px;white-space:nowrap">' + fmtDate(s.time) + '</td>' +
+      '<td><strong>' + escHtml(s.stanok) + '</strong></td>' +
+      '<td style="color:var(--muted)">' + escHtml(s.obsluha||'—') + '</td>' +
+      '<td style="font-size:12px">' + escHtml(s.akcia||'—') + '</td>' +
+      '<td>' + (s.method==='dhz' ? '<span class="dhz-badge">🎫 DHZ</span>' : '💵') + '</td>' +
+      '<td style="font-size:12px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + escHtml(s.itemsStr||'') + '</td>' +
+      '<td style="font-weight:700;color:' + (s.method==='dhz'?'var(--purple)':'var(--accent)') + '">' + fmt(s.total) + '</td></tr>';
+  }).join('') : '<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:20px">Žiadne predaje</td></tr>';
 }
 
-function fmt(n){return(Math.round(n*100)/100).toFixed(2).replace('.',',')+' €';}
+function fmt(n){return(Math.round(n*100)/100).toFixed(2).replace('.',',')+'\u00a0€';}
 function fmtDate(t){try{return new Date(t).toLocaleString('sk-SK',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});}catch{return t;}}
 function escHtml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
-function toast(msg,type){const t=document.getElementById('toast');t.textContent=msg;t.className='toast show'+(type?' '+type:'');clearTimeout(t._t);t._t=setTimeout(()=>t.className='toast',3500);}
+function toast(msg,type){var t=document.getElementById('toast');t.textContent=msg;t.className='toast show'+(type?' '+type:'');clearTimeout(t._t);t._t=setTimeout(function(){t.className='toast';},3500);}
 
 (function(){
-  const PW='dhzpos22', KEY='pos_auth';
-  const overlay=document.getElementById('loginOverlay');
+  var PW='dhzpos22', KEY='pos_auth';
+  var overlay=document.getElementById('loginOverlay');
   if(localStorage.getItem(KEY)===PW){overlay.style.display='none';return;}
   function tryLogin(){
-    const val=document.getElementById('loginInput').value;
+    var val=document.getElementById('loginInput').value;
     if(val===PW){localStorage.setItem(KEY,PW);overlay.style.display='none';}
     else{document.getElementById('loginErr').style.display='block';document.getElementById('loginInput').value='';document.getElementById('loginInput').focus();}
   }
