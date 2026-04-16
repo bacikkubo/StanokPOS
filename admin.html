@@ -146,12 +146,16 @@ tr:hover td{background:var(--surface2)}
         <div class="info" id="productInfo">Vyber akciu pre správu produktov.</div>
         <div id="addProductSection" style="display:none;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:14px;margin-bottom:14px">
           <div style="font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">Pridať produkt</div>
-          <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr auto;gap:10px;align-items:flex-end">
+          <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr auto;gap:10px;align-items:flex-end;margin-bottom:10px">
             <div class="form-group"><label>Názov</label><input type="text" id="newName" placeholder="napr. Pivo 0.5L"></div>
             <div class="form-group"><label>Cena (€)</label><input type="number" id="newPrice" placeholder="2.50" step="0.10" min="0"></div>
             <div class="form-group"><label>Kategória</label><input type="text" id="newCat" placeholder="napr. Alko" list="catSuggestions"><datalist id="catSuggestions"></datalist></div>
             <div class="form-group"><label>Emoji</label><input type="text" id="newEmoji" placeholder="🍺" maxlength="2" style="width:60px"></div>
             <button class="btn btn-primary" id="btnAddProduct">➕</button>
+          </div>
+          <div class="form-group">
+            <label>URL obrázka (nepovinné)</label>
+            <input type="text" id="newImg" placeholder="napr. https://bacikkubo.github.io/StanokPOS/img/pivo.jpg">
           </div>
         </div>
         <div id="productsContainer"><div style="color:var(--muted);font-size:13px;padding:20px;text-align:center">Vyber akciu pre zobrazenie produktov</div></div>
@@ -334,15 +338,19 @@ function renderProducts() {
   const container = document.getElementById('productsContainer');
   if (!products.length) { container.innerHTML = '<div style="text-align:center;color:var(--muted);padding:24px">Žiadne produkty. Pridaj prvý.</div>'; return; }
   const cats = [...new Set(products.map(p => p.cat))];
-  let html = '<table><thead><tr><th style="width:46px">Emoji</th><th>Názov</th><th>Kategória</th><th>Cena (€)</th><th style="width:56px"></th></tr></thead><tbody>';
+  let html = '<table><thead><tr><th style="width:60px">Obr./Emoji</th><th>Názov</th><th>Kategória</th><th>Cena (€)</th><th>URL obrázka</th><th style="width:56px"></th></tr></thead><tbody>';
   cats.forEach(cat => {
-    html += '<tr><td colspan="5" class="cat-header-row">' + escHtml(cat) + ' — ' + products.filter(p=>p.cat===cat).length + ' ks</td></tr>';
+    html += '<tr><td colspan="6" class="cat-header-row">' + escHtml(cat) + ' — ' + products.filter(p=>p.cat===cat).length + ' ks</td></tr>';
     products.filter(p => p.cat === cat).forEach(p => {
       html += '<tr data-id="' + p.id + '">' +
-        '<td style="text-align:center"><input class="edit-input" style="width:36px;text-align:center;font-size:18px" value="' + escHtml(p.emoji||'📦') + '" data-field="emoji"></td>' +
+        '<td style="text-align:center">' +
+          (p.img ? '<img src="' + escHtml(p.img) + '" style="width:40px;height:40px;object-fit:cover;border-radius:6px" onerror="this.style.display='none';this.nextSibling.style.display='inline'">' : '') +
+          '<input class="edit-input" style="width:36px;text-align:center;font-size:18px;' + (p.img ? 'display:none' : '') + '" value="' + escHtml(p.emoji||'📦') + '" data-field="emoji">' +
+        '</td>' +
         '<td><input class="edit-input" value="' + escHtml(p.name) + '" data-field="name"></td>' +
         '<td><input class="edit-input" value="' + escHtml(p.cat) + '" data-field="cat" list="catSuggestions"></td>' +
         '<td><input class="edit-input price-input" type="number" step="0.10" min="0" value="' + p.price + '" data-field="price"> €</td>' +
+        '<td><input class="edit-input" value="' + escHtml(p.img||'') + '" placeholder="URL obrázka..." data-field="img" style="font-size:12px;color:var(--muted)"></td>' +
         '<td><button class="btn btn-danger btn-sm" data-del="' + p.id + '">🗑</button></td></tr>';
     });
   });
@@ -374,10 +382,11 @@ document.getElementById('btnAddProduct').addEventListener('click', function() {
   const price = parseFloat(document.getElementById('newPrice').value);
   const cat = document.getElementById('newCat').value.trim() || 'Ostatne';
   const emoji = document.getElementById('newEmoji').value.trim() || '📦';
+  const img = document.getElementById('newImg').value.trim();
   if (!name) { toast('Zadaj názov!', 'err'); return; }
   if (isNaN(price)||price<0) { toast('Zadaj správnu cenu!', 'err'); return; }
-  products.push({ id: Date.now(), akciaId: selectedAkciaId, name, price, cat, emoji });
-  document.getElementById('newName').value = ''; document.getElementById('newPrice').value = ''; document.getElementById('newEmoji').value = '';
+  products.push({ id: Date.now(), akciaId: selectedAkciaId, name, price, cat, emoji, img });
+  document.getElementById('newName').value = ''; document.getElementById('newPrice').value = ''; document.getElementById('newEmoji').value = ''; document.getElementById('newImg').value = '';
   renderProducts(); updateCatSuggestions();
   toast('✓ Produkt pridaný — nezabudni Uložiť!', 'warn');
 });
