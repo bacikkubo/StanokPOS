@@ -390,7 +390,7 @@ function renderProducts(){
     return '<div class="product-card" data-id="'+p.id+'">'+media+'<div class="product-name">'+p.name+'</div><div class="product-price">'+fmt(p.price)+'</div></div>';
   }).join('');
   document.querySelectorAll('.product-card').forEach(card=>{
-    card.addEventListener('click',function(){addToCart(parseInt(this.dataset.id));});
+    card.addEventListener('click',function(){addToCart(this.dataset.id);});
   });
 }
 
@@ -424,7 +424,7 @@ function renderCart(){
       '</div>'
     ).join('');
     document.querySelectorAll('.qty-btn').forEach(btn=>{
-      btn.addEventListener('click',function(){changeQty(parseInt(this.dataset.id),parseInt(this.dataset.delta));});
+      btn.addEventListener('click',function(){changeQty(this.dataset.id,parseInt(this.dataset.delta));});
     });
   }
   document.getElementById('cartTotal').textContent=fmt(total);
