@@ -344,8 +344,8 @@ function renderProducts() {
     products.filter(p => p.cat === cat).forEach(p => {
       html += '<tr data-id="' + p.id + '">' +
         '<td style="text-align:center">' +
-          (p.img ? '<img src="' + escHtml(p.img) + '" style="width:40px;height:40px;object-fit:cover;border-radius:6px" onerror="this.style.display='none';this.nextSibling.style.display='inline'">' : '') +
-          '<input class="edit-input" style="width:36px;text-align:center;font-size:18px;' + (p.img ? 'display:none' : '') + '" value="' + escHtml(p.emoji||'📦') + '" data-field="emoji">' +
+          (p.img ? '<img src="' + escHtml(p.img) + '" style="width:40px;height:40px;object-fit:cover;border-radius:6px">' : '<span style="font-size:22px">' + escHtml(p.emoji||'📦') + '</span>') +
+          '<input type="hidden" value="' + escHtml(p.emoji||'📦') + '" data-field="emoji">' +
         '</td>' +
         '<td><input class="edit-input" value="' + escHtml(p.name) + '" data-field="name"></td>' +
         '<td><input class="edit-input" value="' + escHtml(p.cat) + '" data-field="cat" list="catSuggestions"></td>' +
