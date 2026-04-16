@@ -383,16 +383,12 @@ function renderProducts(){
     grid.innerHTML='<div style="color:var(--muted);font-size:13px;padding:20px;grid-column:1/-1">'+(state.akciaId?'Ziadne produkty pre tuto akciu':'Vyber akciu v Nastaveniach')+'</div>';
     return;
   }
-  grid.innerHTML=prods.map(p=>
-    '<div class="product-card" data-id="'+p.id+'">' +
-    (p.img ?
-      '<img src="'+escHtml(p.img)+'" style="width:70px;height:70px;object-fit:cover;border-radius:8px" onerror="this.style.display='none'">' :
-      '<div class="product-emoji">'+(p.emoji||'📦')+'</div>'
-    ) +
-    '<div class="product-name">'+p.name+'</div>' +
-    '<div class="product-price">'+fmt(p.price)+'</div>' +
-    '</div>'
-  ).join('');
+  grid.innerHTML=prods.map(p=>{
+    var media = p.img
+      ? '<img src="'+escHtml(p.img)+'" style="width:70px;height:70px;object-fit:cover;border-radius:8px">'
+      : '<div class="product-emoji">'+(p.emoji||'📦')+'</div>';
+    return '<div class="product-card" data-id="'+p.id+'">'+media+'<div class="product-name">'+p.name+'</div><div class="product-price">'+fmt(p.price)+'</div></div>';
+  }).join('');
   document.querySelectorAll('.product-card').forEach(card=>{
     card.addEventListener('click',function(){addToCart(parseInt(this.dataset.id));});
   });
