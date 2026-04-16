@@ -259,6 +259,10 @@ document.getElementById('navProducts').addEventListener('click', function() {
   document.getElementById('btnBackToAkcie').style.display = 'none';
   document.getElementById('productsPageTitle').textContent = '📦 Centrálny zoznam produktov';
   document.getElementById('productInfo').textContent = 'Centrálny zoznam všetkých produktov. Pridaj produkty tu a potom ich prirad k akciám.';
+  document.getElementById('productInfo').style.display = '';
+  document.getElementById('productsContainer').style.display = '';
+  document.getElementById('btnSaveProducts').style.display = '';
+  document.querySelector('#page-products .section').style.display = '';
   currentAssignAkciaId = null;
 });
 document.getElementById('navReport').addEventListener('click', function() { showPage('report'); loadReport(); });
@@ -434,8 +438,12 @@ function openAssign(akciaId, akciaName) {
   document.getElementById('navAkcie').classList.remove('active');
   document.getElementById('assignSection').style.display = 'block';
   document.getElementById('btnBackToAkcie').style.display = 'inline-flex';
-  document.getElementById('productsPageTitle').textContent = '📦 Produkty';
-  document.getElementById('productInfo').textContent = 'Centrálny zoznam. Produkty pridaj/uprav tu.';
+  document.getElementById('productsPageTitle').textContent = '📦 Tovar pre akciu: ' + akciaName;
+  document.getElementById('productInfo').style.display = 'none';
+  document.getElementById('productsContainer').style.display = 'none';
+  document.getElementById('btnSaveProducts').style.display = 'none';
+  // Skry pridavaci formular
+  document.querySelector('#page-products .section').style.display = 'none';
   document.getElementById('assignTitle').textContent = '📦 Tovar pre akciu: ' + akciaName;
   renderAssign();
 }
@@ -444,6 +452,10 @@ document.getElementById('btnBackToAkcie').addEventListener('click', function() {
   showPage('akcie');
   document.getElementById('assignSection').style.display = 'none';
   document.getElementById('btnBackToAkcie').style.display = 'none';
+  document.getElementById('productInfo').style.display = '';
+  document.getElementById('productsContainer').style.display = '';
+  document.getElementById('btnSaveProducts').style.display = '';
+  document.querySelector('#page-products .section').style.display = '';
   currentAssignAkciaId = null;
 });
 
